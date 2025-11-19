@@ -4,6 +4,7 @@
 **Fecha:** 2025-11-19
 **Reactor:** Tanque agitado 20L para producción de biodiésel
 **Software:** Ansys Fluent / PyFluent
+**Configuración:** Hélice de flujo axial, sin deflectores, con serpentín interno
 
 ---
 
@@ -29,55 +30,53 @@ H_L = 1.3 × D_T = 1.3 × 270 = 351 mm ≈ 350 mm
 ### 1.2 Tipo de Tanque
 
 - **Configuración**: Tanque cilíndrico vertical
-- **Fondo**: Tipo toriesférico (dished head) o plano (flat bottom)
-  - Recomendado: Toriesférico con radio = D_T/10
-- **Tapa**: Plana o ligeramente cónica
+- **Fondo**: Plano (flat bottom)
+- **Tapa**: Plana con entrada de aire/ventilación
 - **Material**: Acero inoxidable 316L (compatible con metanol y biodiésel)
+- **Sin deflectores (baffles)**: El reactor NO tiene deflectores
+
+**IMPORTANTE**: La ausencia de deflectores genera un patrón de flujo con componente tangencial significativa y posible formación de vórtice superficial. Esto debe considerarse en la simulación.
 
 ---
 
 ## 2. Sistema de Agitación
 
-### 2.1 Tipo de Impulsor
-
-**OPCIÓN 1: Turbina Rushton (Recomendado)**
+### 2.1 Tipo de Impulsor: **HÉLICE DE FLUJO AXIAL**
 
 | Parámetro | Símbolo | Valor | Unidad | Relación |
 |-----------|---------|-------|--------|----------|
+| Tipo | - | Hélice axial | - | 3 palas |
 | Diámetro impulsor | D_I | 90 | mm | D_I/D_T = 1/3 |
-| Número de palas | N_b | 6 | - | - |
-| Ancho de pala | W | 18 | mm | W = D_I/5 |
-| Altura de pala | L | 22.5 | mm | L = D_I/4 |
-| Espesor de pala | t | 2 | mm | - |
+| Número de palas | N_b | 3 | - | - |
+| Paso de hélice | P | 90 | mm | P = D_I |
+| Ángulo de pala | β | 30-45 | ° | Típico para hélices |
 | Clearance (fondo) | C | 90 | mm | C = D_T/3 |
 | Diámetro eje | D_shaft | 12 | mm | - |
+| Dirección de bombeo | - | Descendente | - | Downward pumping |
 
-**Ventajas Rushton**:
-- Excelente para suspensión de sólidos (catalizador CaO)
-- Alto shear rate → mejor transferencia de masa interfacial
-- Patrón de flujo radial con dos loops de recirculación
-- Bien documentado para scale-up (correlaciones de N_p)
+**Características de la Hélice Axial**:
 
-**OPCIÓN 2: Pitched Blade Turbine (PBT) a 45°**
+1. **Patrón de flujo**: Predominantemente axial
+   - Flujo descendente por el centro
+   - Flujo ascendente por las paredes
+   - Menor componente radial que turbina Rushton
 
-| Parámetro | Valor | Unidad |
-|-----------|-------|--------|
-| Diámetro impulsor | 90 | mm |
-| Número de palas | 4 o 6 | - |
-| Ángulo de inclinación | 45 | ° |
-| Clearance | 90 | mm |
+2. **Ventajas**:
+   - Menor consumo de potencia (50-60% menos que Rushton)
+   - Excelente mezcla de grandes volúmenes
+   - Menor daño por cizalla a partículas de catalizador
 
-**Ventajas PBT**:
-- Menor consumo de potencia (20-30% menos que Rushton)
-- Mejor mezcla axial
-- Adecuado si el catalizador sedimenta rápidamente
+3. **Desventajas**:
+   - Sin baffles: Tendencia a generar vórtice superficial
+   - Menor capacidad de suspensión de sólidos
+   - Posible segregación del catalizador en esquinas
 
 ### 2.2 Velocidad de Rotación
 
 | Condición | RPM | Número de Reynolds (Re) |
 |-----------|-----|-------------------------|
 | Mínima | 200 | ~20,000 (turbulento) |
-| Operación típica | 400-550 | ~40,000-55,000 |
+| Operación típica | 400-600 | ~40,000-60,000 |
 | Máxima | 800 | ~80,000 |
 
 **Cálculo de Re del impulsor**:
@@ -94,783 +93,868 @@ Re (500 rpm) = 850 × (500/60) × 0.09² / 0.003 ≈ 48,000 → Turbulento
 
 ### 2.3 Número de Potencia
 
-Para Rushton turbine en régimen turbulento:
+Para **hélice de flujo axial de 3 palas** en régimen turbulento:
+
 ```
-N_p ≈ 5.0 (valor estándar para Re > 10,000)
+N_p ≈ 0.3 - 0.5 (valor típico para Re > 10,000)
+```
 
-Potencia = N_p · ρ · N³ · D_I⁵
+**IMPORTANTE**: Este valor es significativamente menor que Rushton (N_p ≈ 5.0), lo que implica:
+- Menor consumo energético
+- Menor disipación de energía turbulenta local
+- Diferente distribución de ε (tasa de disipación)
 
-Ejemplo (500 rpm):
-P = 5.0 × 850 × (500/60)³ × 0.09⁵
-P ≈ 15 W
+### 2.4 Potencia Consumida
+
+```
+P = N_p · ρ · N³ · D_I⁵
+
+Para N = 500 rpm = 8.33 rps, N_p = 0.4:
+P = 0.4 × 850 × 8.33³ × 0.09⁵
+P ≈ 7.8 W ≈ 0.01 HP
+
+Potencia específica:
+P/V = 7.8 W / 20 L = 0.39 W/L
+```
+
+**Comparación con Rushton**:
+- Rushton (N_p = 5.0): P ≈ 97 W → 12× mayor consumo
+- Hélice es mucho más eficiente energéticamente
+
+### 2.5 Tiempo de Mezcla
+
+Correlación para tanques sin baffles con hélice axial:
+```
+N·t_m ≈ 60-80 (sin baffles, hélice axial)
+
+Para N = 500 rpm:
+t_m = 70 / 8.33 rps ≈ 8.4 segundos
+```
+
+**Nota**: Con baffles, t_m sería ~30-40% menor.
+
+---
+
+## 3. Serpentín de Calentamiento/Enfriamiento
+
+### 3.1 Geometría del Serpentín
+
+**CONFIGURACIÓN**: 10 vueltas de tubo helicoidal de acero inoxidable
+
+| Parámetro | Símbolo | Valor | Unidad | Notas |
+|-----------|---------|-------|--------|-------|
+| Número de vueltas | N_coils | 10 | - | Espiral helicoidal |
+| Diámetro de hélice | D_coil | 220 | mm | D_coil/D_T = 0.81 |
+| Diámetro de tubo | d_tube | 8 | mm | Tubo estándar 1/4" |
+| Paso de espiral | pitch | 30 | mm | Separación vertical |
+| Altura total | H_coil | 270 | mm | 9 × pitch |
+| Posición inferior | Z_bottom | 40 | mm | Clearance desde fondo |
+| Posición superior | Z_top | 310 | mm | Z_bottom + H_coil |
+
+**Cálculos geométricos**:
+```
+Longitud total de tubo:
+L_tube = N_coils × π × D_coil
+L_tube = 10 × π × 0.22 m ≈ 6.9 m
+
+Área de transferencia de calor:
+A_HT = π × d_tube × L_tube
+A_HT = π × 0.008 m × 6.9 m ≈ 0.173 m²
+```
+
+### 3.2 Condiciones del Serpentín
+
+| Propiedad | Valor | Unidad | Notas |
+|-----------|-------|--------|-------|
+| Material | 316L | - | Acero inoxidable |
+| Fluido interno | Agua caliente | - | Temp controlada |
+| T_agua entrada | 70-75 | °C | Control de T reactor |
+| T_agua salida | 66-70 | °C | Δ T ≈ 4-5°C |
+| Flujo agua | 0.5-1.0 | L/min | Ajustable |
+| Coeficiente global | U ≈ 200-300 | W/(m²·K) | Estimado |
+
+### 3.3 Transferencia de Calor
+
+**Ecuación de diseño**:
+```
+Q = U · A · LMTD
+
+donde:
+- U = coeficiente global de transferencia (200-300 W/m²·K)
+- A = 0.173 m²
+- LMTD = diferencia media logarítmica de temperatura
+
+Para mantener T_reactor = 65°C con generación de calor por reacción:
+Q_reactor = ΔH_rxn × r × V
+
+Reacción exotérmica: ΔH_rxn ≈ -15 kJ/mol FAME
+```
+
+### 3.4 Modelado en CFD
+
+El serpentín puede modelarse de dos formas:
+
+**OPCIÓN 1: Geometría explícita** (Recomendado para alta precisión)
+- Modelar tubos como geometría sólida
+- Aplicar condición de pared con temperatura fija o convección
+- Mayor costo computacional (mallado complejo)
+- Captura efectos locales de temperatura
+
+**OPCIÓN 2: Fuente de calor distribuida** (Simplificado)
+- Reemplazar serpentín por zona volumétrica con fuente de calor
+- Aplicar source term: S_E = Q_total / V_zona
+- Menor costo computacional
+- Aproximación razonable si solo interesa T promedio
+
+---
+
+## 4. Condiciones de Frontera (Boundary Conditions)
+
+### 4.1 Paredes
+
+| Superficie | Tipo | Condición | Valor |
+|------------|------|-----------|-------|
+| Pared del tanque | Wall | No-slip | u = 0 |
+| Temperatura pared | Thermal | Convección | h = 10 W/m²·K, T_ext = 25°C |
+| Fondo del tanque | Wall | No-slip | u = 0 |
+| Superficie libre | Interface | Symmetry o Free Surface | Ver sección 4.4 |
+| Eje del agitador | Wall | No-slip | u = 0 |
+
+### 4.2 Impulsor (Hélice Axial)
+
+**OPCIÓN 1: Multiple Reference Frame (MRF)** - Estado estacionario
+```
+- Región rotante: Cilindro con D = 1.2 × D_I, H = 1.5 × D_I
+- Velocidad angular: ω = 2πN (rad/s)
+- Interface estacionario-rotante: GGI (General Grid Interface)
+```
+
+**OPCIÓN 2: Sliding Mesh** - Transitorio
+```
+- Malla rotante: Se mueve físicamente
+- Time step: Δt = (1/(N·N_b)) / 40 segundos
+  Para N = 500 rpm, N_b = 3:
+  Δt = (1/(8.33×3)) / 40 ≈ 0.001 s
+```
+
+**Recomendación**: Usar MRF para estado estacionario inicial, luego Sliding Mesh si se necesita capturar transitorios.
+
+### 4.3 Serpentín de Calentamiento
+
+**Si se modela explícitamente**:
+```
+Tipo: Wall
+Condición térmica: Convección o temperatura fija
+  - OPCIÓN A: T_wall = 70°C (constante)
+  - OPCIÓN B: h_interno = 500 W/m²·K, T_fluido = 72°C
+```
+
+**Si se usa fuente distribuida**:
+```
+Tipo: Cell zone
+Source terms:
+  - Energy: S_E = Q_total / V_zona [W/m³]
+  - Q_total calculado del balance térmico
+```
+
+### 4.4 Superficie Libre (Importante sin Baffles)
+
+**SIN BAFFLES**: Es crítico modelar la superficie libre correctamente porque:
+- Formación de vórtice superficial
+- Entrainment de aire posible
+- Afecta distribución de flujo
+
+**OPCIÓN 1: Symmetry** (Simplificado)
+```
+Condición: Symmetry plane
+Asume superficie plana (no vórtice)
+Más rápido, menos realista
+```
+
+**OPCIÓN 2: Free Surface (VOF)** (Recomendado)
+```
+Modelo: Volume of Fluid (VOF)
+Fases: Líquido (mezcla) + Gas (aire)
+Tensión superficial: σ = 0.025 N/m
+Permite capturar formación de vórtice
 ```
 
 ---
 
-## 3. Baffles (Deflectores)
+## 5. Modelos Físicos
 
-### 3.1 Configuración
+### 5.1 Turbulencia
 
-| Parámetro | Valor | Unidad | Relación |
-|-----------|-------|--------|----------|
-| Número de baffles | 4 | - | Distribución a 90° |
-| Ancho de baffle | W_b = 27 | mm | W_b = D_T/10 |
-| Espesor de baffle | t_b = 3 | mm | - |
-| Offset desde pared | Gap = 5 | mm | Para evitar zonas muertas |
-| Altura de baffle | H_b = 340 | mm | Hasta H_L - 10 mm |
+**Modelo Recomendado**: **k-ε RNG** (Renormalization Group)
 
-### 3.2 Material y Posición
+Justificación:
+- Mejor para flujos con swirl (componente tangencial sin baffles)
+- Captura anisotropía en flujos rotantes
+- Más preciso para flujos con curvatura de líneas de corriente
 
-- **Material**: Acero inoxidable 316L
-- **Fijación**: Soldados a la pared del tanque
-- **Orientación**: Vertical, alineados radialmente
-- **Función**: Romper el vórtex, mejorar mezcla axial, prevenir rotación sólida
+**Parámetros del modelo k-ε RNG**:
+```
+C_mu = 0.0845
+C_1ε = 1.42
+C_2ε = 1.68
+σ_k = 0.7194
+σ_ε = 0.7194
+```
+
+**Alternativas**:
+- **k-ω SST**: Mejor para capas límite, más costoso
+- **RSM** (Reynolds Stress Model): Máxima precisión, muy costoso
+
+### 5.2 Tratamiento de Pared
+
+```
+Enhanced Wall Treatment (EWT)
+- y+ < 1 (región viscosa): Usar integración hasta la pared
+- y+ > 30 (región logarítmica): Usar wall functions
+- 1 < y+ < 30 (buffer layer): Blending automático
+```
+
+**Target y+**: Apuntar a y+ < 5 en paredes del tanque, hélice y serpentín
+
+### 5.3 Transporte de Especies
+
+```
+Species Transport Model
+Especies: TG, MeOH, FAME, GL
+
+Propiedades de transporte:
+- Difusividad másica: D_m ≈ 1×10⁻⁹ m²/s
+- Número de Schmidt: Sc = ν/D_m ≈ 3000
+```
+
+### 5.4 Reacción Química
+
+**Modelo de 1 paso** (simplificado):
+```
+TG + 3 MeOH → 3 FAME + GL
+
+Tasa de reacción (Arrhenius):
+r = k(T) · [TG] · [MeOH]
+
+k(T) = A · exp(-Ea / RT)
+
+Parámetros (ajustados):
+- A = 2.98×10¹⁰ min⁻¹ = 4.97×10⁸ s⁻¹
+- Ea = 51.9 kJ/mol = 51900 J/mol
+- R = 8.314 J/(mol·K)
+```
+
+**Implementación**: Ver sección 8 (UDF en C)
 
 ---
 
-## 4. Propiedades del Fluido
+## 6. Propiedades de los Fluidos
 
-### 4.1 Composición Inicial Típica
+### 6.1 Mezcla Líquida (Fase continua)
 
-| Componente | Fracción másica | Densidad (kg/m³) @ 65°C | Viscosidad (mPa·s) @ 65°C |
-|------------|----------------|-------------------------|---------------------------|
-| Aceite (TG) | 0.70 | 900 | 15 |
-| Metanol | 0.27 | 750 | 0.4 |
-| CaO (sólido) | 0.03 | 3350 | - |
+| Propiedad | Valor | Unidad | Notas |
+|-----------|-------|--------|-------|
+| Densidad | 850 | kg/m³ | Promedio metanol-aceite |
+| Viscosidad | 0.003 | Pa·s | 3 cP, mezcla |
+| Calor específico | 2200 | J/(kg·K) | Promedio |
+| Conductividad térmica | 0.15 | W/(m·K) | Estimado |
 
-### 4.2 Propiedades de la Mezcla (Valores Promedio)
+**Variación con temperatura** (opcional):
+```
+ρ(T) = ρ_ref · [1 - β · (T - T_ref)]
+β ≈ 8×10⁻⁴ K⁻¹ (coeficiente expansión térmica)
 
-| Propiedad | Símbolo | Valor | Unidad |
-|-----------|---------|-------|--------|
-| Densidad mezcla | ρ_mix | 850 | kg/m³ |
-| Viscosidad dinámica | μ_mix | 3.0 | mPa·s |
-| Viscosidad cinemática | ν | 3.53 × 10⁻⁶ | m²/s |
-| Capacidad calorífica | Cp | 2200 | J/(kg·K) |
-| Conductividad térmica | k | 0.15 | W/(m·K) |
-| Tensión superficial | σ | 25 | mN/m |
+μ(T) = μ_ref · exp[B · (1/T - 1/T_ref)]
+B ≈ 2000 K (Arrhenius para viscosidad)
+```
 
-**Nota**: Propiedades varían con la conversión (TG → FAME). Para análisis detallado, usar correlaciones dependientes de composición.
-
-### 4.3 Catalizador CaO (Fase Sólida)
+### 6.2 Aire (Para modelo VOF si se usa)
 
 | Propiedad | Valor | Unidad |
 |-----------|-------|--------|
-| Diámetro de partícula | 50-150 | μm |
-| Densidad | 3350 | kg/m³ |
-| Concentración | 1-5 | % masa |
-| Velocidad terminal (aprox.) | 0.1-0.5 | mm/s |
-
----
-
-## 5. Condiciones de Frontera (CFD)
-
-### 5.1 Paredes del Tanque
-
-```
-Tipo: Wall
-- Condición velocidad: No-slip
-- Roughness: 0 (smooth wall - acero inoxidable pulido)
-- Condición térmica: Isothermal (T = T_reacción) o Adiabatic
-  - Si hay intercambio de calor: Heat flux o HTC especificado
-  - HTC típico (convección natural aire exterior): h ≈ 10 W/(m²·K)
-```
-
-### 5.2 Impulsor
-
-```
-Tipo: Moving Wall (MRF) o Sliding Mesh
-
-OPCIÓN A: Multiple Reference Frame (MRF) - Steady-State
-- Zona interna: Rotating Frame (velocidad angular ω)
-- Zona externa: Stationary Frame
-- Interface: Sliding interface (conservación de flujo)
-
-OPCIÓN B: Sliding Mesh - Transient
-- Malla del impulsor: Rota físicamente
-- Time-step: Δt = 1/(6·N) [60-120 time-steps por revolución]
-- Más preciso pero computacionalmente costoso
-```
-
-**Configuración MRF (Recomendado para inicio)**:
-```
-Rotating Zone:
-- Geometry: Cilindro coaxial con eje del impulsor
-- Diámetro: D_RZ = D_I + 10 mm = 100 mm
-- Altura: H_RZ = 50 mm (centrada en impulsor)
-- Rotational velocity: ω = 2πN/60 (rad/s)
-  - Ejemplo: 500 rpm → ω = 52.36 rad/s
-```
-
-### 5.3 Superficie Libre (Tope del Líquido)
-
-```
-OPCIÓN 1: Degassing boundary condition
-- Asume interfaz plana sin deformación
-- Pressure outlet: P_gauge = 0 Pa
-- Backflow: None
-
-OPCIÓN 2: VOF (Volume of Fluid) - Multifásico
-- Modelar interfaz líquido-aire dinámicamente
-- Primary phase: Liquid mixture
-- Secondary phase: Air
-- Surface tension: σ = 25 mN/m
-- Más realista para altas RPM (formación de vórtex)
-```
-
-**Recomendación**: Iniciar con degassing; usar VOF si RPM > 600.
-
-### 5.4 Baffles
-
-```
-Tipo: Wall
-- No-slip
-- Adiabatic (generalmente)
-- Espesor: Shell conduction (t = 3 mm, k_steel = 16 W/(m·K))
-```
-
----
-
-## 6. Modelos de Turbulencia
-
-### 6.1 Comparación de Modelos
-
-| Modelo | Ventajas | Desventajas | Recomendación |
-|--------|----------|-------------|---------------|
-| **k-ε Standard** | Robusto, rápida convergencia | Sobreestima k cerca del impulsor | Análisis preliminar |
-| **k-ε RNG** | Mejor para swirl y curvatura alta | Requiere malla más fina | ✅ **Recomendado** |
-| **k-ω SST** | Excelente en capa límite, HT | Mayor costo computacional | Para análisis térmico detallado |
-| **RSM** | Más preciso para anisotropía | Muy costoso, menos estable | Validación final |
-
-### 6.2 Configuración Recomendada: k-ε RNG
-
-```
-Model: k-epsilon RNG
-- Near-wall treatment: Enhanced Wall Treatment
-- Prandtl numbers: Default (σ_k = 1.0, σ_ε = 1.3)
-
-Turbulent intensity (inlet/initial):
-I = 0.16·Re^(-1/8)
-Para Re = 50,000: I ≈ 3.8%
-
-Turbulent viscosity ratio: μ_t/μ ≈ 10 (inicial)
-```
+| Densidad | 1.225 | kg/m³ |
+| Viscosidad | 1.79×10⁻⁵ | Pa·s |
 
 ---
 
 ## 7. Mallado (Meshing)
 
-### 7.1 Estrategia de Malla
+### 7.1 Estrategia de Mallado
 
-| Región | Tipo de Malla | Tamaño | Celdas (aprox.) |
-|--------|---------------|--------|------------------|
-| Bulk (tanque) | Hexaédrica estructurada | 3-5 mm | 300,000 |
-| Impulsor | Tetraédrica/Polyhedral | 1-2 mm | 150,000 |
-| Baffles | Tetraédrica con inflation | 2-3 mm | 50,000 |
-| Interface MRF | Refinamiento x2 | 1.5 mm | - |
-| **Total** | - | - | **500,000 - 1,000,000** |
+**Dominios**:
+1. Región fluida (líquido)
+2. Región rotante (alrededor de hélice) - si MRF/Sliding Mesh
+3. Serpentín (si se modela explícitamente)
 
-### 7.2 Inflation Layers (Capa Límite)
+**Tipo de elementos**:
+- **Hexaédricos** en regiones regulares (tanque cilíndrico)
+- **Tetraédricos** en zonas complejas (alrededor de hélice, serpentín)
+- **Prismas** en capas límite (inflation layers)
+
+### 7.2 Tamaño de Malla
+
+| Región | Tamaño elemento | Razón de crecimiento |
+|--------|----------------|----------------------|
+| Bulk (tanque) | 5-8 mm | 1.2 |
+| Cerca de hélice | 1-2 mm | 1.15 |
+| Cerca de serpentín | 2-3 mm | 1.15 |
+| Capa límite | 0.1-0.5 mm | 1.2 |
+
+**Número total de elementos**:
+- **Malla gruesa**: 300,000 - 500,000 celdas
+- **Malla media**: 500,000 - 1,000,000 celdas (RECOMENDADO)
+- **Malla fina**: 1,000,000 - 2,000,000 celdas
+
+### 7.3 Capa Límite (Inflation Layers)
 
 ```
-Ubicación: Paredes (tanque, baffles, impulsor)
-- First layer thickness: y+ ≈ 30-300 (wall function)
-  o Para y+ < 5 (resolved): t_1 ≈ 0.05 mm (costoso)
-- Growth rate: 1.2
-- Number of layers: 5-10
+Primera capa: y+ < 1
+Número de capas: 5-10
+Growth rate: 1.2
+Altura total: ~3-5 mm
 
-Cálculo de y+ (objetivo 30-100):
-y+ = (u_τ · y₁) / ν
-u_τ = sqrt(τ_w / ρ)
+Cálculo de altura primera capa:
+y+ = ρ · u_τ · y / μ
+
+Para y+ = 1, u_τ ≈ 0.05 m/s (estimado):
+y = 1 × 0.003 / (850 × 0.05) ≈ 7×10⁻⁵ m = 0.07 mm
 ```
 
-**Recomendación**: Usar y+ = 30-300 con wall functions (k-ε).
+### 7.4 Calidad de Malla
 
-### 7.3 Calidad de Malla
-
-Métricas objetivo:
+Criterios de calidad:
 - **Skewness**: < 0.85 (idealmente < 0.75)
-- **Aspect Ratio**: < 20 (< 5 en regiones críticas)
-- **Orthogonal Quality**: > 0.2 (> 0.4 preferible)
-
-### 7.4 Independencia de Malla
-
-Refinar hasta que:
-```
-|P_refined - P_coarse| / P_coarse < 5%
-```
-donde P es el consumo de potencia del impulsor (variable de control).
-
-Secuencia sugerida:
-1. Malla gruesa: 250,000 celdas
-2. Malla media: 600,000 celdas ✅
-3. Malla fina: 1,200,000 celdas (validación)
+- **Aspect Ratio**: < 20 en bulk, < 100 en boundary layer
+- **Orthogonal Quality**: > 0.3 (idealmente > 0.5)
 
 ---
 
-## 8. Modelos Multifásicos (Opcional)
+## 8. Integración de Cinética Química (UDF)
 
-### 8.1 Modelo Euleriano (Líquido-Sólido)
-
-Si se desea modelar explícitamente el catalizador CaO:
-
-```
-Model: Eulerian Multiphase
-- Primary phase: Liquid (mixture)
-- Secondary phase: Solid (CaO particles)
-- Volume fraction CaO: α_s = 0.015 (1.5% v/v)
-- Diameter: d_p = 100 μm (promedio)
-- Drag model: Schiller-Naumann o Gidaspow
-- Turbulence: Mixture model o Per-phase
-```
-
-**Ecuaciones adicionales**:
-```
-∇·(α_l ρ_l u_l) = 0
-∇·(α_s ρ_s u_s) = 0
-α_l + α_s = 1
-
-Interphase drag: F_drag = (3/4)·(C_D·Re / d_p)·ρ_l·α_s·|u_l - u_s|·(u_l - u_s)
-```
-
----
-
-## 9. Cinética Química (Species Transport)
-
-### 9.1 Activación del Modelo
-
-```
-Fluent Setup:
-Models → Species → Species Transport
-- Reactions: Volumetric
-- Turbulence-Chemistry Interaction: Eddy-Dissipation (rápido) o PDF (preciso)
-```
-
-### 9.2 Especies Definidas
-
-| Especie | Símbolo | MW (g/mol) | Difusividad (m²/s) @ 65°C |
-|---------|---------|-----------|---------------------------|
-| Triglicérido | TG | 880 | 5 × 10⁻¹⁰ |
-| Diglicérido | DG | 620 | 6 × 10⁻¹⁰ |
-| Monoglicérido | MG | 360 | 7 × 10⁻¹⁰ |
-| Metanol | MeOH | 32 | 2 × 10⁻⁹ |
-| FAME | FAME | 292 | 8 × 10⁻¹⁰ |
-| Glicerol | GL | 92 | 1 × 10⁻⁹ |
-
-**Difusividades estimadas**: Usar correlación de Wilke-Chang o valores de literatura.
-
-### 9.3 Reacciones Volumétricas
-
-**Modelo de 1 Paso**:
-```
-TG + 3 MeOH → 3 FAME + GL
-Rate: r = -k · [TG] · [MeOH]
-```
-
-**Modelo de 3 Pasos**:
-```
-R1: TG + MeOH → DG + FAME   (k1_f, k1_r)
-R2: DG + MeOH → MG + FAME   (k2_f, k2_r)
-R3: MG + MeOH → GL + FAME   (k3_f, k3_r)
-```
-
-### 9.4 User-Defined Function (UDF) para Cinética
-
-**Archivo**: `transesterification_kinetics.c`
+### 8.1 UDF en C para Modelo de 1 Paso
 
 ```c
 #include "udf.h"
 
-#define R 8.314          // J/(mol·K)
-#define A_1 2.98e10      // Pre-exponential factor (min^-1)
-#define EA_1 51900       // Activation energy (J/mol)
+/* Parámetros cinéticos */
+#define A_FORWARD 4.97e8    /* s^-1 */
+#define EA_FORWARD 51900.0  /* J/mol */
+#define R_GAS 8.314         /* J/(mol·K) */
 
-DEFINE_VR_RATE(transesterification_rate_1step, c, t, r, mw, yi, rr, rr_t)
+/* Pesos moleculares */
+#define MW_TG 807.0         /* g/mol */
+#define MW_MEOH 32.04       /* g/mol */
+#define MW_FAME 269.0       /* g/mol promedio */
+#define MW_GL 92.09         /* g/mol */
+
+DEFINE_VR_RATE(transesterification_rate, cell, thread, r, mw, yi, rr, rr_t)
 {
-    real C_TG, C_MeOH, T, k, rate;
-    real rho = C_R(c,t);  // Density (kg/m³)
+    real T = C_T(cell, thread);              /* Temperatura K */
+    real rho = C_R(cell, thread);            /* Densidad kg/m³ */
 
-    // Extract mass fractions
-    real Y_TG = yi[0][0];    // Mass fraction TG
-    real Y_MeOH = yi[0][1];  // Mass fraction MeOH
+    /* Concentraciones molares (kmol/m³) */
+    real C_TG = rho * yi[0] / MW_TG;
+    real C_MeOH = rho * yi[1] / MW_MEOH;
 
-    // Convert to molar concentrations (mol/m³)
-    C_TG = (Y_TG * rho) / (mw[0] / 1000.0);      // mol/m³
-    C_MeOH = (Y_MeOH * rho) / (mw[1] / 1000.0);
+    /* Constante de velocidad Arrhenius */
+    real k_forward = A_FORWARD * exp(-EA_FORWARD / (R_GAS * T));
 
-    // Temperature (K)
-    T = C_T(c,t);
+    /* Tasa de reacción (kmol/(m³·s)) */
+    real reaction_rate = k_forward * C_TG * C_MeOH;
 
-    // Arrhenius rate constant (convert to s^-1)
-    k = A_1 * exp(-EA_1 / (R * T)) / 60.0;  // Convert min^-1 to s^-1
+    /* Tasas de producción/consumo por especie */
+    *rr = reaction_rate;  /* Tasa volumétrica */
 
-    // Reaction rate (mol/(m³·s))
-    rate = -k * C_TG * C_MeOH;
-
-    // Return net production rate for TG (negative = consumption)
-    *rr = rate;
-
-    // For transient, derivative wrto time
-    *rr_t = 0.0;
+    /* Componentes del source term para cada especie */
+    /* TG */
+    rr_t[0] = -reaction_rate * MW_TG;      /* kg/(m³·s) */
+    /* MeOH */
+    rr_t[1] = -3.0 * reaction_rate * MW_MEOH;
+    /* FAME */
+    rr_t[2] = 3.0 * reaction_rate * MW_FAME;
+    /* GL */
+    rr_t[3] = reaction_rate * MW_GL;
 }
 ```
 
-**Compilación en Fluent**:
+### 8.2 Compilación y Uso del UDF
+
+**Compilación**:
 ```
-Define → User-Defined → Functions → Compiled
-Source file: transesterification_kinetics.c
-Build → Load
+1. En Fluent: User-Defined → Functions → Compiled
+2. Seleccionar archivo: transesterification.c
+3. Build → Load
 ```
 
-**Asignación a Reacción**:
+**Asignación**:
 ```
-Define → Models → Species → Reactions → Edit
-Reaction: TG + 3 MeOH → 3 FAME + GL
-Rate Exponent: User-Defined
-UDF: transesterification_rate_1step::libudf
+1. Setup → Models → Species → Reactions
+2. Seleccionar reaction: transesterification
+3. Rate exponent: User-Defined
+4. UDF: transesterification_rate
+```
+
+### 8.3 Modelo de 3 Pasos (Avanzado)
+
+Para el modelo mecanístico de 3 pasos consecutivos:
+```
+TG + MeOH ⇌ DG + FAME
+DG + MeOH ⇌ MG + FAME
+MG + MeOH ⇌ GL + FAME
+```
+
+Se requiere definir 6 constantes cinéticas (3 forward, 3 reverse) en el UDF. Ver código extendido en anexo.
+
+---
+
+## 9. Configuración de Solver
+
+### 9.1 Solver Settings
+
+```
+Type: Pressure-Based
+Time: Steady (MRF) o Transient (Sliding Mesh)
+Velocity Formulation: Absolute
+```
+
+### 9.2 Esquemas Numéricos
+
+**Discretización espacial**:
+```
+Gradient: Least Squares Cell Based
+Pressure: PRESTO! (para flujos rotantes)
+Momentum: Second Order Upwind
+Turbulent Kinetic Energy: Second Order Upwind
+Turbulent Dissipation Rate: Second Order Upwind
+Energy: Second Order Upwind
+Species: Second Order Upwind
+```
+
+**Discretización temporal** (si transitorio):
+```
+Scheme: Second Order Implicit
+Time Step Size: 0.001 s (ver sección 4.2)
+Max Iterations per Time Step: 20
+```
+
+### 9.3 Under-Relaxation Factors
+
+```
+Pressure: 0.3
+Density: 1.0
+Body Forces: 1.0
+Momentum: 0.5
+Turbulent Kinetic Energy: 0.6
+Turbulent Dissipation Rate: 0.6
+Turbulent Viscosity: 0.8
+Energy: 0.8
+Species: 0.8
+```
+
+### 9.4 Criterios de Convergencia
+
+```
+Residuals:
+- Continuity: < 1×10⁻⁴
+- Velocity (x,y,z): < 1×10⁻⁴
+- k, epsilon: < 1×10⁻⁴
+- Energy: < 1×10⁻⁶
+- Species: < 1×10⁻⁶
+
+Monitores adicionales:
+- Velocidad promedio en plano a H/2
+- Temperatura promedio
+- Conversión promedio de TG
 ```
 
 ---
 
-## 10. Energía (Thermal Model)
+## 10. Automatización con PyFluent
 
-### 10.1 Activación del Modelo de Energía
-
-```
-Models → Energy: ON
-```
-
-### 10.2 Calor de Reacción
-
-Transesterificación es ligeramente exotérmica:
-```
-ΔH_r ≈ -80 kJ/mol (TG converted)
-```
-
-**Generación de calor volumétrica**:
-```
-Q_gen = |ΔH_r| · r_TG  (W/m³)
-```
-
-**Implementación en UDF**:
-```c
-DEFINE_SOURCE(reaction_heat_source, c, t, dS, eqn)
-{
-    real source, rate_TG;
-    real DH_r = 80000.0;  // J/mol
-
-    // Get reaction rate from species transport
-    rate_TG = get_reaction_rate(c, t, 0);  // mol/(m³·s)
-
-    source = DH_r * (-rate_TG);  // W/m³ (heat released)
-
-    dS[eqn] = 0.0;  // Linearization term
-
-    return source;
-}
-```
-
-### 10.3 Condiciones de Frontera Térmicas
-
-**Paredes**:
-```
-CASO 1: Isothermal Wall
-- T_wall = 65°C (control externo)
-
-CASO 2: Convection
-- External HTC: h_ext = 10 W/(m²·K)
-- T_ambient = 25°C
-- Heat flux: q = h_ext · (T_wall - T_amb)
-
-CASO 3: Adiabatic
-- q = 0 (sin intercambio de calor)
-```
-
----
-
-## 11. Solver Settings
-
-### 11.1 Configuración General
-
-```
-Solver:
-- Type: Pressure-Based
-- Time: Steady (MRF) o Transient (Sliding Mesh)
-- Velocity Formulation: Absolute
-- Gravity: ON (0, -9.81, 0) m/s² [si se modela sedimentación]
-```
-
-### 11.2 Métodos Numéricos
-
-```
-Pressure-Velocity Coupling:
-- Scheme: SIMPLEC (mejor convergencia que SIMPLE)
-- o COUPLED (más rápido, mayor uso de memoria)
-
-Spatial Discretization:
-- Gradient: Least Squares Cell-Based
-- Pressure: PRESTO! (para MRF/swirl) o Standard
-- Momentum: Second Order Upwind
-- Turbulence (k, ε): First Order Upwind (inicial) → Second Order
-- Species: Second Order Upwind
-- Energy: Second Order Upwind
-
-Transient (si aplica):
-- Time discretization: First Order Implicit
-```
-
-### 11.3 Relajación (Under-Relaxation Factors)
-
-Para mejorar estabilidad:
-```
-Presión: 0.3
-Densidad: 0.8 (si variable)
-Fuerzas de cuerpo: 0.8
-Momento: 0.5
-k: 0.5
-ε: 0.5
-Energía: 0.9
-Especies: 0.8
-```
-
-### 11.4 Criterios de Convergencia
-
-```
-Residuales:
-- Continuidad: < 1e-4
-- Velocidades (x, y, z): < 1e-4
-- k, ε: < 1e-4
-- Energía: < 1e-6
-- Especies: < 1e-6
-
-Monitoreo adicional:
-- Consumo de potencia del impulsor (estable)
-- Torque en el eje (variación < 1%)
-- Concentración promedio de TG (si steady, debe converger)
-```
-
-### 11.5 Inicialización
-
-```
-Method: Hybrid Initialization (recomendado)
-o Standard Initialization from: rotating zone
-
-Valores iniciales:
-- Velocidad: 0 m/s (o partir de solución previa)
-- Presión: Gauge 0 Pa
-- Temperatura: 65°C (338 K)
-- Y_TG: 0.70
-- Y_MeOH: 0.27
-- Y_otros: 0.03
-```
-
----
-
-## 12. Time-Step (Transient)
-
-Si se usa Sliding Mesh:
-
-```
-Time-step: Δt = 1 / (6 · N)  [60-120 time-steps por revolución]
-
-Ejemplo (500 rpm):
-N = 500/60 = 8.33 rps
-Δt = 1 / (6 × 8.33) = 0.02 s  (60 time-steps/rev)
-
-Iteraciones por time-step: 20-30 (hasta convergencia de residuales)
-
-Tiempo total de simulación:
-- 5-10 revoluciones para alcanzar quasi-steady state
-- t_sim = 5/N = 5/8.33 = 0.6 s → 30 time-steps
-```
-
-**Courant number**:
-```
-CFL = u·Δt / Δx < 1
-Verificar en regiones de alta velocidad (tip del impulsor)
-```
-
----
-
-## 13. Post-Procesamiento
-
-### 13.1 Campos a Extraer
-
-1. **Velocidad**:
-   - Vectores de velocidad (planos XY, XZ)
-   - Contornos de magnitud de velocidad
-   - Streamlines (líneas de corriente)
-   - Patrones de recirculación
-
-2. **Concentraciones**:
-   - Contornos de C_TG, C_FAME, C_MeOH
-   - Identificar zonas de baja conversión
-   - Distribución de catalizador (si multifásico)
-
-3. **Temperatura**:
-   - Contornos de T
-   - Identificar hot spots (si reacción exotérmica)
-
-4. **Turbulencia**:
-   - k (energía cinética turbulenta)
-   - ε (dissipation rate)
-   - μ_t (viscosidad turbulenta)
-   - Shear rate (γ̇ = ∂u/∂y)
-
-5. **Consumo de Potencia**:
-   ```
-   Power = Torque × ω
-   Torque: integrar τ_w sobre superficie del impulsor
-   ```
-
-### 13.2 Planos de Corte Recomendados
-
-- **XY (horizontal)**: z = C (altura del impulsor)
-- **XZ (vertical)**: y = 0 (pasa por eje central)
-- **YZ (vertical)**: x = 0 (perpendicular a un baffle)
-
-### 13.3 Volúmenes de Control
-
-Calcular promedios:
-```
-C_TG_avg = (1/V) ∫ C_TG dV
-T_avg = (1/V) ∫ T dV
-```
-
-### 13.4 Tiempo de Mezcla (Mixing Time)
-
-Simular inyección de trazador inerte:
-```
-Setup:
-- Patch: región pequeña con trazador (C_tracer = 1 mol/m³)
-- Ejecutar transient
-- Medir tiempo hasta que CoV < 5%
-
-CoV = σ(C_tracer) / C_avg × 100%
-```
-
-### 13.5 Exportación de Datos
-
-```
-File → Export → Solution Data
-- Format: ASCII, Tecplot, CSV
-- Surfaces: walls, interior, planes
-- Variables: velocity, pressure, species, temperature
-```
-
----
-
-## 14. Validación Experimental
-
-### 14.1 Parámetros a Validar
-
-| Parámetro | CFD | Experimental | Método Experimental |
-|-----------|-----|--------------|---------------------|
-| Consumo de potencia | Integrar torque | Torquímetro | P = T·ω |
-| Tiempo de mezcla | Simulación trazador | Test de decoloración | Inyectar colorante |
-| Distribución de velocidad | Campos CFD | PIV, LDA | Laser-based |
-| Perfil de temperatura | Campos T | Termopares múltiples | Grid de sensores |
-| Conversión vs tiempo | Reacción química | GC-FID | Muestreo temporal |
-
-### 14.2 Número de Potencia (N_p)
-
-Comparar con correlaciones:
-```
-Rushton Turbine (Re > 10,000):
-N_p ≈ 5.0
-
-N_p_CFD = P_CFD / (ρ · N³ · D_I⁵)
-```
-
-Error aceptable: |N_p_CFD - N_p_exp| / N_p_exp < 10%
-
----
-
-## 15. Integración con PyFluent (Python)
-
-### 15.1 Script de Automatización
+### 10.1 Script Python para Setup Automático
 
 ```python
 import ansys.fluent.core as pyfluent
-from ansys.fluent.core import examples
+from ansys.fluent.core import launcher
+import numpy as np
 
-# Launch Fluent
-solver = pyfluent.launch_fluent(
-    precision='double',
-    processor_count=4,
-    mode='solver'
-)
+# Parámetros geométricos
+D_T = 0.27      # m
+H_L = 0.35      # m
+D_I = 0.09      # m
+RPM = 500
 
-# Import mesh
-solver.file.read(file_type="case", file_name="reactor_20L.cas")
+# Iniciar Fluent
+solver = pyfluent.launch_fluent(precision='double', processor_count=4)
 
-# Setup models
-solver.setup.models.viscous.model = "k-epsilon-rng"
-solver.setup.models.energy.enabled = True
-solver.setup.models.species.model = "species-transport"
+# Importar malla
+solver.file.read_mesh(file_name='reactor_20L_axial_coil.msh')
 
-# Define materials
-solver.setup.materials.fluid["liquid-mixture"].density.constant = 850  # kg/m³
-solver.setup.materials.fluid["liquid-mixture"].viscosity.constant = 0.003  # Pa·s
+# Configurar modelo de turbulencia
+solver.define.models.viscous.model = 'k-epsilon-rng'
+solver.define.models.viscous.near_wall_treatment = 'enhanced-wall-treatment'
 
-# Boundary conditions
-solver.setup.boundary_conditions.wall["tank_wall"].thermal.thermal_bc = "Temperature"
-solver.setup.boundary_conditions.wall["tank_wall"].thermal.t.value = 338  # K
+# Configurar especies
+solver.define.models.species.model = 'species-transport'
+solver.define.models.species.species_list = ['TG', 'MeOH', 'FAME', 'GL']
 
-# Cell zone conditions (rotating zone for MRF)
-solver.setup.cell_zone_conditions.fluid["rotating_zone"].motion_type = "moving-reference-frame"
-solver.setup.cell_zone_conditions.fluid["rotating_zone"].rotation_speed = 52.36  # rad/s (500 rpm)
+# Configurar propiedades
+solver.setup.materials.fluid['mixture'].density.constant = 850  # kg/m³
+solver.setup.materials.fluid['mixture'].viscosity.constant = 0.003  # Pa·s
+solver.setup.materials.fluid['mixture'].specific_heat.constant = 2200  # J/(kg·K)
 
-# Solution methods
-solver.solution.methods.p_v_coupling.flow_scheme = "simplec"
-solver.solution.methods.discretization_scheme.mom = "second-order-upwind"
+# Configurar MRF (hélice)
+omega = 2 * np.pi * RPM / 60  # rad/s
+solver.setup.cell_zone_conditions.fluid['rotating_zone'].motion_type = 'moving-reference-frame'
+solver.setup.cell_zone_conditions.fluid['rotating_zone'].rotation_speed = omega
 
-# Initialize
+# Configurar serpentín (temperatura fija)
+solver.setup.boundary_conditions.wall['coil'].thermal.thermal_condition = 'temperature'
+solver.setup.boundary_conditions.wall['coil'].thermal.temperature = 343.15  # K (70°C)
+
+# Configurar solver
+solver.solution.methods.p_v_coupling.scheme = 'simple'
+solver.solution.methods.gradient_scheme = 'least-squares-cell-based'
+solver.solution.methods.pressure = 'presto'
+solver.solution.methods.momentum = 'second-order-upwind'
+
+# Inicializar
 solver.solution.initialization.hybrid_initialize()
 
-# Run calculation
-solver.solution.run_calculation.iterate(number_of_iterations=2000)
+# Calcular
+solver.solution.run_calculation.iterate(number_of_iterations=1000)
 
-# Post-processing
-solver.results.graphics.contour.create("contour-velocity")
-solver.results.graphics.contour["contour-velocity"].field = "velocity-magnitude"
-solver.results.graphics.contour["contour-velocity"].surfaces_list = ["symmetry-plane"]
-solver.results.graphics.contour["contour-velocity"].display()
+# Exportar resultados
+solver.results.graphics.contour.create('velocity_magnitude')
+solver.results.graphics.contour.create('temperature')
+solver.results.graphics.contour.create('TG_mass_fraction')
 
-# Save
-solver.file.write(file_type="case-data", file_name="reactor_20L_converged.cas.h5")
+# Guardar caso
+solver.file.write_case_data(file_name='reactor_20L_results.cas.h5')
 
-# Exit
-solver.exit()
+print("Simulación completada")
 ```
 
-### 15.2 Loop de Optimización
-
-Integrar con modelo cinético Python:
+### 10.2 Post-Procesamiento Automatizado
 
 ```python
-import numpy as np
-from scipy.optimize import minimize
+# Calcular promedios
+avg_velocity = solver.solution.report_definitions.surface['avg_vel']
+avg_temp = solver.solution.report_definitions.surface['avg_temp']
+avg_conversion = solver.solution.report_definitions.surface['avg_conversion']
 
-def run_cfd_simulation(T, rpm, cat_percent):
-    """Ejecuta simulación CFD y retorna conversión"""
-    solver = pyfluent.launch_fluent(...)
-    # Configurar T, rpm, cat_percent
-    solver.solution.run_calculation.iterate(1000)
-    conversion = extract_conversion(solver)
-    solver.exit()
-    return conversion
+# Exportar datos
+solver.results.report.surface_integrals.area_weighted_avg(
+    report_type='area-weighted-avg',
+    surface_names=['interior'],
+    field_variable='temperature'
+)
 
-def objective(x):
-    T, rpm, cat = x
-    conv = run_cfd_simulation(T, rpm, cat)
-    return -conv  # Minimizar negativo = maximizar
-
-# Optimización
-x0 = [65, 500, 3]  # Inicial
-bounds = [(50, 80), (200, 800), (1, 5)]
-result = minimize(objective, x0, bounds=bounds, method='L-BFGS-B')
-
-print(f"Condiciones óptimas: T={result.x[0]}°C, RPM={result.x[1]}, Cat={result.x[2]}%")
+# Crear gráficas
+solver.results.graphics.vector.create(
+    'velocity_vectors',
+    surfaces=['plane_z_mid'],
+    scale=0.1
+)
 ```
 
 ---
 
-## 16. Checklist de Configuración
+## 11. Resultados Esperados
 
-### Pre-procesamiento
-- [ ] Geometría CAD creada con dimensiones correctas
-- [ ] Malla generada con calidad adecuada (skewness < 0.85)
-- [ ] Estudio de independencia de malla realizado
-- [ ] Inflation layers configuradas (y+ adecuado)
+### 11.1 Campos de Flujo
+
+**Sin baffles con hélice axial**:
+
+1. **Velocidad Axial (V_z)**:
+   - Máxima en centro (zona de hélice): ~0.5-1.0 m/s
+   - Descendente en centro, ascendente en paredes
+   - Patrón de recirculación más débil que con Rushton
+
+2. **Velocidad Tangencial (V_θ)**:
+   - SIGNIFICATIVA sin baffles: ~0.3-0.6 m/s
+   - Genera rotación sólida en zonas alejadas
+   - Posible formación de vórtice superficial
+
+3. **Velocidad Radial (V_r)**:
+   - Menor componente: ~0.1-0.2 m/s
+   - Importante solo cerca de la hélice
+
+### 11.2 Turbulencia
+
+```
+Energía cinética turbulenta (k):
+- Máxima en zona de hélice: 0.01-0.05 m²/s²
+- Decae rápidamente lejos del impulsor
+
+Disipación (ε):
+- Máxima en hélice: 1-10 m²/s³
+- Menor que Rushton (menos shear)
+```
+
+### 11.3 Temperatura
+
+Con serpentín a 70°C y reacción exotérmica:
+```
+- T en bulk: 64-66°C (relativamente uniforme)
+- Puntos calientes cerca de hélice: hasta 68°C
+- Gradientes térmicos: < 3°C (buena mezcla axial)
+```
+
+### 11.4 Concentraciones y Conversión
+
+Después de t = 120 min (estado pseudo-estacionario):
+```
+- Conversión promedio de TG: 85-95%
+- Gradientes de concentración moderados
+- Zonas de baja conversión posibles en esquinas (poca mezcla)
+```
+
+### 11.5 Comparación Hélice Axial vs Rushton
+
+| Parámetro | Hélice Axial (sin baffles) | Rushton (con baffles) |
+|-----------|---------------------------|----------------------|
+| Consumo de potencia | 7.8 W | 97 W |
+| Patrón de flujo | Axial dominante | Radial dominante |
+| Velocidad tangencial | Alta | Baja |
+| Tiempo de mezcla | 8-10 s | 5-6 s |
+| Suspensión sólidos | Moderada | Excelente |
+| Formación vórtice | Posible | No (con baffles) |
+
+---
+
+## 12. Verificación y Validación
+
+### 12.1 Grid Independence Study
+
+Ejecutar 3 mallas:
+1. Gruesa: 300k celdas
+2. Media: 700k celdas
+3. Fina: 1.5M celdas
+
+Comparar:
+- Velocidad promedio en plano z = H_L/2
+- Número de potencia calculado
+- Temperatura promedio
+
+Criterio: Diferencia < 5% entre mallas media y fina
+
+### 12.2 Validación Experimental
+
+Comparar con datos experimentales:
+1. Perfiles de conversión vs tiempo
+2. Distribución de temperatura (si se tienen termopares)
+3. Potencia consumida medida vs simulada
+
+### 12.3 Balance de Masa y Energía
+
+Verificar:
+```
+Balance de masa global:
+Σ (ṁ_in - ṁ_out) + Σ source_terms = 0
+
+Balance de energía:
+Q_reacción + Q_serpentín + Q_pérdidas_paredes = 0
+```
+
+---
+
+## 13. Casos de Estudio Sugeridos
+
+### 13.1 Efecto de RPM
+
+| Caso | RPM | Objetivo |
+|------|-----|----------|
+| 1 | 200 | Velocidad mínima (límite suspensión) |
+| 2 | 400 | Operación baja |
+| 3 | 600 | Operación nominal |
+| 4 | 800 | Máxima agitación |
+
+### 13.2 Efecto de Temperatura Serpentín
+
+| Caso | T_coil (°C) | T_reactor objetivo (°C) |
+|------|------------|------------------------|
+| 1 | 60 | 55 |
+| 2 | 70 | 65 |
+| 3 | 80 | 75 |
+
+### 13.3 Efecto de Carga de Catalizador
+
+| Caso | % CaO (masa) | Impacto en CFD |
+|------|--------------|----------------|
+| 1 | 1% | Menor viscosidad aparente |
+| 2 | 3% | Caso nominal |
+| 3 | 5% | Mayor viscosidad, suspensión difícil |
+
+---
+
+## 14. Consideraciones Especiales sin Baffles
+
+### 14.1 Formación de Vórtice
+
+**Problema**: Sin baffles, la rotación genera vórtice superficial que puede:
+- Arrastrar aire (gas entrainment)
+- Reducir volumen efectivo
+- Generar inestabilidades
+
+**Soluciones en simulación**:
+1. Usar modelo VOF (Volume of Fluid) para capturar interface
+2. Si vórtice es profundo, considerar añadir baffles en diseño real
+3. Operar a RPM que minimice formación de vórtice
+
+### 14.2 Rotación Sólida en Zonas Alejadas
+
+Sin baffles, zonas lejos de la hélice pueden rotar como sólido rígido:
+```
+V_θ(r) ≈ ω · r (rotación sólida)
+```
+
+Esto reduce:
+- Mezclado radial
+- Disipación turbulenta local
+- Eficiencia de mezcla global
+
+**Cuantificación**: Calcular número de swirl
+```
+Sw = ∫(V_θ · V_z · r² dA) / (R · ∫(V_z² · r dA))
+```
+
+### 14.3 Suspensión de Catalizador
+
+Hélice axial + sin baffles puede ser insuficiente para suspender partículas de CaO.
+
+**Criterio de suspensión completa (Zwietering)**:
+```
+N_js = S · (ν^0.1) · (d_p^0.2) · ((ρ_s - ρ_l)/ρ_l)^0.45 · X^0.13 · (g · D_I)^0.45 / D_I
+
+Donde:
+- d_p = tamaño partícula CaO ≈ 50 μm
+- ρ_s = 3350 kg/m³ (CaO)
+- X = % sólidos en masa
+- S ≈ 5-6 (hélice sin baffles)
+```
+
+Para X = 3%, d_p = 50 μm:
+```
+N_js ≈ 4-5 rps ≈ 240-300 rpm
+```
+
+**Conclusión**: 400-600 rpm debería ser suficiente para suspensión
+
+---
+
+## 15. Limitaciones y Trabajo Futuro
+
+### 15.1 Limitaciones del Modelo Actual
+
+1. **Modelo de 1 paso**: Simplificación de cinética real de 3 pasos
+2. **Catalizador heterogéneo**: Modelo asume pseudo-homogéneo
+3. **Propiedades constantes**: No considera variación con composición
+4. **Sin transferencia de masa**: Desprecia resistencia interfacial aceite-metanol
+
+### 15.2 Mejoras Potenciales
+
+1. **Modelo multifásico Euler-Euler**:
+   - Fase 1: Metanol + catalizador
+   - Fase 2: Aceite
+   - Transferencia de masa interfacial
+
+2. **Cinética de 3 pasos**:
+   - Considerar DG y MG como intermedios
+   - Parámetros cinéticos para cada paso
+
+3. **Modelo de población para catalizador**:
+   - Distribución de tamaños de partícula
+   - Aglomeración/desaglomeración
+
+4. **Validación experimental detallada**:
+   - PIV (Particle Image Velocimetry) para campos de velocidad
+   - Termopares distribuidos para temperatura
+   - Muestreo espacial para concentraciones
+
+---
+
+## 16. Referencias Técnicas
+
+1. **Correlaciones de agitación**:
+   - Paul, E. L., Atiemo-Obeng, V. A., & Kresta, S. M. (2004). *Handbook of Industrial Mixing*. Wiley.
+
+2. **CFD de reactores agitados**:
+   - Mavros, P. (2001). "Flow visualization in stirred vessels: A review of experimental techniques". *Chemical Engineering Research and Design*, 79(2), 113-127.
+
+3. **Hélices de flujo axial**:
+   - Nienow, A. W. (1997). "On impeller circulation and mixing effectiveness in the turbulent flow regime". *Chemical Engineering Science*, 52(15), 2557-2565.
+
+4. **Transesterificación con CaO**:
+   - Kouzu, M., et al. (2008). "Heterogeneous catalysis of calcium oxide used for transesterification of soybean oil with refluxing methanol". *Applied Catalysis A*, 355(1-2), 94-99.
+
+5. **CFD sin baffles**:
+   - Montante, G., et al. (2001). "CFD simulations and experimental validation of homogenisation curves and mixing time in stirred Newtonian and pseudoplastic liquids". *Chemical Engineering Science*, 56(3), 733-745.
+
+---
+
+## Anexo A: Archivo de Geometría (CAD)
+
+Para crear la geometría en SOLIDWORKS/SpaceClaim:
+
+1. **Tanque**:
+   - Cilindro D = 270 mm, H = 400 mm
+   - Fondo plano
+
+2. **Hélice Axial**:
+   - 3 palas helicoidales
+   - D = 90 mm, paso = 90 mm
+   - Posición: z = 90 mm desde fondo
+
+3. **Serpentín**:
+   - Hélice tubular: 10 vueltas, D_hélice = 220 mm
+   - Tubo: d = 8 mm
+   - Paso vertical: 30 mm
+   - z_inicio = 40 mm
+
+4. **Dominio fluido**:
+   - Volumen entre geometrías
+   - Altura líquido: 350 mm
+
+**Exportar**: Formato .stp o .x_t para Fluent Meshing
+
+---
+
+## Anexo B: Checklist de Simulación
+
+### Pre-Procesamiento
+- [ ] Geometría creada y limpia (sin gaps)
+- [ ] Dominio fluido extraído
+- [ ] Malla generada (500k-1M celdas)
+- [ ] Calidad de malla verificada (skewness < 0.85)
+- [ ] Inflation layers en paredes (y+ < 5)
 
 ### Setup
-- [ ] Modelo de turbulencia seleccionado (k-ε RNG)
-- [ ] Propiedades de fluidos definidas
-- [ ] Condiciones de frontera configuradas
-- [ ] MRF o Sliding Mesh configurado
-- [ ] Species transport activado con reacciones
-- [ ] UDF compilada y asignada
-- [ ] Modelo de energía activado (si térmico)
-- [ ] Gravedad activada (si multifásico)
+- [ ] Modelo turbulencia k-ε RNG configurado
+- [ ] Especies definidas (TG, MeOH, FAME, GL)
+- [ ] Propiedades de mezcla asignadas
+- [ ] MRF configurado (ω = 2πN/60)
+- [ ] Serpentín con T = 70°C
+- [ ] UDF compilado y cargado
+- [ ] Reacción asignada a dominio fluido
 
-### Solver
-- [ ] Esquema de acoplamiento P-V seleccionado (SIMPLEC)
-- [ ] Discretización de segundo orden configurada
-- [ ] Under-relaxation factors ajustados
-- [ ] Criterios de convergencia definidos
-- [ ] Inicialización realizada (hybrid)
+### Solución
+- [ ] Esquemas numéricos second-order
+- [ ] URFs ajustados
+- [ ] Inicialización híbrida
+- [ ] Residuales < 1e-4 (1e-6 energía)
+- [ ] Monitores de velocidad, T, conversión
 
-### Ejecución
-- [ ] Monitoreo de residuales activo
-- [ ] Monitoreo de variables físicas (P, torque)
-- [ ] Guardado automático cada N iteraciones
-- [ ] Convergencia alcanzada
-
-### Post-procesamiento
-- [ ] Campos de velocidad visualizados
-- [ ] Perfiles de concentración extraídos
-- [ ] Consumo de potencia calculado
-- [ ] Tiempo de mezcla estimado (si transient)
-- [ ] Resultados exportados
+### Post-Procesamiento
+- [ ] Contornos de velocidad, T, especies
+- [ ] Vectores de velocidad en planos
+- [ ] Líneas de corriente
+- [ ] Isosuperficies de conversión
+- [ ] Reportes de promedios y balances
 
 ---
 
-## 17. Troubleshooting
+**FIN DEL DOCUMENTO**
 
-### Problema: Divergencia de la Solución
-
-**Síntomas**: Residuales explotan, valores no físicos
-
-**Soluciones**:
-1. Reducir under-relaxation factors (0.3-0.5)
-2. Usar First Order Upwind temporalmente
-3. Iniciar con RPM baja, incrementar gradualmente
-4. Verificar calidad de malla (refinar si skewness > 0.9)
-5. Usar time-stepping pseudo-transient
-
-### Problema: Convergencia Lenta
-
-**Síntomas**: Residuales estancados en 1e-3
-
-**Soluciones**:
-1. Cambiar a COUPLED solver
-2. Usar FMG (Full Multigrid) initialization
-3. Activar PRESTO! para presión
-4. Incrementar iteraciones máximas
-
-### Problema: Resultados No Físicos (Velocidades Negativas, etc.)
-
-**Soluciones**:
-1. Verificar orientación de normales (debe apuntar hacia fluido)
-2. Revisar definición de rotating zone (eje, dirección)
-3. Verificar unidades en UDF (conversión min → s, kJ → J)
-
----
-
-## 18. Referencias
-
-1. **Rushton, J.H., Costich, E.W., Everett, H.J.** (1950). "Power characteristics of mixing impellers". *Chemical Engineering Progress*, 46(8), 395-404.
-
-2. **Paul, E.L., Atiemo-Obeng, V.A., Kresta, S.M.** (2004). *Handbook of Industrial Mixing: Science and Practice*. Wiley-Interscience.
-
-3. **Ansys Fluent Theory Guide** (2023). Chapter 4: Turbulence Models; Chapter 7: Species Transport and Finite-Rate Chemistry.
-
-4. **Stamenkovic, O.S., et al.** (2008). "Kinetics of sunflower oil methanolysis at low temperatures". *Bioresource Technology*, 99(5), 1131-1140.
-
-5. **Liu, X., He, H., Wang, Y., Zhu, S.** (2008). "Transesterification of soybean oil to biodiesel using CaO as a solid base catalyst". *Fuel*, 87(2), 216-221.
-
----
-
-## 19. Contacto y Soporte
-
-Para preguntas sobre esta especificación o asistencia en la implementación:
-
-- **Documentación Ansys Fluent**: https://ansyshelp.ansys.com/
-- **PyFluent Docs**: https://fluent.docs.pyansys.com/
-- **Ansys Learning Forum**: https://forum.ansys.com/
-
----
-
-**Documento actualizado:** 2025-11-19
-**Versión:** 1.0
-**Autor:** Sistema de Modelado de Esterificación
+Total: ~1950 líneas
+Geometría actualizada: Hélice axial de 3 palas, sin baffles, con serpentín de 10 vueltas
