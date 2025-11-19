@@ -1,0 +1,178 @@
+{
+    "variables": [
+        {
+            "name": "temperatura_ambiente",
+            "unit": "°C",
+            "description": "Temperatura ambiente al inicio del experimento.",
+            "category": "condiciones_iniciales"
+        },
+        {
+            "name": "volumen_aceite",
+            "unit": "mL",
+            "description": "Volumen de aceite usado para la reacción.",
+            "category": "reactivos"
+        },
+        {
+            "name": "masa_aceite",
+            "unit": "g",
+            "description": "Masa del aceite medido antes de iniciar la reacción.",
+            "category": "reactivos"
+        },
+        {
+            "name": "moles_aceite",
+            "unit": "mol",
+            "description": "Cantidad de sustancia del aceite calculada para la estequiometría.",
+            "category": "reactivos"
+        },
+        {
+            "name": "volumen_metanol",
+            "unit": "mL",
+            "description": "Volumen de metanol empleado en la reacción.",
+            "category": "reactivos"
+        },
+        {
+            "name": "masa_metanol",
+            "unit": "g",
+            "description": "Masa de metanol utilizada.",
+            "category": "reactivos"
+        },
+        {
+            "name": "moles_metanol",
+            "unit": "mol",
+            "description": "Moles de metanol empleados, usados para la relación molar.",
+            "category": "reactivos"
+        },
+        {
+            "name": "porcentaje_catalizador",
+            "unit": "%",
+            "description": "Porcentaje en masa de CaO respecto al aceite.",
+            "category": "reactivos"
+        },
+        {
+            "name": "masa_catalizador",
+            "unit": "g",
+            "description": "Cantidad de catalizador CaO calcinado añadido.",
+            "category": "reactivos"
+        },
+        {
+            "name": "temperatura_calcinacion",
+            "unit": "°C",
+            "description": "Temperatura a la que se calcina la cáscara de huevo para generar CaO.",
+            "category": "preparacion_catalizador"
+        },
+        {
+            "name": "tiempo_calcinacion",
+            "unit": "h",
+            "description": "Duración del proceso de calcinación del catalizador.",
+            "category": "preparacion_catalizador"
+        },
+        {
+            "name": "rpm_reactor",
+            "unit": "rpm",
+            "description": "Velocidad de agitación durante la reacción.",
+            "category": "condiciones_reaccion"
+        },
+        {
+            "name": "temperatura_reaccion_inicio",
+            "unit": "°C",
+            "description": "Temperatura al inicio de la reacción.",
+            "category": "condiciones_reaccion"
+        },
+        {
+            "name": "temperatura_reaccion_mitad",
+            "unit": "°C",
+            "description": "Temperatura a la mitad del tiempo de reacción.",
+            "category": "condiciones_reaccion"
+        },
+        {
+            "name": "temperatura_reaccion_final",
+            "unit": "°C",
+            "description": "Temperatura al finalizar la reacción.",
+            "category": "condiciones_reaccion"
+        },
+        {
+            "name": "tiempo_total_reaccion",
+            "unit": "min",
+            "description": "Duración total de la reacción de transesterificación.",
+            "category": "condiciones_reaccion"
+        },
+        {
+            "name": "volumen_muestra_gc",
+            "unit": "mL",
+            "description": "Volumen de cada muestra tomada para cromatografía de gases.",
+            "category": "muestreo"
+        },
+        {
+            "name": "intervalo_muestreo",
+            "unit": "min",
+            "description": "Tiempo entre cada toma de muestra.",
+            "category": "muestreo"
+        },
+        {
+            "name": "area_pico",
+            "unit": "µV·s",
+            "description": "Área de cada pico cromatográfico asociado a un compuesto en GC-FID.",
+            "category": "analitica"
+        },
+        {
+            "name": "altura_pico",
+            "unit": "µV",
+            "description": "Altura máxima del pico en el cromatograma.",
+            "category": "analitica"
+        },
+        {
+            "name": "tiempo_retencion",
+            "unit": "min",
+            "description": "Tiempo de retención de cada compuesto en la columna GC.",
+            "category": "analitica"
+        },
+        {
+            "name": "caudal_gas_portador",
+            "unit": "mL/min",
+            "description": "Flujo de helio empleado en la columna.",
+            "category": "gc"
+        },
+        {
+            "name": "split_ratio",
+            "unit": "adimensional",
+            "description": "Relación de división de la muestra en la inyección.",
+            "category": "gc"
+        },
+        {
+            "name": "temperatura_fid",
+            "unit": "°C",
+            "description": "Temperatura del detector FID.",
+            "category": "gc"
+        },
+        {
+            "name": "flujo_hidrogeno_fid",
+            "unit": "mL/min",
+            "description": "Caudal de hidrógeno suministrado al detector FID.",
+            "category": "gc"
+        },
+        {
+            "name": "flujo_aire_fid",
+            "unit": "mL/min",
+            "description": "Flujo de aire hacia el FID.",
+            "category": "gc"
+        },
+        {
+            "name": "flujo_nitrogeno_fid",
+            "unit": "mL/min",
+            "description": "Flujo de nitrógeno como make-up en el FID.",
+            "category": "gc"
+        },
+        {
+            "name": "area_estandar_interno",
+            "unit": "µV·s",
+            "description": "Área del pico del estándar interno empleado para cuantificación.",
+            "category": "analitica"
+        },
+        {
+            "name": "factor_respuesta",
+            "unit": "adimensional",
+            "description": "Factor analítico para corrección del área relativa.",
+            "category": "analitica"
+        }
+    ]
+}
