@@ -1,0 +1,1167 @@
+\documentclass[12pt,a4paper]{article}
+
+% Paquetes esenciales
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{chemfig}
+\usepackage{siunitx}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% Configuración de geometría
+\geometry{
+    left=2.5cm,
+    right=2.5cm,
+    top=3cm,
+    bottom=3cm
+}
+
+% Configuración de hyperref
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=blue,
+    pdftitle={Modelado de Esterificación para Producción de Biodiésel},
+    pdfauthor={},
+}
+
+% Configuración de listings para código Python
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    captionpos=b
+}
+
+% Información del documento
+\title{\textbf{Sistema Integrado de Modelado Cinético para la Producción de Biodiésel mediante Transesterificación Catalizada por CaO}\\
+\vspace{0.5cm}
+\large{Integración de Modelos Standalone y Simulación Comercial (ASPEN HYSYS)}}
+
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento presenta un sistema integrado de modelado cinético para la producción de biodiésel a partir de aceite de cocina usado mediante transesterificación catalizada por óxido de calcio (CaO). El sistema desarrollado combina modelos cinéticos standalone implementados en Python con simulaciones en ASPEN HYSYS, permitiendo la optimización de variables operacionales (temperatura, agitación, concentración de catalizador) y la validación cruzada de resultados. Se implementan modelos de 1 paso (pseudo-homogéneo de segundo orden) y 3 pasos (mecanístico), ajustados a datos experimentales mediante técnicas de optimización no lineal. El sistema incluye módulos para procesamiento de datos de cromatografía de gases (GC-FID), ajuste de parámetros cinéticos, optimización multivariable, sincronización de datos con ASPEN HYSYS, y generación automatizada de reportes. Adicionalmente, se proporcionan especificaciones para simulación CFD de un reactor de 20L para scaled-up del proceso.
+
+\textbf{Palabras clave:} biodiésel, transesterificación, CaO, modelado cinético, ASPEN HYSYS, optimización, CFD
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introducción}
+
+\subsection{Contexto}
+
+El biodiésel es un combustible renovable derivado de la transesterificación de aceites vegetales o grasas animales con alcoholes de cadena corta (típicamente metanol o etanol) en presencia de un catalizador. La reacción de transesterificación convierte los triglicéridos (TG) presentes en los aceites en ésteres metílicos de ácidos grasos (FAME, por sus siglas en inglés) y glicerol como subproducto \cite{biodiesel_review}.
+
+\subsection{Catalizador CaO}
+
+El óxido de calcio (CaO) obtenido por calcinación de cáscara de huevo ha demostrado ser un catalizador heterogéneo efectivo y económico para la transesterificación \cite{cao_catalyst}. Las ventajas principales incluyen:
+
+\begin{itemize}
+    \item Alta actividad catalítica debido a sitios básicos fuertes
+    \item Disponibilidad y bajo costo (residuos agroindustriales)
+    \item Facilidad de separación del producto
+    \item Menor generación de aguas residuales comparado con catálisis homogénea
+\end{itemize}
+
+\subsection{Motivación del Trabajo}
+
+El modelado cinético preciso de la reacción de transesterificación es fundamental para:
+
+\begin{enumerate}
+    \item Optimizar las condiciones de operación (temperatura, concentración de catalizador, relación molar metanol:aceite, agitación)
+    \item Diseñar reactores a escala industrial
+    \item Predecir rendimientos y tiempos de reacción
+    \item Reducir costos operacionales y energéticos
+\end{enumerate}
+
+Este trabajo desarrolla un sistema integrado que combina la flexibilidad de modelos programados en Python con la robustez termodinámica de simuladores comerciales como ASPEN HYSYS, permitiendo validación cruzada y análisis comparativo.
+
+\section{Marco Teórico}
+
+\subsection{Reacción de Transesterificación}
+
+La transesterificación es una reacción reversible que puede representarse de forma simplificada o mecanística:
+
+\subsubsection{Modelo Simplificado (1 Paso)}
+
+\begin{equation}
+\text{TG} + 3\text{CH}_3\text{OH} \rightleftharpoons 3\text{FAME} + \text{Glicerol}
+\label{eq:overall_reaction}
+\end{equation}
+
+\subsubsection{Modelo Mecanístico (3 Pasos)}
+
+La reacción procede mediante tres etapas consecutivas reversibles:
+
+\begin{align}
+\text{TG} + \text{CH}_3\text{OH} &\rightleftharpoons \text{DG} + \text{FAME} \label{eq:step1}\\
+\text{DG} + \text{CH}_3\text{OH} &\rightleftharpoons \text{MG} + \text{FAME} \label{eq:step2}\\
+\text{MG} + \text{CH}_3\text{OH} &\rightleftharpoons \text{Glicerol} + \text{FAME} \label{eq:step3}
+\end{align}
+
+donde DG y MG representan diglicéridos y monoglicéridos, respectivamente.
+
+\subsection{Modelos Cinéticos}
+
+\subsubsection{Modelo Pseudo-Homogéneo de Segundo Orden}
+
+Asumiendo pseudo-homogeneidad (catalizador heterogéneo con mezcla perfecta), la velocidad de reacción global puede expresarse como:
+
+\begin{equation}
+r_{\text{TG}} = -k \cdot C_{\text{TG}} \cdot C_{\text{MeOH}}^3
+\label{eq:pseudo_homogeneous}
+\end{equation}
+
+Para el modelo de 1 paso simplificado, se puede usar un modelo de segundo orden efectivo:
+
+\begin{equation}
+r_{\text{TG}} = -k \cdot C_{\text{TG}} \cdot C_{\text{MeOH}}
+\label{eq:second_order}
+\end{equation}
+
+\subsubsection{Modelo de Tres Pasos}
+
+Para cada etapa \(i\) (donde \(i = 1, 2, 3\)), se define:
+
+\begin{equation}
+r_i = k_{f,i} \cdot C_{\text{reactivo}_i} \cdot C_{\text{MeOH}} - k_{r,i} \cdot C_{\text{producto}_i} \cdot C_{\text{FAME}}
+\label{eq:three_step_kinetics}
+\end{equation}
+
+donde \(k_{f,i}\) y \(k_{r,i}\) son las constantes de velocidad directa e inversa para el paso \(i\).
+
+\subsection{Dependencia con la Temperatura: Ecuación de Arrhenius}
+
+Las constantes de velocidad dependen de la temperatura según la ecuación de Arrhenius:
+
+\begin{equation}
+k(T) = A \cdot \exp\left(-\frac{E_a}{RT}\right)
+\label{eq:arrhenius}
+\end{equation}
+
+donde:
+\begin{itemize}
+    \item \(k\): constante de velocidad (\si{L.mol^{-1}.min^{-1}})
+    \item \(A\): factor pre-exponencial (\si{L.mol^{-1}.min^{-1}})
+    \item \(E_a\): energía de activación (\si{kJ.mol^{-1}})
+    \item \(R\): constante universal de los gases (\SI{8.314}{J.mol^{-1}.K^{-1}})
+    \item \(T\): temperatura absoluta (K)
+\end{itemize}
+
+\subsection{Valores Reportados en Literatura para CaO}
+
+Diversos estudios reportan parámetros cinéticos para transesterificación catalizada por CaO:
+
+\begin{table}[H]
+\centering
+\caption{Parámetros cinéticos reportados para transesterificación con CaO}
+\label{tab:literature_params}
+\begin{tabular}{@{}lccl@{}}
+\toprule
+\textbf{Parámetro} & \textbf{Valor} & \textbf{Unidad} & \textbf{Referencia} \\ \midrule
+\(E_a\) (forward) & 51.9 & \si{kJ.mol^{-1}} & \cite{ea_cao_1} \\
+\(E_a\) (forward) & 79.0 & \si{kJ.mol^{-1}} & \cite{ea_cao_2} \\
+\(E_a\) (forward) & 161 & \si{kJ.mol^{-1}} & \cite{ea_cao_3} (régimen cinético) \\
+\(A\) & \(2.98 \times 10^{10}\) & \si{min^{-1}} & \cite{ea_cao_2} \\
+Orden de reacción & 2 (global) & - & \cite{second_order} \\
+Temp. óptima & 60-65 & \si{\celsius} & \cite{optimal_conditions} \\
+\% Cat. óptimo & 1-5 & \% masa & \cite{optimal_conditions} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Mecanismo Eley-Rideal}
+
+Estudios sugieren que el metanol se adsorbe sobre los sitios activos del CaO, mientras que los triglicéridos reaccionan desde la fase líquida (mecanismo Eley-Rideal) \cite{eley_rideal}:
+
+\begin{equation}
+r = \frac{k \cdot K_{\text{MeOH}} \cdot C_{\text{TG}} \cdot C_{\text{MeOH}}}{1 + K_{\text{MeOH}} \cdot C_{\text{MeOH}}}
+\label{eq:eley_rideal}
+\end{equation}
+
+donde \(K_{\text{MeOH}}\) es la constante de adsorción del metanol.
+
+\section{Metodología}
+
+\subsection{Arquitectura del Sistema}
+
+El sistema desarrollado consta de los siguientes módulos principales:
+
+\begin{enumerate}
+    \item \textbf{Procesamiento de Datos (GC-FID)}: Carga y procesamiento de cromatogramas
+    \item \textbf{Modelos Cinéticos Standalone}: Implementación en Python de modelos 1 y 3 pasos
+    \item \textbf{Optimización}: Ajuste de parámetros y optimización de variables operacionales
+    \item \textbf{Integración ASPEN HYSYS}: Interfaz COM para sincronización con simulador comercial
+    \item \textbf{Comparación y Validación}: Análisis estadístico de resultados
+    \item \textbf{Visualización y Exportación}: Generación de gráficas y reportes
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+┌─────────────────────────────────────────────┐
+│   Datos Experimentales (JSON + GC-FID)      │
+└────────────────┬────────────────────────────┘
+                 │
+    ┌────────────┴────────────┐
+    ▼                         ▼
+┌─────────────┐      ┌─────────────────┐
+│  Modelo     │      │   ASPEN HYSYS   │
+│  Standalone │      │   (COM API)     │
+│  (Python)   │      └─────────────────┘
+└─────────────┘                │
+    │                          │
+    └────────┬─────────────────┘
+             ▼
+    ┌────────────────┐
+    │  Comparación   │
+    │  & Validación  │
+    └────────────────┘
+             │
+             ▼
+    ┌────────────────┐
+    │  Resultados &  │
+    │   Reportes     │
+    └────────────────┘
+\end{verbatim}
+\caption{Arquitectura del sistema integrado}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Variables del Sistema}
+
+El sistema utiliza las siguientes variables experimentales (definidas en \texttt{variables\_esterificacion\_dataset.json}):
+
+\subsubsection{Reactivos}
+\begin{itemize}
+    \item Volumen, masa y moles de aceite
+    \item Volumen, masa y moles de metanol
+    \item Porcentaje y masa de catalizador CaO
+\end{itemize}
+
+\subsubsection{Preparación del Catalizador}
+\begin{itemize}
+    \item Temperatura de calcinación (\si{\celsius})
+    \item Tiempo de calcinación (h)
+\end{itemize}
+
+\subsubsection{Condiciones de Reacción}
+\begin{itemize}
+    \item Temperatura de reacción: inicio, mitad, final (\si{\celsius})
+    \item Velocidad de agitación (rpm)
+    \item Tiempo total de reacción (min)
+\end{itemize}
+
+\subsubsection{Muestreo}
+\begin{itemize}
+    \item Volumen de muestra (mL)
+    \item Intervalo de muestreo (min)
+\end{itemize}
+
+\subsubsection{Análisis por GC-FID}
+\begin{itemize}
+    \item Área de pico (\si{\micro V.s})
+    \item Altura de pico (\si{\micro V})
+    \item Tiempo de retención (min)
+    \item Área de estándar interno
+    \item Factor de respuesta
+\end{itemize}
+
+\subsubsection{Parámetros Instrumentales}
+\begin{itemize}
+    \item Caudal de gas portador (He) (\si{mL.min^{-1}})
+    \item Split ratio
+    \item Temperatura FID (\si{\celsius})
+    \item Flujos de H\(_2\), aire y N\(_2\) para FID
+\end{itemize}
+
+\subsection{Procesamiento de Datos de Cromatografía (GC-FID)}
+
+\subsubsection{Cuantificación de FAMEs}
+
+La concentración de cada FAME se calcula mediante el método del estándar interno:
+
+\begin{equation}
+C_{\text{FAME},i} = \frac{A_i}{A_{\text{IS}}} \cdot \frac{C_{\text{IS}}}{f_i}
+\label{eq:fame_quantification}
+\end{equation}
+
+donde:
+\begin{itemize}
+    \item \(A_i\): área del pico del FAME \(i\)
+    \item \(A_{\text{IS}}\): área del estándar interno
+    \item \(C_{\text{IS}}\): concentración del estándar interno
+    \item \(f_i\): factor de respuesta del FAME \(i\)
+\end{itemize}
+
+\subsubsection{Cálculo de Conversión}
+
+La conversión de triglicéridos se define como:
+
+\begin{equation}
+X_{\text{TG}} = \frac{n_{\text{TG},0} - n_{\text{TG}}}{n_{\text{TG},0}} \times 100\%
+\label{eq:conversion}
+\end{equation}
+
+\subsubsection{Rendimiento de FAMEs}
+
+\begin{equation}
+Y_{\text{FAME}} = \frac{\sum n_{\text{FAME},i}}{3 \cdot n_{\text{TG},0}} \times 100\%
+\label{eq:yield}
+\end{equation}
+
+\subsection{Modelos Cinéticos Implementados}
+
+\subsubsection{Balances de Materia}
+
+Para un reactor batch perfectamente agitado (CSTR batch), los balances de materia son:
+
+\textbf{Modelo de 1 Paso:}
+
+\begin{align}
+\frac{dC_{\text{TG}}}{dt} &= -k_1 \cdot C_{\text{TG}} \cdot C_{\text{MeOH}} \\
+\frac{dC_{\text{MeOH}}}{dt} &= -3 k_1 \cdot C_{\text{TG}} \cdot C_{\text{MeOH}} \\
+\frac{dC_{\text{FAME}}}{dt} &= 3 k_1 \cdot C_{\text{TG}} \cdot C_{\text{MeOH}} \\
+\frac{dC_{\text{GL}}}{dt} &= k_1 \cdot C_{\text{TG}} \cdot C_{\text{MeOH}}
+\end{align}
+
+\textbf{Modelo de 3 Pasos:}
+
+\begin{align}
+\frac{dC_{\text{TG}}}{dt} &= -r_1 \\
+\frac{dC_{\text{DG}}}{dt} &= r_1 - r_2 \\
+\frac{dC_{\text{MG}}}{dt} &= r_2 - r_3 \\
+\frac{dC_{\text{GL}}}{dt} &= r_3 \\
+\frac{dC_{\text{FAME}}}{dt} &= r_1 + r_2 + r_3 \\
+\frac{dC_{\text{MeOH}}}{dt} &= -(r_1 + r_2 + r_3)
+\end{align}
+
+donde cada \(r_i\) está dada por la ecuación (\ref{eq:three_step_kinetics}).
+
+\subsubsection{Integración Numérica}
+
+Las ecuaciones diferenciales ordinarias (EDOs) se integran numéricamente utilizando el método \texttt{solve\_ivp} de SciPy con el algoritmo Radau (implícito, adecuado para sistemas stiff):
+
+\begin{lstlisting}[language=Python, caption=Ejemplo de integración numérica]
+from scipy.integrate import solve_ivp
+
+def odes(t, y, k_params):
+    # y = [C_TG, C_DG, C_MG, C_GL, C_FAME, C_MeOH]
+    # Implementar ecuaciones diferenciales
+    return dydt
+
+solution = solve_ivp(
+    odes,
+    t_span=(0, t_final),
+    y0=C_initial,
+    method='Radau',
+    args=(k_params,)
+)
+\end{lstlisting}
+
+\subsection{Ajuste de Parámetros Cinéticos}
+
+\subsubsection{Función Objetivo}
+
+Se minimiza la suma de residuales cuadráticos entre datos experimentales y modelo:
+
+\begin{equation}
+S(\theta) = \sum_{j=1}^{N_{\text{exp}}} \sum_{i=1}^{N_{\text{puntos}}} w_i \left( C_{j,i}^{\text{exp}} - C_{j,i}^{\text{mod}}(\theta) \right)^2
+\label{eq:objective}
+\end{equation}
+
+donde:
+\begin{itemize}
+    \item \(\theta\): vector de parámetros a ajustar \([E_{a,1}, E_{a,2}, \ldots, A_1, A_2, \ldots]\)
+    \item \(N_{\text{exp}}\): número de experimentos (5 datasets)
+    \item \(N_{\text{puntos}}\): número de puntos temporales en cada experimento
+    \item \(w_i\): peso del punto \(i\)
+\end{itemize}
+
+\subsubsection{Algoritmo de Optimización}
+
+Se utiliza \texttt{lmfit} con el método Levenberg-Marquardt, que combina Gauss-Newton y descenso de gradiente:
+
+\begin{algorithm}[H]
+\caption{Ajuste de parámetros cinéticos}
+\begin{algorithmic}[1]
+\State \textbf{Input:} Datos experimentales, parámetros iniciales \(\theta_0\), límites
+\State \textbf{Output:} Parámetros optimizados \(\theta^*\), intervalos de confianza
+\State Definir función residual: \(r(\theta) = C^{\text{exp}} - C^{\text{mod}}(\theta)\)
+\State Configurar parámetros con límites físicos:
+\State \quad \(E_a \in [20, 200]\) kJ/mol
+\State \quad \(A \in [10^5, 10^{15}]\) (escala logarítmica)
+\State Ejecutar minimización con \texttt{lmfit.minimize}
+\State Calcular matriz de covarianza y correlaciones
+\State Calcular intervalos de confianza al 95\%
+\State \Return \(\theta^*\), estadísticas
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Optimización de Variables Operacionales}
+
+Una vez ajustados los parámetros cinéticos, se optimizan las condiciones de operación para maximizar el rendimiento.
+
+\subsubsection{Variables de Decisión}
+
+\begin{itemize}
+    \item \(T\): Temperatura de reacción (\si{\celsius}), \(T \in [50, 80]\)
+    \item \(\omega\): Velocidad de agitación (rpm), \(\omega \in [200, 800]\)
+    \item \(C_{\text{cat}}\): Concentración de catalizador (\% masa), \(C_{\text{cat}} \in [1, 5]\)
+\end{itemize}
+
+\subsubsection{Función Objetivo}
+
+Maximizar la conversión de TG o rendimiento de FAME en un tiempo dado, o minimizar el tiempo para alcanzar una conversión objetivo (típicamente 95\%):
+
+\begin{equation}
+\max_{T, \omega, C_{\text{cat}}} \quad Y_{\text{FAME}}(t_{\text{final}}, T, \omega, C_{\text{cat}})
+\label{eq:optimization_objective}
+\end{equation}
+
+sujeto a:
+\begin{align}
+50 &\le T \le 80 \\
+200 &\le \omega \le 800 \\
+1 &\le C_{\text{cat}} \le 5
+\end{align}
+
+\subsubsection{Algoritmos de Optimización}
+
+Se implementan tres algoritmos:
+
+\begin{enumerate}
+    \item \textbf{Nelder-Mead}: Método simplex, libre de gradientes
+    \item \textbf{SLSQP} (Sequential Least Squares Programming): Con restricciones
+    \item \textbf{Differential Evolution}: Algoritmo genético global
+\end{enumerate}
+
+\subsubsection{Superficie de Respuesta (RSM)}
+
+Para visualizar efectos combinados, se genera una superficie de respuesta evaluando el modelo en una malla de puntos:
+
+\begin{lstlisting}[language=Python, caption=Generación de superficie de respuesta]
+T_range = np.linspace(50, 80, 20)
+Cat_range = np.linspace(1, 5, 20)
+T_grid, Cat_grid = np.meshgrid(T_range, Cat_range)
+
+Y_grid = np.zeros_like(T_grid)
+for i in range(len(T_range)):
+    for j in range(len(Cat_range)):
+        Y_grid[i,j] = simulate(T_grid[i,j], Cat_grid[i,j], omega_fixed)
+
+# Visualizar con contourf o surface 3D
+\end{lstlisting}
+
+\subsection{Integración con ASPEN HYSYS}
+
+\subsubsection{Conexión COM}
+
+ASPEN HYSYS se controla mediante la interfaz COM (Component Object Model) usando \texttt{pywin32}:
+
+\begin{lstlisting}[language=Python, caption=Conexión con ASPEN HYSYS]
+import win32com.client as win32
+
+# Conectar con HYSYS
+hyApp = win32.Dispatch('HYSYS.Application')
+hyApp.Visible = True
+
+# Abrir o crear caso
+hyCase = hyApp.SimulationCases.Open("biodiesel_reactor.hsc")
+# o hyCase = hyApp.SimulationCases.Add()
+
+# Acceder a objetos
+hyFlowsheet = hyCase.Flowsheet
+\end{lstlisting}
+
+\subsubsection{Configuración del Reactor}
+
+En HYSYS se configura un reactor CSTR con reacción cinética definida por el usuario:
+
+\begin{enumerate}
+    \item \textbf{Componentes}: Definir triglicéridos, metanol, FAMEs, glicerol
+    \item \textbf{Paquete Termodinámico}: UNIFAC o NRTL (adecuado para mezclas no ideales)
+    \item \textbf{Reactor}: CSTR con volumen especificado (20L)
+    \item \textbf{Reacción}: Tipo Kinetic con ecuación de velocidad user-defined
+\end{enumerate}
+
+\begin{lstlisting}[language=Python, caption=Configuración de parámetros en HYSYS]
+# Acceder al reactor
+reactor = hyFlowsheet.Operations.Item("R-100")
+
+# Configurar temperatura
+reactor.Temperature.SetValue(65, "C")
+
+# Configurar volumen
+reactor.Volume.SetValue(20, "L")
+
+# Ejecutar simulación
+hyCase.Solver.CanSolve = True
+
+# Extraer resultados
+conversion = reactor.Conversion.GetValue("%")
+\end{lstlisting}
+
+\subsubsection{Sincronización de Datos}
+
+Para garantizar comparación justa, se implementa un sistema de sincronización que mapea las variables del JSON a los parámetros de HYSYS:
+
+\begin{table}[H]
+\centering
+\caption{Mapeo de variables JSON a HYSYS}
+\label{tab:variable_mapping}
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Variable JSON} & \textbf{HYSYS Path} & \textbf{Unidad} \\ \midrule
+temperatura\_reaccion\_inicio & Reactor.Temperature & \si{\celsius} \\
+volumen\_aceite + volumen\_metanol & Reactor.FeedStream.VolumeFlow & \si{L.min^{-1}} \\
+masa\_catalizador & Reactor.CatalystMass & g \\
+tiempo\_total\_reaccion & Reactor.ResidenceTime & min \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Comparación y Validación}
+
+\subsubsection{Métricas de Error}
+
+Se calculan las siguientes métricas entre modelo standalone y ASPEN HYSYS:
+
+\textbf{Error Cuadrático Medio (RMSE):}
+\begin{equation}
+\text{RMSE} = \sqrt{\frac{1}{N}\sum_{i=1}^N (y_i^{\text{stand}} - y_i^{\text{HYSYS}})^2}
+\end{equation}
+
+\textbf{Error Absoluto Medio (MAE):}
+\begin{equation}
+\text{MAE} = \frac{1}{N}\sum_{i=1}^N |y_i^{\text{stand}} - y_i^{\text{HYSYS}}|
+\end{equation}
+
+\textbf{Coeficiente de Determinación (R\(^2\)):}
+\begin{equation}
+R^2 = 1 - \frac{\sum_{i=1}^N (y_i^{\text{stand}} - y_i^{\text{HYSYS}})^2}{\sum_{i=1}^N (y_i^{\text{stand}} - \bar{y}^{\text{stand}})^2}
+\end{equation}
+
+\textbf{Porcentaje de Diferencia Promedio:}
+\begin{equation}
+\text{Diff}\% = \frac{100}{N}\sum_{i=1}^N \left|\frac{y_i^{\text{stand}} - y_i^{\text{HYSYS}}}{y_i^{\text{stand}}}\right|
+\end{equation}
+
+\subsubsection{Parity Plot}
+
+Se genera un gráfico de paridad comparando predicciones de ambos modelos:
+
+\begin{figure}[H]
+\centering
+\begin{verbatim}
+Conversión HYSYS (%)
+     ^
+100  |                    * (ideal: y=x)
+     |                 *
+     |              *
+ 50  |           *
+     |        *
+     |     *
+  0  +-----+-----+-----+---->
+     0    50   100   Conversión Standalone (%)
+\end{verbatim}
+\caption{Ejemplo conceptual de parity plot}
+\label{fig:parity_plot_concept}
+\end{figure}
+
+\section{Especificaciones para Simulación CFD (Reactor 20L)}
+
+\subsection{Geometría del Reactor}
+
+Para un reactor de \SI{20}{L} se proponen las siguientes dimensiones basadas en correlaciones estándar para STR (Stirred Tank Reactors):
+
+\begin{table}[H]
+\centering
+\caption{Especificaciones geométricas del reactor 20L}
+\label{tab:reactor_geometry}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Parámetro} & \textbf{Símbolo} & \textbf{Valor} & \textbf{Unidad} \\ \midrule
+Volumen del tanque & \(V_T\) & 20 & L \\
+Diámetro del tanque & \(D_T\) & 270 & mm \\
+Altura del líquido & \(H_L\) & 350 & mm \\
+Relación \(H_L/D_T\) & - & 1.3 & - \\
+Diámetro del impulsor & \(D_I\) & 90 & mm (\(D_I = D_T/3\)) \\
+Tipo de impulsor & - & Rushton Turbine & - \\
+Número de palas & \(N_b\) & 6 & - \\
+Ancho de pala & \(W\) & 18 & mm (\(W = D_I/5\)) \\
+Altura de pala & \(L\) & 22.5 & mm (\(L = D_I/4\)) \\
+Clearance (fondo) & \(C\) & 90 & mm (\(C = D_T/3\)) \\
+Número de baffles & \(N_{baf}\) & 4 & - \\
+Ancho de baffle & \(W_b\) & 27 & mm (\(W_b = D_T/10\)) \\
+Espesor de baffle & \(t_b\) & 3 & mm \\
+Material tanque & - & Acero inoxidable 316L & - \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Tipo de Impulsor}
+
+Para reacciones líquido-líquido (aceite-metanol) con catalizador sólido en suspensión, se recomienda:
+
+\textbf{Turbina Rushton} (Radial Flow):
+\begin{itemize}
+    \item Excelente para suspensión de sólidos
+    \item Alto shear rate → mejor transferencia de masa
+    \item Patrón de flujo: dos loops de recirculación
+\end{itemize}
+
+\textbf{Alternativa}: Pitched Blade Turbine (PBT) a 45° (Axial Flow):
+\begin{itemize}
+    \item Menor consumo de potencia
+    \item Mejor mezcla axial
+    \item Adecuado si el catalizador tiende a sedimentar
+\end{itemize}
+
+\subsection{Condiciones de Frontera para CFD}
+
+\subsubsection{Paredes}
+
+\begin{itemize}
+    \item Condición: No-slip
+    \item Temperatura: Isotérmica a \(T_{\text{reacción}}\) o adiabática
+    \item Tratamiento térmico: Si hay intercambio de calor, especificar coeficiente de transferencia de calor \(h\) con el exterior
+\end{itemize}
+
+\subsubsection{Impulsor}
+
+\begin{itemize}
+    \item Enfoque 1: \textbf{MRF} (Multiple Reference Frame) - estacionario
+    \item Enfoque 2: \textbf{Sliding Mesh} - transitorio, más preciso
+    \item Velocidad de rotación: 200-800 rpm (según optimización)
+\end{itemize}
+
+\subsubsection{Superficie Libre}
+
+\begin{itemize}
+    \item Modelo multifásico: VOF (Volume of Fluid) si se modela interfaz líquido-aire
+    \item Simplificación: Considerar tapa plana con condición de simetría (free-slip)
+\end{itemize}
+
+\subsection{Modelos de Turbulencia}
+
+Para flujo turbulento en STR, se recomiendan:
+
+\begin{enumerate}
+    \item \textbf{k-\(\epsilon\) Standard}: Robusto, convergencia rápida, razonable para STR
+    \item \textbf{k-\(\epsilon\) RNG}: Mejor para alta curvatura y swirl
+    \item \textbf{k-\(\omega\) SST}: Mejor resolución de capa límite, recomendado si hay transferencia de calor en paredes
+    \item \textbf{Reynolds Stress Model (RSM)}: Mayor precisión pero mayor costo computacional
+\end{enumerate}
+
+\textbf{Recomendación}: Iniciar con k-\(\epsilon\) RNG, validar con datos experimentales (consumo de potencia, tiempo de mezcla).
+
+\subsection{Mallado}
+
+\subsubsection{Tipo de Malla}
+
+\begin{itemize}
+    \item \textbf{Región bulk}: Hexaédrica estructurada (mejor calidad, menor costo)
+    \item \textbf{Región impulsor}: Tetraédrica o polyhedral (geometría compleja)
+    \item \textbf{Baffles}: Inflation layers para capturar capa límite
+\end{itemize}
+
+\subsubsection{Tamaño de Malla}
+
+\begin{table}[H]
+\centering
+\caption{Especificaciones de malla para CFD}
+\label{tab:mesh_specs}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Región} & \textbf{Tamaño de elemento} & \textbf{Número de elementos} \\ \midrule
+Bulk (tanque) & 3-5 mm & \(\sim\)300,000 \\
+Impulsor & 1-2 mm & \(\sim\)150,000 \\
+Baffles & 2-3 mm & \(\sim\)50,000 \\
+Interfaz MRF & Refinamiento x2 & - \\
+\textbf{Total} & - & \textbf{500,000 - 1,000,000} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Estudio de independencia de malla}: Refinar hasta que el consumo de potencia del impulsor varíe < 5\%.
+
+\subsection{Integración de Cinética Química en Fluent}
+
+La cinética de transesterificación se integra mediante:
+
+\subsubsection{Species Transport Model}
+
+Activar el modelo de transporte de especies en Fluent:
+\begin{itemize}
+    \item Especies: TG, DG, MG, Glicerol, FAME, MeOH
+    \item Reacciones: Volumetric (en fase líquida)
+    \item Difusividad: Especificar coeficientes de difusión o usar correlación de Wilke-Chang
+\end{itemize}
+
+\subsubsection{User-Defined Function (UDF) en C}
+
+Implementar la cinética como UDF:
+
+\begin{lstlisting}[language=C, caption=Ejemplo de UDF para cinética (esqueleto)]
+#include "udf.h"
+
+DEFINE_VR_RATE(transesterification_rate, c, t, r, mw, yi, rr, rr_t)
+{
+    real C_TG, C_MeOH, T, k, rate;
+    real A = 2.98e10;  // min^-1
+    real Ea = 51900;   // J/mol
+    real R = 8.314;    // J/(mol·K)
+
+    // Obtener concentraciones
+    C_TG = yi[0][0] * C_R(c,t) / mw[0];
+    C_MeOH = yi[0][1] * C_R(c,t) / mw[1];
+
+    // Temperatura
+    T = C_T(c,t);
+
+    // Arrhenius
+    k = A * exp(-Ea / (R * T));
+
+    // Rate (mol/m^3·s)
+    rate = -k * C_TG * C_MeOH;
+
+    *rr = rate;
+}
+\end{lstlisting}
+
+\subsubsection{Acoplamiento Térmica-Cinética}
+
+Si la reacción es exotérmica, incluir el término de generación de calor:
+
+\begin{equation}
+\dot{Q}_{\text{reacción}} = (-\Delta H_r) \cdot r_{\text{TG}} \cdot V
+\end{equation}
+
+donde \(\Delta H_r \approx -80\) kJ/mol para transesterificación.
+
+\subsection{Parámetros de Simulación}
+
+\begin{table}[H]
+\centering
+\caption{Parámetros de simulación CFD recomendados}
+\label{tab:cfd_params}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parámetro} & \textbf{Valor} \\ \midrule
+Solver & Pressure-based, Steady-state (MRF) o Transient (Sliding Mesh) \\
+Esquema presión-velocidad & SIMPLE o SIMPLEC \\
+Discretización momento & Second Order Upwind \\
+Discretización turbulencia & First Order Upwind (inicialmente) \\
+Residuales convergencia & \(< 10^{-4}\) (continuidad, momento), \(< 10^{-6}\) (energía, especies) \\
+Time-step (transient) & \(\Delta t = 1/(6 \cdot N \cdot rpm)\) (60-120 time-steps por revolución) \\
+Iteraciones por time-step & 20-30 \\
+Tiempo de simulación & 5-10 revoluciones del impulsor (alcanzar quasi-steady state) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Post-Procesamiento CFD}
+
+Una vez completada la simulación, extraer:
+
+\begin{enumerate}
+    \item \textbf{Campos de velocidad}: Vectores, contornos, streamlines
+    \item \textbf{Campos de concentración}: Distribución de TG, FAME en el reactor
+    \item \textbf{Campos de temperatura}: Identificar hot spots si la reacción es exotérmica
+    \item \textbf{Consumo de potencia}: Calcular \(P = N_p \rho N^3 D_I^5\) y validar con experimental
+    \item \textbf{Tiempo de mezcla}: Inyectar trazador pasivo y medir tiempo de homogeneización
+    \item \textbf{Distribución de shear rate}: Evaluar si hay degradación del catalizador
+\end{enumerate}
+
+\subsection{Validación del CFD}
+
+El modelo CFD debe validarse con:
+
+\begin{itemize}
+    \item \textbf{Consumo de potencia}: Comparar con correlación de \(N_p\) experimental
+    \item \textbf{Tiempo de mezcla}: Medición experimental con trazador
+    \item \textbf{Distribución de concentraciones}: Comparar con muestreo en diferentes puntos del reactor
+\end{itemize}
+
+\section{Implementación en Python}
+
+\subsection{Estructura de Directorios}
+
+\begin{verbatim}
+mod_esterificacion/
+├── src/
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── kinetic_model.py
+│   │   ├── properties.py
+│   │   └── parameter_fitting.py
+│   ├── data_processing/
+│   │   ├── __init__.py
+│   │   ├── gc_processor.py
+│   │   └── data_loader.py
+│   ├── optimization/
+│   │   ├── __init__.py
+│   │   ├── optimizer.py
+│   │   └── sensitivity.py
+│   ├── aspen_integration/
+│   │   ├── __init__.py
+│   │   ├── hysys_connector.py
+│   │   └── data_sync.py
+│   ├── visualization/
+│   │   ├── __init__.py
+│   │   ├── plotter.py
+│   │   └── exporter.py
+│   └── utils/
+│       ├── __init__.py
+│       └── comparison.py
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── literature/
+├── results/
+│   ├── figures/
+│   ├── reports/
+│   └── exports/
+├── docs/
+│   └── documento_latex.tex
+├── tests/
+├── config/
+├── main.py
+├── requirements.txt
+└── README.md
+\end{verbatim}
+
+\subsection{Módulos Principales}
+
+\subsubsection{Módulo: kinetic\_model.py}
+
+Implementa clases para modelos cinéticos:
+
+\begin{lstlisting}[language=Python, caption=Estructura de kinetic\_model.py]
+class KineticModel:
+    """Clase base para modelos cinéticos"""
+    def __init__(self, model_type='1-step'):
+        self.model_type = model_type
+
+    def arrhenius(self, T, A, Ea):
+        """Calcula k usando Arrhenius"""
+        R = 8.314  # J/(mol·K)
+        return A * np.exp(-Ea * 1000 / (R * T))
+
+    def odes(self, t, y, params):
+        """Sistema de EDOs a integrar"""
+        if self.model_type == '1-step':
+            return self._odes_1step(t, y, params)
+        elif self.model_type == '3-step':
+            return self._odes_3step(t, y, params)
+
+    def simulate(self, t_span, C0, params):
+        """Integra EDOs y retorna solución"""
+        sol = solve_ivp(
+            self.odes,
+            t_span,
+            C0,
+            method='Radau',
+            args=(params,),
+            dense_output=True
+        )
+        return sol
+\end{lstlisting}
+
+\subsubsection{Módulo: gc\_processor.py}
+
+Procesa datos de cromatografía:
+
+\begin{lstlisting}[language=Python, caption=Estructura de gc\_processor.py]
+class GCProcessor:
+    """Procesador de datos GC-FID"""
+
+    def __init__(self, response_factors):
+        self.response_factors = response_factors
+
+    def calculate_concentration(self, area, area_IS, C_IS, rf):
+        """Cuantifica usando estándar interno"""
+        return (area / area_IS) * (C_IS / rf)
+
+    def calculate_conversion(self, C_TG, C_TG0):
+        """Calcula conversión de TG"""
+        return (C_TG0 - C_TG) / C_TG0 * 100
+
+    def process_chromatogram(self, raw_data):
+        """Procesa archivo de cromatograma completo"""
+        # Implementar lectura, integración, cuantificación
+        pass
+\end{lstlisting}
+
+\subsubsection{Módulo: hysys\_connector.py}
+
+Interfaz con ASPEN HYSYS:
+
+\begin{lstlisting}[language=Python, caption=Estructura de hysys\_connector.py]
+import win32com.client as win32
+
+class HYSYSConnector:
+    """Conector con ASPEN HYSYS"""
+
+    def __init__(self, case_file=None):
+        self.hyApp = win32.Dispatch('HYSYS.Application')
+        self.hyApp.Visible = True
+
+        if case_file:
+            self.hyCase = self.hyApp.SimulationCases.Open(case_file)
+        else:
+            self.hyCase = self.hyApp.SimulationCases.Add()
+
+        self.hyFlowsheet = self.hyCase.Flowsheet
+
+    def set_reactor_params(self, T, V, catalyst_mass):
+        """Configura parámetros del reactor"""
+        reactor = self.hyFlowsheet.Operations.Item("R-100")
+        reactor.Temperature.SetValue(T, "C")
+        reactor.Volume.SetValue(V, "L")
+        # Configurar cinética, catalizador, etc.
+
+    def run_simulation(self):
+        """Ejecuta simulación"""
+        self.hyCase.Solver.CanSolve = True
+
+    def get_results(self):
+        """Extrae resultados"""
+        reactor = self.hyFlowsheet.Operations.Item("R-100")
+        conversion = reactor.Conversion.GetValue("%")
+        # Extraer más variables
+        return {'conversion': conversion}
+\end{lstlisting}
+
+\subsection{Script Principal (main.py)}
+
+\begin{lstlisting}[language=Python, caption=Estructura de main.py]
+import argparse
+from src.data_processing import data_loader, gc_processor
+from src.models import kinetic_model, parameter_fitting
+from src.optimization import optimizer
+from src.aspen_integration import hysys_connector, data_sync
+from src.visualization import plotter, exporter
+
+def main():
+    parser = argparse.ArgumentParser(description='Sistema de Modelado de Esterificación')
+    parser.add_argument('--mode', choices=['process_gc', 'fit_params', 'optimize', 'simulate_hysys', 'compare'], required=True)
+    parser.add_argument('--input', help='Archivo de entrada')
+    parser.add_argument('--output', help='Directorio de salida')
+
+    args = parser.parse_args()
+
+    if args.mode == 'process_gc':
+        # Procesamiento de datos GC
+        processor = gc_processor.GCProcessor(response_factors={})
+        data = processor.process_chromatogram(args.input)
+
+    elif args.mode == 'fit_params':
+        # Ajuste de parámetros
+        model = kinetic_model.KineticModel(model_type='1-step')
+        fitter = parameter_fitting.ParameterFitter(model)
+        params = fitter.fit(experimental_data)
+
+    elif args.mode == 'optimize':
+        # Optimización de variables
+        opt = optimizer.OperationalOptimizer(model, params)
+        optimal_conditions = opt.optimize()
+
+    elif args.mode == 'simulate_hysys':
+        # Simulación en HYSYS
+        connector = hysys_connector.HYSYSConnector()
+        results = connector.run_and_extract()
+
+    elif args.mode == 'compare':
+        # Comparación standalone vs HYSYS
+        sync = data_sync.DataSync()
+        comparison = sync.compare_models()
+
+if __name__ == '__main__':
+    main()
+\end{lstlisting}
+
+\section{Resultados Esperados}
+
+Una vez completado el sistema, se espera obtener:
+
+\subsection{Parámetros Cinéticos Ajustados}
+
+\begin{table}[H]
+\centering
+\caption{Parámetros cinéticos ajustados (valores ilustrativos)}
+\label{tab:fitted_params}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Parámetro} & \textbf{Valor} & \textbf{Unidad} & \textbf{IC 95\%} & \textbf{R\(^2\)} \\ \midrule
+\(E_{a,1}\) & 62.5 & kJ/mol & \(\pm 5.2\) & - \\
+\(A_1\) & \(1.5 \times 10^{10}\) & min\(^{-1}\) & \(\pm 0.3 \times 10^{10}\) & - \\
+Modelo global & - & - & - & 0.985 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Condiciones Óptimas de Operación}
+
+\begin{table}[H]
+\centering
+\caption{Condiciones óptimas de operación (valores ilustrativos)}
+\label{tab:optimal_conditions}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Variable} & \textbf{Valor Óptimo} & \textbf{Rendimiento FAME (\%)} \\ \midrule
+Temperatura & 62\si{\celsius} & - \\
+Agitación & 550 rpm & - \\
+Catalizador & 3.2 \% & - \\
+\textbf{Rendimiento predicho} & - & \textbf{96.8} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Comparación Standalone vs HYSYS}
+
+\begin{table}[H]
+\centering
+\caption{Métricas de comparación entre modelos (valores ilustrativos)}
+\label{tab:comparison_metrics}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Métrica} & \textbf{Valor} \\ \midrule
+RMSE & 1.8 \% \\
+MAE & 1.2 \% \\
+R\(^2\) & 0.992 \\
+Diferencia promedio & 2.1 \% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Gráficas Principales}
+
+Las siguientes gráficas se generarán automáticamente:
+
+\begin{enumerate}
+    \item Conversión de TG vs Tiempo (experimental vs modelos)
+    \item Perfiles de concentración de especies
+    \item Superficie de respuesta (Temp vs Cat\% vs Rendimiento)
+    \item Parity plot (Standalone vs HYSYS)
+    \item Análisis de sensibilidad (Tornado plot)
+    \item Residuales del ajuste
+\end{enumerate}
+
+\section{Conclusiones}
+
+El sistema desarrollado proporciona:
+
+\begin{itemize}
+    \item Un framework robusto y modular para modelado de transesterificación
+    \item Flexibilidad para modelos de diferente complejidad (1 o 3 pasos)
+    \item Optimización sistemática de condiciones de operación
+    \item Validación cruzada con simulador comercial (ASPEN HYSYS)
+    \item Herramientas para procesamiento automatizado de datos GC-FID
+    \item Base para simulaciones CFD de scaled-up
+    \item Generación automatizada de reportes y visualizaciones
+\end{itemize}
+
+Este enfoque integrado permite tanto investigación académica rigurosa como aplicación industrial práctica en el diseño y optimización de procesos de producción de biodiésel.
+
+\section{Trabajo Futuro}
+
+\subsection{Extensiones Propuestas}
+
+\begin{enumerate}
+    \item Integración completa con PyFluent para simulaciones CFD automatizadas
+    \item Implementación de modelos de adsorción en CaO (Langmuir-Hinshelwood completo)
+    \item Análisis de desactivación del catalizador en múltiples ciclos
+    \item Optimización multiobjetivo (rendimiento vs costo vs tiempo)
+    \item Interface gráfica (GUI) para usuarios no programadores
+    \item Análisis de incertidumbre mediante Monte Carlo
+    \item Integración con bases de datos de propiedades (NIST, DIPPR)
+    \item Escalado experimental a planta piloto usando resultados del modelo
+\end{enumerate}
+
+\subsection{Validación Experimental}
+
+El sistema debe validarse con:
+\begin{itemize}
+    \item Experimentos adicionales en condiciones óptimas predichas
+    \item Validación de CFD con mediciones de velocidad (PIV, LDA)
+    \item Pruebas de robustez con diferentes aceites (palma, soya, jatropha)
+    \item Estudios de estabilidad y reusabilidad del catalizador
+\end{itemize}
+
+\begin{thebibliography}{99}
+
+\bibitem{biodiesel_review}
+Ong HC, Milano J, Silitonga AS, et al.
+\textit{Biodiesel production from Calophyllum inophyllum-Ceiba pentandra oil mixture: Optimization and characterization}.
+Journal of Cleaner Production. 2019;219:183-198.
+
+\bibitem{cao_catalyst}
+Sharma M, Khan AA, Puri SK, Tuli DK.
+\textit{Wood ash as a potential heterogeneous catalyst for biodiesel synthesis}.
+Biomass and Bioenergy. 2012;41:94-106.
+
+\bibitem{ea_cao_1}
+Pratigto P, Susianto S, Winardi S.
+\textit{Kinetics of Transesterification Reaction of Soybean Oil into Biodiesel with CaO Catalyst}.
+Jurnal Kimia Sains dan Aplikasi. 2018;21(4):190-195.
+
+\bibitem{ea_cao_2}
+Salinas D, Guerrero-Fajardo CA.
+\textit{Kinetics of biodiesel synthesis from sunflower oil over CaO heterogeneous catalyst}.
+Fuel. 2010;89(12):3731-3737.
+
+\bibitem{ea_cao_3}
+Kouzu M, Kasuno T, Tajika M, et al.
+\textit{Calcium oxide as a solid base catalyst for transesterification of soybean oil and its application to biodiesel production}.
+Fuel. 2008;87(12):2798-2806.
+
+\bibitem{second_order}
+Stamenkovic OS, Todorovic ZB, Lazic ML, et al.
+\textit{Kinetics of sunflower oil methanolysis at low temperatures}.
+Bioresource Technology. 2008;99(5):1131-1140.
+
+\bibitem{optimal_conditions}
+Ngamcharussrivichai C, Totarat P, Bunyakiat K.
+\textit{Ca and Zn mixed oxide as a heterogeneous base catalyst for transesterification of palm kernel oil}.
+Applied Catalysis A: General. 2008;341(1-2):77-85.
+
+\bibitem{eley_rideal}
+Liu X, He H, Wang Y, Zhu S.
+\textit{Transesterification of soybean oil to biodiesel using CaO as a solid base catalyst}.
+Fuel. 2008;87(2):216-221.
+
+\end{thebibliography}
+
+\end{document}
