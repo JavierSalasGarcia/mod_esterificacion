@@ -154,11 +154,10 @@ El sistema está organizado en **13 módulos** agrupados en **6 categorías**:
 Procesamiento de datos & gc\_processor, data\_loader & 600 \\
 Modelos cinéticos & kinetic\_model, properties, parameter\_fitting & 1800 \\
 Optimización & optimizer & 500 \\
-Integración ASPEN & hysys\_connector, data\_sync & 1050 \\
 Comparación y análisis & comparison & 400 \\
 Visualización y exportación & plotter, exporter & 320 \\
 \midrule
-\textbf{TOTAL} & \textbf{13 módulos} & \textbf{6500+} \\
+\textbf{TOTAL} & \textbf{11 módulos} & \textbf{5450+} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -178,10 +177,6 @@ main.py
   │
   ├── optimization/
   │   └── optimizer.py      ←─── EXTENSIBLE
-  │
-  ├── aspen_integration/
-  │   ├── hysys_connector.py
-  │   └── data_sync.py
   │
   ├── utils/
   │   └── comparison.py

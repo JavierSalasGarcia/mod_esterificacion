@@ -24,8 +24,8 @@ class ModelComparison:
     """
 
     def __init__(self,
-                 model1_name: str = "Standalone",
-                 model2_name: str = "HYSYS"):
+                 model1_name: str = "Model1",
+                 model2_name: str = "Model2"):
         """
         Inicializa comparador de modelos.
 
@@ -417,11 +417,11 @@ if __name__ == "__main__":
 
     # Datos sintéticos
     t = np.linspace(0, 120, 13)
-    y_model1 = 0.5 * np.exp(-0.015 * t)  # Modelo standalone
-    y_model2 = 0.5 * np.exp(-0.015 * t) + np.random.normal(0, 0.01, len(t))  # HYSYS con ruido
+    y_model1 = 0.5 * np.exp(-0.015 * t)  # Modelo 1
+    y_model2 = 0.5 * np.exp(-0.015 * t) + np.random.normal(0, 0.01, len(t))  # Modelo 2 con ruido
 
     # Crear comparador
-    comparator = ModelComparison(model1_name="Standalone", model2_name="HYSYS")
+    comparator = ModelComparison(model1_name="Model1", model2_name="Model2")
 
     # Calcular métricas
     metrics = comparator.calculate_all_metrics(y_model1, y_model2, "C_TG")

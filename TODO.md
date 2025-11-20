@@ -82,10 +82,7 @@
 
 ---
 
-## Fase 5: Integración con ASPEN HYSYS 🔄
 
-### 5.1 Módulo HYSYS Connector (`src/aspen_integration/hysys_connector.py`)
-- [ ] Implementar conexión COM con HYSYS
 - [ ] Cargar/crear archivo .hsc base
 - [ ] Configurar componentes (triglicéridos, metanol, FAME, glicerol)
 - [ ] Configurar paquete termodinámico (UNIFAC/NRTL)
@@ -94,11 +91,8 @@
 - [ ] Extraer resultados (conversión, composición, temperatura)
 - [ ] Manejo de errores y excepciones
 
-### 5.2 Módulo de Sincronización (`src/aspen_integration/data_sync.py`)
 - [ ] Crear clase `DataSync` para gestionar datos de entrada
-- [ ] Sincronizar datos entre modelos standalone y HYSYS
 - [ ] Validar consistencia de unidades
-- [ ] Mapear variables JSON → HYSYS paths
 
 ---
 
@@ -116,11 +110,9 @@
 ## Fase 7: Visualización y Exportación 🔄
 
 ### 7.1 Módulo de Visualización (`src/visualization/plotter.py`)
-- [ ] Gráfica: Conversión vs Tiempo (standalone vs HYSYS)
 - [ ] Gráfica: Perfiles de concentración (TG, DG, MG, FAME, Glicerol)
 - [ ] Gráfica: Superficie de respuesta 3D (Temp vs Cat% vs Conversión)
 - [ ] Gráfica: Tornado plot (análisis sensibilidad)
-- [ ] Gráfica: Parity plot (standalone vs HYSYS)
 - [ ] Gráfica: Residuales del ajuste
 - [ ] Configurar estilo de gráficas (publicación)
 
@@ -159,7 +151,6 @@
 - [ ] Escribir introducción y marco teórico
 - [ ] Documentar modelos cinéticos
 - [ ] Documentar metodología de optimización
-- [ ] Documentar integración con HYSYS
 - [ ] Incluir resultados y validación
 - [ ] Incluir especificaciones CFD
 - [ ] Generar bibliografía
@@ -179,7 +170,6 @@
 - [ ] Tests para `gc_processor.py`
 - [ ] Tests para `kinetic_model.py`
 - [ ] Tests para `optimizer.py`
-- [ ] Tests para `hysys_connector.py`
 - [ ] Tests para `comparison.py`
 
 ### 10.2 Tests de Integración
@@ -196,7 +186,6 @@
 - [ ] Modo: procesamiento de datos GC
 - [ ] Modo: ajuste de parámetros
 - [ ] Modo: optimización de variables
-- [ ] Modo: simulación HYSYS
 - [ ] Modo: comparación y validación
 - [ ] Modo: generación de reportes
 
@@ -204,7 +193,6 @@
 - [ ] Ejemplo 1: Procesamiento de datos GC
 - [ ] Ejemplo 2: Ajuste de parámetros cinéticos
 - [ ] Ejemplo 3: Optimización de condiciones
-- [ ] Ejemplo 4: Comparación con HYSYS
 - [ ] Ejemplo 5: Análisis completo
 
 ---
@@ -215,7 +203,6 @@
 1. Completar documento LaTeX académico
 2. Módulo de procesamiento GC-FID
 3. Módulo de modelo cinético básico
-4. Módulo de integración con HYSYS
 
 ### 🟡 Media Prioridad (Próximas 2 Semanas)
 1. Módulo de optimización
@@ -232,7 +219,6 @@
 
 ## Notas Importantes
 
-- **ASPEN HYSYS**: El usuario tiene HYSYS (no Plus), usar COM con 'HYSYS.Application'
 - **Reactor**: 20L para scaled-up, necesita especificaciones CFD completas
 - **Datos**: 5 datasets experimentales disponibles en JSON
 - **Ejecutable**: Todo debe correr desde VS Code como scripts .py
