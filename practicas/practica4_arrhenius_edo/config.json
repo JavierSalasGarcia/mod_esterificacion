@@ -1,0 +1,14 @@
+{
+  "parametros_cineticos": {
+    "_comentario": "Parámetros típicos para transesterificación con CaO",
+    "_fuente": "Kouzu et al., Fuel 2008, 87(12):2798-2806",
+    "A_forward": 2.98e10,
+    "Ea_forward_kJ_mol": 51.9,
+    "R_J_mol_K": 8.314
+  },
+  "condiciones": {
+    "temperaturas_C": [55, 65, 75],
+    "C_TG_inicial_mol_L": 0.5,
+    "tiempo_min": 120
+  }
+}
