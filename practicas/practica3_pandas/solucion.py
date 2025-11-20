@@ -49,13 +49,13 @@ C_TG_rel_inicial = df_procesado['TG_Crel'].iloc[0]
 df_procesado['conversion_%'] = ((C_TG_rel_inicial - df_procesado['TG_Crel']) / C_TG_rel_inicial) * 100
 
 print("\n" + "="*70)
-print("📊 DATOS PROCESADOS")
+print("Datos: DATOS PROCESADOS")
 print("="*70)
 print(df_procesado[['tiempo_min', 'TG_Crel', 'FAME_Crel', 'conversion_%']])
 
 # Estadísticas
 print("\n" + "="*70)
-print("📈 ESTADÍSTICAS")
+print("Resultados: ESTADÍSTICAS")
 print("="*70)
 print(df_procesado[['TG_Crel', 'FAME_Crel', 'conversion_%']].describe())
 
@@ -64,6 +64,6 @@ with pd.ExcelWriter('resultados_procesados.xlsx', engine='openpyxl') as writer:
     df.to_excel(writer, sheet_name='Datos Crudos', index=False)
     df_procesado.to_excel(writer, sheet_name='Procesados', index=False)
 
-print("\n✅ Excel generado: resultados_procesados.xlsx")
-print(f"✅ Conversión final: {df_procesado['conversion_%'].iloc[-1]:.2f}%")
+print("\n✓ Excel generado: resultados_procesados.xlsx")
+print(f"✓ Conversión final: {df_procesado['conversion_%'].iloc[-1]:.2f}%")
 print("\n" + "="*70)

@@ -15,7 +15,7 @@ print(f"\nFilas: {len(df)}")
 # TODO 2: Filtra solo datos de TG
 df_TG = None  # <-- df[df['compuesto'] == 'TG']
 
-print("\n📊 Datos de TG:")
+print("\nDatos de TG:")
 # TODO 3: Muestra df_TG
 
 # TODO 4: Calcula el área promedio de TG
@@ -26,4 +26,4 @@ print(f"\nÁrea promedio TG: {area_promedio_TG:.2f}")
 # TODO 5: Exporta a Excel
 # df.to_excel('mi_resultado.xlsx', index=False)
 
-print("\n✅ Completa los TODOs!")
+print("\n✓ Completa los TODOs!")

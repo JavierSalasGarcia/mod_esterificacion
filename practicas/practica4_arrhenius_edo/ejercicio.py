@@ -35,4 +35,4 @@ k_65C = arrhenius(65)
 # TODO 4: Grafica el resultado
 # plt.plot(...)
 
-print("✅ Completa los TODOs!")
+print("✓ Completa los TODOs!")

@@ -1,6 +1,6 @@
 # Práctica 1: Fundamentos de Python y Cálculos Químicos Básicos
 
-## 📖 Teoría
+## Teoría
 
 ### ¿Qué es Python?
 Python es un lenguaje de programación de alto nivel, fácil de leer y escribir. Es ampliamente usado en ciencia e ingeniería para análisis de datos, simulaciones y automatización.
@@ -26,17 +26,17 @@ Triglicérido (TG) + 3 Metanol (MeOH) → 3 FAME (biodiésel) + Glicerol (GL)
 5. **Comentarios**: Documentación con `#`
 6. **Print**: Mostrar resultados en pantalla
 
-## 🎯 Objetivos de Aprendizaje
+## Objetivos: Objetivos de Aprendizaje
 
 Al completar esta práctica podrás:
-- ✅ Instalar Python y crear un entorno virtual
-- ✅ Usar variables para almacenar datos químicos
-- ✅ Realizar cálculos estequiométricos
-- ✅ Calcular conversión y rendimiento
-- ✅ Definir funciones simples
-- ✅ Mostrar resultados formateados
+- ✓ Instalar Python y crear un entorno virtual
+- ✓ Usar variables para almacenar datos químicos
+- ✓ Realizar cálculos estequiométricos
+- ✓ Calcular conversión y rendimiento
+- ✓ Definir funciones simples
+- ✓ Mostrar resultados formateados
 
-## 📦 Instalación/Requisitos
+## Requisitos: Instalación/Requisitos
 
 ### Verificar instalación de Python
 
@@ -65,7 +65,7 @@ source venv/bin/activate
 ### Instalar dependencias (ninguna por ahora)
 Esta práctica solo usa Python estándar, sin librerías externas.
 
-## 💡 Conceptos Clave
+## Conceptos Clave
 
 | Término | Definición | Ejemplo |
 |---------|------------|---------|
@@ -76,7 +76,7 @@ Esta práctica solo usa Python estándar, sin librerías externas.
 | **Función** | Bloque de código reutilizable | `def calcular_masa():` |
 | **Return** | Devuelve un valor desde función | `return resultado` |
 
-## 👨‍💻 Ejercicio Guiado
+## Ejercicio: Ejercicio Guiado
 
 ### Archivo: `config.json`
 
@@ -228,7 +228,7 @@ def calcular_rendimiento(moles_producto_real, moles_producto_teorico):
 # PASO 3: Realizar cálculos con datos del experimento
 # ==============================================================================
 
-print("📊 DATOS DEL EXPERIMENTO")
+print("Datos: DATOS DEL EXPERIMENTO")
 print("-" * 70)
 print(f"Volumen del reactor: {experimento['volumen_reactor_mL']} mL")
 print(f"Masa inicial de TG: {experimento['masa_TG_inicial_g']} g")
@@ -284,20 +284,20 @@ C_MeOH_inicial = calcular_concentracion_molar(moles_MeOH_inicial, volumen_total_
 # ==============================================================================
 
 print("\n" + "="*70)
-print("📈 RESULTADOS DE LOS CÁLCULOS")
+print("Resultados: RESULTADOS DE LOS CÁLCULOS")
 print("="*70)
 
-print("\n🔬 MOLES:")
+print("\nMoles: MOLES:")
 print(f"  TG inicial:       {moles_TG_inicial:.4f} mol")
 print(f"  MeOH inicial:     {moles_MeOH_inicial:.4f} mol")
 print(f"  FAME producido:   {moles_FAME_producido:.4f} mol")
 print(f"  FAME teórico:     {moles_FAME_teorico:.4f} mol")
 
-print("\n📊 CONCENTRACIONES INICIALES:")
+print("\nDatos: CONCENTRACIONES INICIALES:")
 print(f"  [TG]₀:   {C_TG_inicial:.3f} mol/L")
 print(f"  [MeOH]₀: {C_MeOH_inicial:.3f} mol/L")
 
-print("\n✨ MÉTRICAS DE DESEMPEÑO:")
+print("\nMetricas: MÉTRICAS DE DESEMPEÑO:")
 print(f"  Conversión de TG: {conversion_TG:.2f} %")
 print(f"  Rendimiento FAME: {rendimiento_FAME:.2f} %")
 
@@ -312,11 +312,11 @@ else:
     print(f"  ⚠ Metanol deficiente (se requiere mínimo 3:1)")
 
 print("\n" + "="*70)
-print("✅ PRÁCTICA COMPLETADA EXITOSAMENTE")
+print("✓ PRÁCTICA COMPLETADA EXITOSAMENTE")
 print("="*70)
 ```
 
-## ✅ Verificación
+## Verificación
 
 Ejecuta el código:
 
@@ -332,7 +332,7 @@ PRÁCTICA 1: Cálculos Químicos Básicos con Python
 
 ✓ Datos cargados exitosamente desde config.json
 
-📊 DATOS DEL EXPERIMENTO
+Datos: DATOS DEL EXPERIMENTO
 ----------------------------------------------------------------------
 Volumen del reactor: 350 mL
 Masa inicial de TG: 50.0 g
@@ -342,27 +342,27 @@ Temperatura: 65 °C
 Tiempo de reacción: 120 min
 
 ======================================================================
-📈 RESULTADOS DE LOS CÁLCULOS
+Resultados: RESULTADOS DE LOS CÁLCULOS
 ======================================================================
 
-🔬 MOLES:
+Moles: MOLES:
   TG inicial:       0.0619 mol
   MeOH inicial:     0.6188 mol
   FAME producido:   0.1564 mol
   FAME teórico:     0.1858 mol
 
-📊 CONCENTRACIONES INICIALES:
+Datos: CONCENTRACIONES INICIALES:
   [TG]₀:   0.177 mol/L
   [MeOH]₀: 1.768 mol/L
 
-✨ MÉTRICAS DE DESEMPEÑO:
+Metricas: MÉTRICAS DE DESEMPEÑO:
   Conversión de TG: 84.08 %
   Rendimiento FAME: 84.16 %
   Relación molar MeOH:TG = 10.0:1
   ✓ Metanol en exceso (estequiométrico: 3:1)
 
 ======================================================================
-✅ PRÁCTICA COMPLETADA EXITOSAMENTE
+✓ PRÁCTICA COMPLETADA EXITOSAMENTE
 ======================================================================
 ```
 
@@ -373,7 +373,7 @@ Tiempo de reacción: 120 min
 3. **Rendimiento ≈ 84%** (tolerancia ±1%)
 4. **Relación molar ≈ 10:1**
 
-## 🚀 Desafío Extra (Opcional)
+## Desafio: Desafío Extra (Opcional)
 
 ### Desafío 1: Calcular reactivo limitante
 Modifica el código para determinar cuál es el reactivo limitante (TG o MeOH).
@@ -394,7 +394,7 @@ Modifica `config.json` con:
 - Menos MeOH (15 mL) → ¿Qué pasa con la conversión?
 - Más TG (75 g) → ¿Cambia el rendimiento?
 
-## 📚 Recursos Adicionales
+## Recursos: Recursos Adicionales
 
 ### Documentación Python
 - Tutorial oficial: https://docs.python.org/es/3/tutorial/
@@ -411,7 +411,7 @@ Cuando domines esta práctica, continúa con:
 
 ---
 
-## 🆘 Solución de Problemas
+## Ayuda: Solución de Problemas
 
 ### Error: `ModuleNotFoundError: No module named 'json'`
 **Solución:** `json` viene incluido con Python. Verifica tu instalación.

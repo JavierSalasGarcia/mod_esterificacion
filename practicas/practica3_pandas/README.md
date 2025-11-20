@@ -1,6 +1,6 @@
 # Práctica 3: Lectura y Procesamiento de Datos con Pandas
 
-## 📖 Teoría
+## Teoría
 
 **Pandas** es la librería más usada para análisis de datos en Python.
 
@@ -15,20 +15,20 @@
 - Área del pico ∝ concentración del compuesto
 - Necesitamos estándar interno para cuantificar
 
-## 🎯 Objetivos
+## Objetivos
 
-- ✅ Leer archivos CSV con pandas
-- ✅ Filtrar datos por compuesto
-- ✅ Calcular concentraciones desde áreas
-- ✅ Exportar resultados a Excel
+- ✓ Leer archivos CSV con pandas
+- ✓ Filtrar datos por compuesto
+- ✓ Calcular concentraciones desde áreas
+- ✓ Exportar resultados a Excel
 
-## 📦 Requisitos
+## Requisitos
 
 ```bash
 pip install pandas openpyxl
 ```
 
-## 👨‍💻 Ejercicio
+## Ejercicio
 
 Trabajarás con datos de cromatografía simulados en `datos/cromatografia_raw.csv`.
 
@@ -41,14 +41,14 @@ tiempo_min,compuesto,area_pico,tiempo_retencion_min
 ...
 ```
 
-## ✅ Verificación
+## Verificación
 
 - DataFrame cargado con ~40 filas
 - Concentraciones calculadas correctamente
 - Excel generado con múltiples hojas
 - Conversión final ≈ 85%
 
-## 🚀 Desafío
+## Desafío Extra
 
 1. Agregar columna con conversión acumulada
 2. Detectar outliers en áreas de pico

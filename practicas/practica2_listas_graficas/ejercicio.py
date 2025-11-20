@@ -19,7 +19,7 @@ print("PRÁCTICA 2: Listas y Visualización")
 print("="*70)
 
 # TODO 2: Usa un ciclo for para mostrar cada dato
-print("\n⏱️  DATOS:")
+print("\nTiempo:  DATOS:")
 print(f"{'Tiempo (min)':>15} {'Conversión (%)':>20}")
 print("-" * 40)
 # for ... in ...:
@@ -28,7 +28,7 @@ print("-" * 40)
 # TODO 3: Calcula la conversión promedio
 conversion_promedio = None  # <-- Usa sum() y len()
 
-print(f"\n📊 Conversión promedio: {conversion_promedio:.2f}%")
+print(f"\nDatos: Conversión promedio: {conversion_promedio:.2f}%")
 
 # TODO 4: Crea la gráfica
 plt.figure(figsize=(10, 6))
@@ -41,4 +41,4 @@ plt.figure(figsize=(10, 6))
 # TODO 5: Guarda la gráfica
 # plt.savefig(...)
 
-print("\n✅ Completa los TODOs y ejecuta de nuevo")
+print("\n✓ Completa los TODOs y ejecuta de nuevo")

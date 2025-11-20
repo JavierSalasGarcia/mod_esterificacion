@@ -73,7 +73,7 @@ def calcular_rendimiento(moles_producto_real, moles_producto_teorico):
 # PASO 3: Realizar cálculos con datos del experimento
 # ==============================================================================
 
-print("📊 DATOS DEL EXPERIMENTO")
+print("Datos: DATOS DEL EXPERIMENTO")
 print("-" * 70)
 print(f"Volumen del reactor: {experimento['volumen_reactor_mL']} mL")
 print(f"Masa inicial de TG: {experimento['masa_TG_inicial_g']} g")
@@ -127,20 +127,20 @@ C_MeOH_inicial = calcular_concentracion_molar(moles_MeOH_inicial, volumen_total_
 # ==============================================================================
 
 print("\n" + "="*70)
-print("📈 RESULTADOS DE LOS CÁLCULOS")
+print("Resultados: RESULTADOS DE LOS CÁLCULOS")
 print("="*70)
 
-print("\n🔬 MOLES:")
+print("\nMoles: MOLES:")
 print(f"  TG inicial:       {moles_TG_inicial:.4f} mol")
 print(f"  MeOH inicial:     {moles_MeOH_inicial:.4f} mol")
 print(f"  FAME producido:   {moles_FAME_producido:.4f} mol")
 print(f"  FAME teórico:     {moles_FAME_teorico:.4f} mol")
 
-print("\n📊 CONCENTRACIONES INICIALES:")
+print("\nDatos: CONCENTRACIONES INICIALES:")
 print(f"  [TG]₀:   {C_TG_inicial:.3f} mol/L")
 print(f"  [MeOH]₀: {C_MeOH_inicial:.3f} mol/L")
 
-print("\n✨ MÉTRICAS DE DESEMPEÑO:")
+print("\nMetricas: MÉTRICAS DE DESEMPEÑO:")
 print(f"  Conversión de TG: {conversion_TG:.2f} %")
 print(f"  Rendimiento FAME: {rendimiento_FAME:.2f} %")
 
@@ -155,5 +155,5 @@ else:
     print(f"  ⚠ Metanol deficiente (se requiere mínimo 3:1)")
 
 print("\n" + "="*70)
-print("✅ PRÁCTICA COMPLETADA EXITOSAMENTE")
+print("✓ PRÁCTICA COMPLETADA EXITOSAMENTE")
 print("="*70)

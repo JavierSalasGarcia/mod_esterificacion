@@ -24,13 +24,13 @@ conversion = experimento['conversion_pct']
 temperatura = experimento['temperatura_C']
 
 # Mostrar información
-print(f"\n📊 Experimento a {temperatura}°C")
+print(f"\nDatos: Experimento a {temperatura}°C")
 print(f"Puntos de datos: {len(tiempo)}")
 print(f"Tiempo total: {max(tiempo)} min")
 print(f"Conversión final: {conversion[-1]:.2f}%\n")
 
 # Procesar datos con ciclo for
-print("⏱️  DATOS EXPERIMENTALES:")
+print("Tiempo:  DATOS EXPERIMENTALES:")
 print("-" * 70)
 print(f"{'Tiempo (min)':>15} {'Conversión (%)':>20} {'Incremento (%)':>20}")
 print("-" * 70)
@@ -58,7 +58,7 @@ estadisticas = {
 }
 
 print("\n" + "="*70)
-print("📈 ESTADÍSTICAS")
+print("Resultados: ESTADÍSTICAS")
 print("="*70)
 for clave, valor in estadisticas.items():
     print(f"{clave:25s}: {valor:>10.2f}")
@@ -83,10 +83,10 @@ plt.ylim(0, 100)
 # Guardar gráfica
 output_file = graf_config['output_file']
 plt.savefig(output_file, dpi=graf_config['dpi'], bbox_inches='tight')
-print(f"\n✅ Gráfica guardada: {output_file}")
+print(f"\n✓ Gráfica guardada: {output_file}")
 
 plt.show()
 
 print("\n" + "="*70)
-print("✅ PRÁCTICA COMPLETADA")
+print("✓ PRÁCTICA COMPLETADA")
 print("="*70)

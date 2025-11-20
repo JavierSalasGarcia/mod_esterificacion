@@ -1,6 +1,6 @@
 # Práctica 2: Listas, Ciclos y Visualización de Datos Experimentales
 
-## 📖 Teoría
+## Teoría
 
 ### Conceptos Python
 - **Listas**: Colecciones ordenadas de elementos `[1, 2, 3]`
@@ -14,20 +14,20 @@ En cinética de reacción, monitoreamos **conversión vs tiempo**:
 - Conversión aumenta con el tiempo
 - Forma de curva indica tipo de cinética
 
-## 🎯 Objetivos
+## Objetivos
 
-- ✅ Trabajar con listas de datos experimentales
-- ✅ Usar ciclos `for` para procesar datos
-- ✅ Crear gráficas con matplotlib
-- ✅ Guardar gráficas como archivos PNG
+- ✓ Trabajar con listas de datos experimentales
+- ✓ Usar ciclos `for` para procesar datos
+- ✓ Crear gráficas con matplotlib
+- ✓ Guardar gráficas como archivos PNG
 
-## 📦 Requisitos
+## Requisitos
 
 ```bash
 pip install matplotlib numpy
 ```
 
-## 💡 Conceptos Clave
+## Conceptos Clave
 
 | Término | Ejemplo |
 |---------|---------|
@@ -37,11 +37,11 @@ pip install matplotlib numpy
 | Ciclo for | `for t in tiempos:` |
 | Diccionario | `datos = {"T": 65, "rpm": 400}` |
 
-## 👨‍💻 Ejercicio
+## Ejercicio
 
 Ejecuta `python ejercicio.py` y sigue las instrucciones.
 
-## ✅ Verificación
+## Verificación
 
 La gráfica debe mostrar:
 - Conversión aumentando de 0% a ~85%
@@ -49,13 +49,13 @@ La gráfica debe mostrar:
 - Ejes etiquetados correctamente
 - Archivo `conversion_vs_tiempo.png` generado
 
-## 🚀 Desafío Extra
+## Desafio: Desafío Extra
 
 1. Agregar línea de tendencia exponencial
 2. Graficar múltiples temperaturas (55, 65, 75°C) en una sola gráfica
 3. Calcular velocidad de reacción (derivada numérica)
 
-## 📚 Recursos
+## Recursos
 
 - Matplotlib tutorial: https://matplotlib.org/stable/tutorials/index.html
 - Listas Python: https://docs.python.org/3/tutorial/datastructures.html

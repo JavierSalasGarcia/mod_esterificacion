@@ -6,9 +6,9 @@
 
 **Sistema 100% funcional y completo** de modelado cinético para la producción de biodiésel mediante transesterificación catalizada por CaO, implementado completamente en Python.
 
-**📊 Líneas de código:** 5450+ | **📦 Módulos:** 11 | **📄 Documentación:** Completa
+**Estadisticas: Líneas de código:** 5450+ | **Modulos: Módulos:** 11 | **Documentacion: Documentación:** Completa
 
-## 🎯 Características Principales
+## Caracteristicas: Características Principales
 
 - **Modelos Cinéticos Flexibles**: Implementación de modelos de 1 paso (simplificado) y 3 pasos (mecanístico)
 - **Procesamiento Automatizado de GC-FID**: Cuantificación de FAMEs y cálculo de conversión
@@ -17,7 +17,37 @@
 - **Visualización Avanzada**: Gráficas publication-ready y reportes automatizados
 - **Especificaciones CFD**: Diseño completo para reactor de 20L con Ansys Fluent
 
-## 📦 Módulos Desarrollados
+
+## Prácticas Didácticas
+
+**NUEVO:** Este repositorio incluye **9 prácticas progresivas** diseñadas para estudiantes de química sin conocimientos previos de programación.
+
+**Progresión:** Python básico → Procesamiento de datos → Modelos cinéticos → Optimización → CFD
+
+**Directorio:** `practicas/`
+
+### Contenido de las Prácticas
+
+1. **Práctica 1:** Fundamentos de Python y cálculos químicos básicos
+2. **Práctica 2:** Listas, ciclos y visualización con matplotlib
+3. **Práctica 3:** Procesamiento de datos con Pandas
+4. **Práctica 4:** Ecuación de Arrhenius y resolución de EDOs
+5. **Práctica 5:** Uso del módulo GC Processor del sistema
+6. **Práctica 6:** Ajuste de parámetros cinéticos (lmfit)
+7. **Práctica 7:** Optimización de condiciones de reacción
+8. **Práctica 8:** Workflow completo integrador
+9. **Práctica 9:** Up-scaling (350 mL → 20 L) y preparación para CFD
+
+**Características especiales:**
+- Perfiles de agitación configurables vía JSON (n puntos arbitrarios)
+- Parámetros con fuentes documentadas (PubChem, Perry's, Kouzu 2008)
+- Diseño de reactor 20L con ribbon impeller + serpentín (10 espiras)
+- UDF para Ansys Fluent con cinética ajustada
+- Comparación modelo 0D vs CFD 3D
+
+**Duración total:** 30-40 horas | **Documentación:** [practicas/README.md](practicas/README.md)
+
+## Modulos: Módulos Desarrollados
 
 ### Procesamiento de Datos (600+ líneas)
 - **`gc_processor.py`** (450 líneas): Procesamiento de cromatografía GC-FID
@@ -85,7 +115,7 @@
   - `optimize`: Optimización de condiciones operacionales
   - `compare`: Comparación estadística de modelos
 
-## 📁 Estructura del Proyecto
+## Estructura: Estructura del Proyecto
 
 ```
 mod_esterificacion/
@@ -125,7 +155,7 @@ mod_esterificacion/
 └── variables_esterificacion_dataset.json  # Datos experimentales
 ```
 
-## 🚀 Instalación
+## Instalacion: Instalación
 
 ### Requisitos Previos
 
@@ -149,7 +179,7 @@ venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 ```
 
-## 📚 Uso
+## Uso: Uso
 
 ### 1. Procesamiento de Datos GC-FID
 
@@ -175,7 +205,7 @@ python main.py --mode optimize --input data/processed/fitted_params.json --outpu
 python main.py --mode compare --input results/ --output results/comparison/
 ```
 
-## 💻 Uso Programático
+## Codigo: Uso Programático
 
 Además de la CLI, todos los módulos pueden usarse directamente en scripts Python:
 
@@ -303,7 +333,7 @@ plotter.plot_concentration_profiles(results, save_path='results/figures/profiles
 plotter.plot_response_surface(surface_data, save_path='results/figures/response_surface.png')
 ```
 
-## 🔬 Ejemplos Adicionales
+## Ciencia: Ejemplos Adicionales
 
 Ver carpeta `examples/` para notebooks y scripts de ejemplo:
 
@@ -312,7 +342,7 @@ Ver carpeta `examples/` para notebooks y scripts de ejemplo:
 - `example_03_optimization.py`: Optimización de variables
 - `example_05_complete_workflow.py`: Flujo completo de análisis
 
-## 📊 Modelos Implementados
+## Estadisticas: Modelos Implementados
 
 ### Modelo de 1 Paso (Pseudo-homogéneo de 2º Orden)
 
@@ -336,7 +366,7 @@ MG + MeOH ⇌ GL + FAME
 - **Agitación**: 200-800 rpm
 - **Catalizador CaO**: 1-5% masa
 
-## 📈 Resultados
+## Analisis: Resultados
 
 El sistema genera automáticamente:
 
@@ -356,7 +386,7 @@ El sistema genera automáticamente:
    - Intervalos de confianza de parámetros
    - Análisis de residuales
 
-## 🌊 Simulación CFD (Reactor 20L)
+## CFD: Simulación CFD (Reactor 20L)
 
 Especificaciones completas en `docs/reactor_cfd_specs.md` (1900+ líneas):
 
@@ -450,7 +480,7 @@ pytest tests/ --cov=src --cov-report=html
 
 Ver `TODO.md` para lista detallada de tareas y progreso del desarrollo.
 
-## ⚠️ Notas Importantes
+## NOTA: Notas Importantes
 
 ### Requisitos del Sistema
 
@@ -487,7 +517,7 @@ Ver `TODO.md` para lista detallada de tareas y progreso del desarrollo.
 - **CFD**: Requiere conocimientos avanzados en Ansys Fluent y mallado
 - **Catalizador heterogéneo**: Modelos asumen suspensión ideal (desprecian transferencia de masa externa)
 
-## 🎯 Próximos Pasos Sugeridos
+## Caracteristicas: Próximos Pasos Sugeridos
 
 ### 1. Configuración Inicial
 ```bash
@@ -581,7 +611,7 @@ Las contribuciones son bienvenidas. Por favor:
 4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
 5. Abre un Pull Request
 
-## 📄 Licencia
+## Documentacion: Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
 

@@ -53,7 +53,7 @@ def calcular_rendimiento(moles_producto_real, moles_producto_teorico):
 
 
 # Mostrar datos del experimento
-print("📊 DATOS DEL EXPERIMENTO")
+print("Datos: DATOS DEL EXPERIMENTO")
 print("-" * 70)
 print(f"Volumen del reactor: {experimento['volumen_reactor_mL']} mL")
 print(f"Masa inicial de TG: {experimento['masa_TG_inicial_g']} g")
@@ -91,10 +91,10 @@ C_MeOH_inicial = None  # <-- Usa calcular_concentracion_molar()
 
 # Mostrar resultados
 print("\n" + "="*70)
-print("📈 RESULTADOS")
+print("Resultados: RESULTADOS")
 print("="*70)
-print(f"\n✨ Conversión de TG: {conversion_TG:.2f} %")
-print(f"✨ Rendimiento FAME: {rendimiento_FAME:.2f} %")
-print(f"\n📊 [TG]₀:   {C_TG_inicial:.3f} mol/L")
-print(f"📊 [MeOH]₀: {C_MeOH_inicial:.3f} mol/L")
+print(f"\nMetricas: Conversión de TG: {conversion_TG:.2f} %")
+print(f"Metricas: Rendimiento FAME: {rendimiento_FAME:.2f} %")
+print(f"\nDatos: [TG]₀:   {C_TG_inicial:.3f} mol/L")
+print(f"Datos: [MeOH]₀: {C_MeOH_inicial:.3f} mol/L")
 print("\n" + "="*70)

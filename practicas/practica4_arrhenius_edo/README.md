@@ -1,6 +1,6 @@
 # Práctica 4: Modelos Cinéticos Simples (Ecuación de Arrhenius)
 
-## 📖 Teoría
+## Teoría
 
 **Ecuación de Arrhenius:** k = A × exp(-Ea/RT)
 - k: constante de velocidad
@@ -11,20 +11,20 @@
 
 **EDO de 1er orden:** dC/dt = -k×C
 
-## 🎯 Objetivos
+## Objetivos
 
-- ✅ Implementar ecuación de Arrhenius
-- ✅ Resolver EDOs con scipy.integrate.odeint
-- ✅ Simular perfiles de concentración
-- ✅ Comparar diferentes temperaturas
+- ✓ Implementar ecuación de Arrhenius
+- ✓ Resolver EDOs con scipy.integrate.odeint
+- ✓ Simular perfiles de concentración
+- ✓ Comparar diferentes temperaturas
 
-## 📦 Requisitos
+## Requisitos
 
 ```bash
 pip install numpy scipy matplotlib
 ```
 
-## ✅ Verificación
+## Verificación
 
 - Gráfica muestra decaimiento exponencial
 - A mayor T → mayor k → reacción más rápida
