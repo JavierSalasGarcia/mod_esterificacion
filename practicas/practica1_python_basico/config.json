@@ -1,25 +1,61 @@
 {
+  "_comentario_general": "Práctica 1: Cálculos Estequiométricos para Transesterificación",
+  "_instrucciones": "Modifica los valores de los escenarios para explorar diferentes condiciones",
+
   "masas_molares": {
-    "_comentario": "Fuente: PubChem Database (https://pubchem.ncbi.nlm.nih.gov/)",
+    "_fuente": "PubChem Database (https://pubchem.ncbi.nlm.nih.gov/)",
     "TG_tripalmitin": 807.3,
     "MeOH": 32.04,
     "FAME_metil_palmitato": 270.5,
     "GL_glicerol": 92.09
   },
+
   "densidades_25C": {
-    "_comentario": "Fuente: Perry's Chemical Engineers' Handbook, 9th Ed.",
-    "TG_tripalmitin_kg_L": 0.875,
-    "MeOH_kg_L": 0.792,
-    "FAME_metil_palmitato_kg_L": 0.865,
-    "GL_glicerol_kg_L": 1.261
+    "_fuente": "Perry's Chemical Engineers' Handbook, 9th Ed.",
+    "TG_tripalmitin_g_mL": 0.852,
+    "MeOH_g_mL": 0.792,
+    "FAME_g_mL": 0.865,
+    "GL_g_mL": 1.261
   },
-  "experimento": {
-    "_comentario": "Datos de ejemplo típicos para biodiésel",
-    "volumen_reactor_mL": 350,
-    "masa_TG_inicial_g": 50.0,
-    "volumen_MeOH_mL": 25.0,
-    "masa_FAME_final_g": 42.3,
-    "temperatura_C": 65,
-    "tiempo_reaccion_min": 120
+
+  "reactor": {
+    "volumen_mL": 350,
+    "_comentario": "Reactor batch típico de laboratorio"
+  },
+
+  "escenarios": {
+    "_comentario": "Diferentes relaciones molares MeOH:TG para comparar",
+
+    "A_estequiometrico": {
+      "nombre": "Relación estequiométrica (3:1)",
+      "masa_TG_g": 50.0,
+      "relacion_molar_MeOH_TG": 3.0,
+      "conversion_esperada_teorica": 0.50,
+      "_comentario": "Relación mínima teórica. Conversión limitada por equilibrio"
+    },
+
+    "B_ligero_exceso": {
+      "nombre": "Ligero exceso (6:1)",
+      "masa_TG_g": 50.0,
+      "relacion_molar_MeOH_TG": 6.0,
+      "conversion_esperada_teorica": 0.85,
+      "_comentario": "Exceso moderado. Mejora conversión desplazando equilibrio"
+    },
+
+    "C_alto_exceso": {
+      "nombre": "Alto exceso (9:1)",
+      "masa_TG_g": 50.0,
+      "relacion_molar_MeOH_TG": 9.0,
+      "conversion_esperada_teorica": 0.95,
+      "_comentario": "Exceso alto. Conversión elevada pero mayor costo de metanol"
+    },
+
+    "D_exceso_extremo": {
+      "nombre": "Exceso extremo (12:1)",
+      "masa_TG_g": 50.0,
+      "relacion_molar_MeOH_TG": 12.0,
+      "conversion_esperada_teorica": 0.98,
+      "_comentario": "Exceso muy alto. Mejora marginal con alto costo"
+    }
   }
 }

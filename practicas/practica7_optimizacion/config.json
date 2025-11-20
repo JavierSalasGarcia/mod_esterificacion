@@ -1,26 +1,49 @@
 {
-  "optimizacion": {
-    "objetivo": "maximize_conversion",
-    "tiempo_reaccion_min": 120,
-    "bounds": {
-      "temperatura_C": [50, 80],
-      "rpm_promedio": [200, 800],
-      "catalizador_pct": [1, 10]
-    },
-    "perfil_agitacion_base": {
-      "_comentario": "RPM se ajustará proporcionalmente al rpm_promedio optimizado",
-      "tipo": "lineal",
-      "puntos_relativos": [
-        {"tiempo_min": 0, "factor": 0.7},
-        {"tiempo_min": 60, "factor": 1.2},
-        {"tiempo_min": 120, "factor": 0.9}
-      ]
-    }
+  "_comentario": "Práctica 7: Optimización de Condiciones Operacionales",
+
+  "funcion_objetivo": {
+    "_comentario": "Pesos de la función objetivo multi-criterio. MODIFICA para experimentar",
+    "peso_conversion": 1.0,
+    "_comentario_conversion": "Maximizar conversión",
+    "peso_costo_temperatura": 0.3,
+    "_comentario_T": "Penalizar temperaturas altas (mayor consumo energético)",
+    "peso_costo_metanol": 0.2,
+    "_comentario_MeOH": "Penalizar relaciones molares altas (mayor costo de metanol)",
+    "peso_costo_catalizador": 0.1,
+    "_comentario_cat": "Penalizar concentraciones altas de catalizador"
   },
-  "C0": {
-    "TG": 0.5,
-    "MeOH": 4.5,
-    "FAME": 0.0,
-    "GL": 0.0
+
+  "restricciones": {
+    "_comentario": "Límites operacionales físicos y de seguridad",
+    "temperatura_min_C": 50,
+    "temperatura_max_C": 70,
+    "_nota_T": "Limite superior por punto de ebullición del MeOH (64.7°C a 1 atm)",
+    "rpm_min": 300,
+    "rpm_max": 800,
+    "catalizador_min_wt": 0.5,
+    "catalizador_max_wt": 2.0,
+    "relacion_molar_min": 3.0,
+    "relacion_molar_max": 12.0
+  },
+
+  "condiciones_base": {
+    "_comentario": "Condiciones de referencia para normalizar costos",
+    "temperatura_C": 60,
+    "rpm": 600,
+    "catalizador_wt": 1.0,
+    "relacion_molar": 6.0
+  },
+
+  "algoritmo": {
+    "metodo": "differential_evolution",
+    "max_iteraciones": 100,
+    "poblacion": 15,
+    "tolerancia": 0.01
+  },
+
+  "experimentos": {
+    "_exp1": "Aumenta peso_conversion a 2.0 para priorizar máxima conversión",
+    "_exp2": "Aumenta peso_costo_temperatura a 0.5 para priorizar eficiencia energética",
+    "_exp3": "Iguala todos los pesos a 1.0 para dar igual importancia a todos los criterios"
   }
 }

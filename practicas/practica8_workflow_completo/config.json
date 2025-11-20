@@ -1,36 +1,49 @@
 {
-  "proyecto": {
-    "nombre": "Optimización de Biodiésel con CaO",
-    "autor": "Estudiante",
-    "fecha": "2025-01-20"
+  "_comentario": "Práctica 8: Workflow Completo",
+
+  "paso1_procesamiento_gc": {
+    "archivo_datos": "gc_data.csv",
+    "factores_respuesta": {
+      "FR_TG": 1.15,
+      "FR_FAME": 0.95,
+      "FR_GL": 1.20
+    },
+    "concentracion_IS_mol_L": 0.100
   },
-  "datos_experimentales": {
-    "experimentos": [
-      {
-        "id": "Exp_55C",
-        "archivo_csv": "datos/exp_55C.csv",
-        "temperatura_C": 55,
-        "perfil_agitacion": {
-          "tipo": "constante",
-          "puntos": [{"tiempo_min": 0, "rpm": 400}]
-        }
-      },
-      {
-        "id": "Exp_65C",
-        "archivo_csv": "datos/exp_65C.csv",
-        "temperatura_C": 65,
-        "perfil_agitacion": {
-          "tipo": "escalonado",
-          "puntos": [
-            {"tiempo_min": 0, "rpm": 300},
-            {"tiempo_min": 60, "rpm": 500}
-          ]
-        }
-      }
-    ]
+
+  "paso2_ajuste_parametros": {
+    "valores_iniciales": {
+      "A_inicial": 1.0e6,
+      "Ea_inicial": 60.0
+    },
+    "limites": {
+      "A_min": 1.0e4,
+      "A_max": 1.0e8,
+      "Ea_min": 30.0,
+      "Ea_max": 100.0
+    }
   },
-  "workflow": {
-    "pasos": ["procesar_gc", "ajustar_parametros", "optimizar", "generar_reportes"],
-    "output_dir": "resultados_finales/"
+
+  "paso3_optimizacion": {
+    "funcion_objetivo": {
+      "peso_conversion": 1.0,
+      "peso_costo_temperatura": 0.3,
+      "peso_costo_metanol": 0.2,
+      "peso_costo_catalizador": 0.1
+    },
+    "restricciones": {
+      "temperatura_min_C": 50,
+      "temperatura_max_C": 70,
+      "relacion_molar_min": 3.0,
+      "relacion_molar_max": 12.0
+    }
+  },
+
+  "paso4_reporte": {
+    "titulo": "Reporte de Optimización de Transesterificación",
+    "autor": "Sistema Automatizado",
+    "formato": "HTML",
+    "graficas_interactivas": true,
+    "incluir_recomendaciones": true
   }
 }

@@ -1,0 +1,54 @@
+{
+  "_comentario_general": "Práctica 2: Perfiles de Temperatura en Transesterificación",
+  "_instrucciones": "Modifica las temperaturas de los escenarios para explorar diferentes condiciones térmicas",
+
+  "parametros_cineticos": {
+    "_fuente": "Estimados a partir de Kouzu et al. (2008) para catálisis con CaO",
+    "_comentario": "Parámetros de Arrhenius para la transesterificación",
+    "A_factor_preexponencial": 1.5e6,
+    "_unidades_A": "L/mol/min",
+    "Ea_energia_activacion_kJ_mol": 65.0,
+    "_comentario_Ea": "Energía de activación típica para transesterificación catalizada"
+  },
+
+  "condiciones_operacion": {
+    "relacion_molar_MeOH_TG": 6.0,
+    "_comentario_relacion": "Relación molar fija para comparar solo efecto de temperatura",
+    "tiempo_total_min": 120,
+    "_comentario_tiempo": "Tiempo de simulación en minutos"
+  },
+
+  "escenarios": {
+    "_comentario": "Cuatro escenarios a diferentes temperaturas constantes",
+
+    "A_temperatura_baja": {
+      "nombre": "Temperatura baja (50°C)",
+      "temperatura_C": 50.0,
+      "_comentario": "Temperatura inferior. Cinética lenta, menor consumo energético"
+    },
+
+    "B_temperatura_media_baja": {
+      "nombre": "Temperatura media-baja (55°C)",
+      "temperatura_C": 55.0,
+      "_comentario": "Temperatura intermedia baja. Balance entre velocidad y energía"
+    },
+
+    "C_temperatura_media_alta": {
+      "nombre": "Temperatura media-alta (60°C)",
+      "temperatura_C": 60.0,
+      "_comentario": "Temperatura óptima común en literatura. Buen compromiso"
+    },
+
+    "D_temperatura_alta": {
+      "nombre": "Temperatura alta (65°C)",
+      "temperatura_C": 65.0,
+      "_comentario": "Temperatura superior. Cinética rápida pero cerca del punto de ebullición del MeOH (64.7°C a 1 atm)"
+    }
+  },
+
+  "notas_tecnicas": {
+    "_temperatura_critica": "El metanol hierve a 64.7°C a presión atmosférica",
+    "_implicacion": "Operar por encima de 65°C requiere reactor cerrado con control de presión",
+    "_fuente_temperatura_critica": "Perry's Chemical Engineers' Handbook, 9th Ed."
+  }
+}

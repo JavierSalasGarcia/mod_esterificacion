@@ -1,14 +1,87 @@
 {
+  "_comentario_general": "Práctica 4: EDOs y Ecuación de Arrhenius",
+  "_instrucciones": "EXPERIMENTA modificando temperaturas, energías de activación y factores pre-exponenciales",
+
   "parametros_cineticos": {
-    "_comentario": "Parámetros típicos para transesterificación con CaO",
-    "_fuente": "Kouzu et al., Fuel 2008, 87(12):2798-2806",
-    "A_forward": 2.98e10,
-    "Ea_forward_kJ_mol": 51.9,
-    "R_J_mol_K": 8.314
+    "_fuente": "Noureddini & Zhu (1997), J. Am. Oil Chem. Soc. 74(11):1457-1463",
+    "_comentario": "Parámetros para modelo de tres pasos con catalizador NaOH",
+
+    "A1": 8.4e4,
+    "_unidades_A1": "L/mol/min",
+    "Ea1": 55.3,
+    "_unidades_Ea1": "kJ/mol",
+    "_comentario_paso1": "TG + MeOH → DG + FAME (paso limitante)",
+
+    "A2": 1.2e5,
+    "_unidades_A2": "L/mol/min",
+    "Ea2": 58.7,
+    "_unidades_Ea2": "kJ/mol",
+    "_comentario_paso2": "DG + MeOH → MG + FAME",
+
+    "A3": 2.1e5,
+    "_unidades_A3": "L/mol/min",
+    "Ea3": 62.1,
+    "_unidades_Ea3": "kJ/mol",
+    "_comentario_paso3": "MG + MeOH → GL + FAME (paso más rápido)",
+
+    "A_inv1": 1.5e3,
+    "Ea_inv1": 70.0,
+    "_comentario_inversa1": "Reacción inversa DG + FAME → TG + MeOH",
+
+    "A_inv2": 8.0e2,
+    "Ea_inv2": 75.0,
+    "_comentario_inversa2": "Reacción inversa MG + FAME → DG + MeOH",
+
+    "A_inv3": 5.0e2,
+    "Ea_inv3": 80.0,
+    "_comentario_inversa3": "Reacción inversa GL + FAME → MG + MeOH"
   },
-  "condiciones": {
-    "temperaturas_C": [55, 65, 75],
-    "C_TG_inicial_mol_L": 0.5,
-    "tiempo_min": 120
+
+  "condiciones_iniciales": {
+    "_comentario": "Concentraciones iniciales en mol/L",
+    "C_TG_0": 0.250,
+    "C_DG_0": 0.000,
+    "C_MG_0": 0.000,
+    "C_GL_0": 0.000,
+    "C_MeOH_0": 1.500,
+    "_relacion_molar": "MeOH:TG = 6:1",
+    "C_FAME_0": 0.000
+  },
+
+  "tiempo_total_min": 120,
+
+  "escenarios": {
+    "_comentario": "Escenarios predefinidos para comparar. MODIFICA las temperaturas para experimentar",
+
+    "A_baja": {
+      "nombre": "Temperatura baja (50°C)",
+      "temperatura_C": 50.0,
+      "_comentario": "Cinética lenta. Prueba aumentar a 55°C y observa el cambio"
+    },
+
+    "B_media": {
+      "nombre": "Temperatura media (60°C)",
+      "temperatura_C": 60.0,
+      "_comentario": "Temperatura óptima común. Compara con 50°C y 70°C"
+    },
+
+    "C_alta": {
+      "nombre": "Temperatura alta (70°C)",
+      "temperatura_C": 70.0,
+      "_comentario": "Cinética rápida pero requiere reactor cerrado. Prueba 65°C como alternativa"
+    },
+
+    "D_personalizado": {
+      "nombre": "Temperatura personalizada (65°C)",
+      "temperatura_C": 65.0,
+      "_comentario": "MODIFICA ESTE VALOR para experimentar. Prueba 45°C, 75°C, 80°C"
+    }
+  },
+
+  "notas_experimentacion": {
+    "_experimento1": "Cambia todas las temperaturas a +10°C y observa cómo cambia la conversión final",
+    "_experimento2": "Modifica Ea1 de 55.3 a 70.0 kJ/mol. ¿Cómo afecta al gráfico de Arrhenius?",
+    "_experimento3": "Duplica A1 y observa el efecto en k1 y la conversión",
+    "_experimento4": "Compara 40°C vs 80°C. ¿Es lineal o exponencial la diferencia?"
   }
 }

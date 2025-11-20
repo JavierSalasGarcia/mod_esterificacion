@@ -1,0 +1,43 @@
+{
+  "_comentario": "Práctica 11: Análisis de Sensibilidad",
+
+  "A": 1.5e6,
+  "Ea": 65.0,
+  "tiempo_total_min": 120,
+
+  "valores_base": {
+    "_comentario": "Valores base para análisis (punto central)",
+    "temperatura_C": 60.0,
+    "agitacion_rpm": 600,
+    "catalizador_wt": 1.0,
+    "relacion_molar": 6.0
+  },
+
+  "rangos_sensibilidad": {
+    "_comentario": "Rangos de exploración para cada parámetro",
+
+    "T": {
+      "min": 50,
+      "max": 80,
+      "_comentario": "Rango amplio que incluye zona subestequiométrica"
+    },
+
+    "rpm": {
+      "min": 300,
+      "max": 800,
+      "_comentario": "Desde agitación baja a muy alta"
+    },
+
+    "cat": {
+      "min": 0.5,
+      "max": 2.0,
+      "_comentario": "Concentración de catalizador en wt%"
+    },
+
+    "relacion": {
+      "min": 3.0,
+      "max": 12.0,
+      "_comentario": "Desde estequiométrico (3:1) a exceso alto (12:1)"
+    }
+  }
+}

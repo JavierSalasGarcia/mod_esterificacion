@@ -1,0 +1,33 @@
+{
+  "_comentario_general": "Práctica 3: Procesamiento de Datos con Pandas",
+  "_instrucciones": "Este archivo configura qué archivo de datos analizar",
+
+  "archivo_datos": "datos_experimentales.csv",
+  "_comentario_archivo": "CSV con datos de una reacción de transesterificación a 60°C, relación molar 6:1",
+
+  "analisis": {
+    "calcular_velocidades": true,
+    "detectar_estacionario": true,
+    "ventana_promedio_movil": 5,
+    "umbral_estacionario": 1.0,
+    "_comentario_umbral": "Desviación estándar móvil menor a este valor indica estado estacionario"
+  },
+
+  "graficas": {
+    "dpi": 300,
+    "formato": "png",
+    "_comentario_graficas": "Configuración de exportación de gráficas"
+  },
+
+  "metadatos_experimento": {
+    "_fuente_datos": "Simulación basada en modelo cinético validado con Kouzu et al. (2008)",
+    "temperatura_operacion_C": 60,
+    "relacion_molar_MeOH_TG": 6.0,
+    "concentracion_inicial_TG_mol_L": 0.250,
+    "concentracion_inicial_MeOH_mol_L": 1.500,
+    "volumen_reactor_mL": 350,
+    "agitacion_rpm": 600,
+    "catalizador": "NaOH",
+    "concentracion_catalizador_wt_pct": 1.0
+  }
+}

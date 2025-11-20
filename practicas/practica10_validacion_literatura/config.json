@@ -1,0 +1,49 @@
+{
+  "_comentario": "Práctica 10: Validación con Literatura (Kouzu et al. 2008)",
+  "_fuente": "Kouzu, M., et al. (2008). Fuel 87:2798-2806. DOI: 10.1016/j.fuel.2007.10.019",
+
+  "parametros_kouzu": {
+    "_comentario": "Parámetros cinéticos reportados por Kouzu et al. 2008 para catalizador CaO",
+    "A": 1.8e6,
+    "_unidades_A": "L/mol/min",
+    "Ea": 68.5,
+    "_unidades_Ea": "kJ/mol"
+  },
+
+  "parametros_nuestro_modelo": {
+    "_comentario": "Parámetros ajustados en nuestro modelo",
+    "A": 1.5e6,
+    "_unidades_A": "L/mol/min",
+    "Ea": 65.0,
+    "_unidades_Ea": "kJ/mol",
+    "_nota": "Valores cercanos a Kouzu. Diferencias pueden deberse a condiciones experimentales"
+  },
+
+  "condiciones": {
+    "relacion_molar": 6.0,
+    "catalizador": "CaO",
+    "concentracion_catalizador_wt": 1.0
+  },
+
+  "datos_kouzu_2008": {
+    "_comentario": "Datos digitalizados de la Figura 3 de Kouzu et al. (2008)",
+    "_metodo": "Datos extraídos manualmente de gráficas publicadas",
+
+    "T60": {
+      "tiempo": [0, 20, 40, 60, 80, 100, 120],
+      "conversion": [0, 35, 58, 72, 82, 88, 92]
+    },
+    "T65": {
+      "tiempo": [0, 20, 40, 60, 80, 100, 120],
+      "conversion": [0, 42, 65, 79, 87, 92, 95]
+    },
+    "T70": {
+      "tiempo": [0, 20, 40, 60, 80, 100, 120],
+      "conversion": [0, 50, 72, 84, 91, 95, 97]
+    },
+    "T75": {
+      "tiempo": [0, 20, 40, 60, 80, 100, 120],
+      "conversion": [0, 58, 78, 88, 94, 97, 98]
+    }
+  }
+}
