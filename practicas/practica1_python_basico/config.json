@@ -1,0 +1,25 @@
+{
+  "masas_molares": {
+    "_comentario": "Fuente: PubChem Database (https://pubchem.ncbi.nlm.nih.gov/)",
+    "TG_tripalmitin": 807.3,
+    "MeOH": 32.04,
+    "FAME_metil_palmitato": 270.5,
+    "GL_glicerol": 92.09
+  },
+  "densidades_25C": {
+    "_comentario": "Fuente: Perry's Chemical Engineers' Handbook, 9th Ed.",
+    "TG_tripalmitin_kg_L": 0.875,
+    "MeOH_kg_L": 0.792,
+    "FAME_metil_palmitato_kg_L": 0.865,
+    "GL_glicerol_kg_L": 1.261
+  },
+  "experimento": {
+    "_comentario": "Datos de ejemplo típicos para biodiésel",
+    "volumen_reactor_mL": 350,
+    "masa_TG_inicial_g": 50.0,
+    "volumen_MeOH_mL": 25.0,
+    "masa_FAME_final_g": 42.3,
+    "temperatura_C": 65,
+    "tiempo_reaccion_min": 120
+  }
+}

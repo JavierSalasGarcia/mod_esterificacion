@@ -1,0 +1,25 @@
+{
+  "experimento": {
+    "_comentario": "Configuración del experimento con perfil de agitación variable",
+    "volumen_reactor_mL": 350,
+    "temperatura_C": 65,
+    "catalizador_pct": 5.0,
+    "perfil_agitacion": {
+      "_comentario": "Perfil de RPM vs tiempo - permite configurar n puntos",
+      "_fuente": "Especificado por usuario - interpolación lineal entre puntos",
+      "tipo": "lineal",
+      "puntos": [
+        {"tiempo_min": 0, "rpm": 300},
+        {"tiempo_min": 30, "rpm": 500},
+        {"tiempo_min": 60, "rpm": 600},
+        {"tiempo_min": 90, "rpm": 500},
+        {"tiempo_min": 120, "rpm": 400}
+      ]
+    }
+  },
+  "procesamiento": {
+    "C_TG_inicial_mol_L": 0.5,
+    "usar_estandar_interno": true,
+    "generar_graficas": true
+  }
+}

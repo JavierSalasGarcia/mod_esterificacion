@@ -43,8 +43,6 @@ Scripts Python listos para ejecutar cada modo de operación:
 - `ejemplo_01_procesar_gc.py`: Procesamiento de datos GC-FID
 - `ejemplo_02_ajustar_parametros.py`: Ajuste de parámetros cinéticos
 - `ejemplo_03_optimizar.py`: Optimización de condiciones
-- `ejemplo_04_simular_hysys.py`: Simulación en ASPEN HYSYS
-- `ejemplo_05_comparar.py`: Comparación de modelos
 - `ejemplo_06_workflow_completo.py`: Flujo completo de análisis
 
 **Instrucciones:**

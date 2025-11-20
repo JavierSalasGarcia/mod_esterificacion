@@ -1,0 +1,36 @@
+{
+  "proyecto": {
+    "nombre": "Optimización de Biodiésel con CaO",
+    "autor": "Estudiante",
+    "fecha": "2025-01-20"
+  },
+  "datos_experimentales": {
+    "experimentos": [
+      {
+        "id": "Exp_55C",
+        "archivo_csv": "datos/exp_55C.csv",
+        "temperatura_C": 55,
+        "perfil_agitacion": {
+          "tipo": "constante",
+          "puntos": [{"tiempo_min": 0, "rpm": 400}]
+        }
+      },
+      {
+        "id": "Exp_65C",
+        "archivo_csv": "datos/exp_65C.csv",
+        "temperatura_C": 65,
+        "perfil_agitacion": {
+          "tipo": "escalonado",
+          "puntos": [
+            {"tiempo_min": 0, "rpm": 300},
+            {"tiempo_min": 60, "rpm": 500}
+          ]
+        }
+      }
+    ]
+  },
+  "workflow": {
+    "pasos": ["procesar_gc", "ajustar_parametros", "optimizar", "generar_reportes"],
+    "output_dir": "resultados_finales/"
+  }
+}

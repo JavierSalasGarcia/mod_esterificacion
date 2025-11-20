@@ -146,42 +146,6 @@ optimization:
     var2: "catalyst_percent"
 
 # ============================================================================
-# CONFIGURACIÓN DE INTEGRACIÓN CON ASPEN HYSYS
-# ============================================================================
-hysys_integration:
-  # Habilitar integración
-  enabled: false  # Cambiar a true si tienes HYSYS instalado
-
-  # Configuración de HYSYS
-  hysys_config:
-    visible: true
-    case_file: null  # null = crear nuevo, o ruta a .hsc existente
-    save_case: true
-    save_path: "results/hysys_cases/"
-
-  # Componentes
-  components:
-    - "Methanol"
-    - "Tripalmitin"      # Usar nombre HYSYS del triglicérido
-    - "MethylPalmitate"  # FAME representativo
-    - "Glycerol"
-
-  # Paquete termodinámico
-  thermodynamic_package: "UNIFAC"  # UNIFAC, NRTL, UNIQUAC
-
-  # Reactor
-  reactor:
-    type: "CSTR"
-    volume_L: 20.0
-    temperature_C: 65.0
-    pressure_kPa: 101.325
-
-  # Conversión de datos (batch a continuo)
-  data_conversion:
-    conversion_factor: "residence_time"
-    residence_time_min: 120
-
-# ============================================================================
 # CONFIGURACIÓN DE VISUALIZACIÓN
 # ============================================================================
 visualization:

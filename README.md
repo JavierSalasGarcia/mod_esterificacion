@@ -4,21 +4,50 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/status-100%25%20completo-brightgreen.svg)]()
 
-**Sistema 100% funcional y completo** de modelado cinético para la producción de biodiésel mediante transesterificación catalizada por CaO, con integración de modelos standalone (Python) y simulación comercial (ASPEN HYSYS).
+**Sistema 100% funcional y completo** de modelado cinético para la producción de biodiésel mediante transesterificación catalizada por CaO, implementado completamente en Python.
 
-**📊 Líneas de código:** 6500+ | **📦 Módulos:** 13 | **📄 Documentación:** 100+ páginas LaTeX
+**Estadisticas: Líneas de código:** 5450+ | **Modulos: Módulos:** 11 | **Documentacion: Documentación:** Completa
 
-## 🎯 Características Principales
+## Caracteristicas: Características Principales
 
 - **Modelos Cinéticos Flexibles**: Implementación de modelos de 1 paso (simplificado) y 3 pasos (mecanístico)
 - **Procesamiento Automatizado de GC-FID**: Cuantificación de FAMEs y cálculo de conversión
 - **Optimización de Variables**: Temperatura, agitación y concentración de catalizador
-- **Integración con ASPEN HYSYS**: Sincronización y validación cruzada mediante COM API
 - **Análisis Comparativo**: Métricas estadísticas (RMSE, MAE, R²) entre modelos
 - **Visualización Avanzada**: Gráficas publication-ready y reportes automatizados
 - **Especificaciones CFD**: Diseño completo para reactor de 20L con Ansys Fluent
 
-## 📦 Módulos Desarrollados
+
+## Prácticas Didácticas
+
+**NUEVO:** Este repositorio incluye **9 prácticas progresivas** diseñadas para estudiantes de química sin conocimientos previos de programación.
+
+**Progresión:** Python básico → Procesamiento de datos → Modelos cinéticos → Optimización → CFD
+
+**Directorio:** `practicas/`
+
+### Contenido de las Prácticas
+
+1. **Práctica 1:** Fundamentos de Python y cálculos químicos básicos
+2. **Práctica 2:** Listas, ciclos y visualización con matplotlib
+3. **Práctica 3:** Procesamiento de datos con Pandas
+4. **Práctica 4:** Ecuación de Arrhenius y resolución de EDOs
+5. **Práctica 5:** Uso del módulo GC Processor del sistema
+6. **Práctica 6:** Ajuste de parámetros cinéticos (lmfit)
+7. **Práctica 7:** Optimización de condiciones de reacción
+8. **Práctica 8:** Workflow completo integrador
+9. **Práctica 9:** Up-scaling (350 mL → 20 L) y preparación para CFD
+
+**Características especiales:**
+- Perfiles de agitación configurables vía JSON (n puntos arbitrarios)
+- Parámetros con fuentes documentadas (PubChem, Perry's, Kouzu 2008)
+- Diseño de reactor 20L con ribbon impeller + serpentín (10 espiras)
+- UDF para Ansys Fluent con cinética ajustada
+- Comparación modelo 0D vs CFD 3D
+
+**Duración total:** 30-40 horas | **Documentación:** [practicas/README.md](practicas/README.md)
+
+## Modulos: Módulos Desarrollados
 
 ### Procesamiento de Datos (600+ líneas)
 - **`gc_processor.py`** (450 líneas): Procesamiento de cromatografía GC-FID
@@ -58,19 +87,6 @@
   - Generación de superficies de respuesta (RSM)
   - Análisis de sensibilidad global
 
-### Integración ASPEN HYSYS (1050+ líneas)
-- **`hysys_connector.py`** (600 líneas): Automatización COM
-  - Creación y configuración de casos HYSYS
-  - Setup de componentes y paquetes termodinámicos (UNIFAC, NRTL)
-  - Configuración de reactores CSTR con cinética Arrhenius
-  - Extracción automática de resultados de simulación
-
-- **`data_sync.py`** (450 líneas): Sincronización de datos
-  - Conversión batch→continuo para HYSYS
-  - Mapeo de condiciones iniciales entre modelos
-  - Validación de consistencia de datos de entrada
-  - Exportación unificada de resultados
-
 ### Comparación y Análisis (400+ líneas)
 - **`comparison.py`** (400 líneas): Métricas estadísticas
   - RMSE, MAE, R², MAPE, Pearson correlation
@@ -93,14 +109,13 @@
   - Reportes resumen automatizados
 
 ### Script Principal (250+ líneas)
-- **`main.py`** (250 líneas): CLI con 5 modos de operación
+- **`main.py`** (250 líneas): CLI con 4 modos de operación
   - `process_gc`: Procesamiento de datos GC-FID
   - `fit_params`: Ajuste de parámetros cinéticos
   - `optimize`: Optimización de condiciones operacionales
-  - `simulate_hysys`: Simulación en ASPEN HYSYS
   - `compare`: Comparación estadística de modelos
 
-## 📁 Estructura del Proyecto
+## Estructura: Estructura del Proyecto
 
 ```
 mod_esterificacion/
@@ -115,9 +130,6 @@ mod_esterificacion/
 │   ├── optimization/             # Optimización
 │   │   ├── optimizer.py          # Optimizador multivariable
 │   │   └── sensitivity.py        # Análisis de sensibilidad
-│   ├── aspen_integration/        # Integración HYSYS
-│   │   ├── hysys_connector.py    # Conector COM
-│   │   └── data_sync.py          # Sincronización de datos
 │   ├── visualization/            # Visualización
 │   │   ├── plotter.py            # Generador de gráficas
 │   │   └── exporter.py           # Exportador de resultados
@@ -143,12 +155,11 @@ mod_esterificacion/
 └── variables_esterificacion_dataset.json  # Datos experimentales
 ```
 
-## 🚀 Instalación
+## Instalacion: Instalación
 
 ### Requisitos Previos
 
 - Python 3.8 o superior
-- ASPEN HYSYS (para módulo de integración, solo Windows)
 - pip (gestor de paquetes de Python)
 
 ### Instalación de Dependencias
@@ -168,7 +179,7 @@ venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 ```
 
-## 📚 Uso
+## Uso: Uso
 
 ### 1. Procesamiento de Datos GC-FID
 
@@ -188,19 +199,13 @@ python main.py --mode fit_params --input variables_esterificacion_dataset.json -
 python main.py --mode optimize --input data/processed/fitted_params.json --output results/
 ```
 
-### 4. Simulación en ASPEN HYSYS
-
-```bash
-python main.py --mode simulate_hysys --input data/processed/input_data.json --output results/
-```
-
-### 5. Comparación de Modelos
+### 4. Comparación de Modelos
 
 ```bash
 python main.py --mode compare --input results/ --output results/comparison/
 ```
 
-## 💻 Uso Programático
+## Codigo: Uso Programático
 
 Además de la CLI, todos los módulos pueden usarse directamente en scripts Python:
 
@@ -290,47 +295,15 @@ print(f"Catalizador óptimo: {optimal['catalyst_%']:.2f}%")
 print(f"Conversión predicha: {optimal['conversion_%']:.2f}%")
 ```
 
-### Integración con ASPEN HYSYS
-
-```python
-from src.aspen_integration.hysys_connector import HYSYSConnector
-
-# Conectar con HYSYS
-connector = HYSYSConnector(visible=True)
-
-# Configurar componentes
-connector.setup_components(['Methanol', 'Tripalmitin', 'MethylPalmitate', 'Glycerol'])
-connector.setup_thermodynamic_package('UNIFAC')
-
-# Crear reactor CSTR
-reactor = connector.create_cstr_reactor(name='Reactor_BD', volume_L=20, T_celsius=65)
-
-# Agregar reacción con cinética Arrhenius
-connector.add_kinetic_reaction(
-    reactor_name='Reactor_BD',
-    stoichiometry={'Tripalmitin': -1, 'Methanol': -3, 'MethylPalmitate': 3, 'Glycerol': 1},
-    kinetic_params={'A': 2.98e10, 'Ea': 51.9, 'orders': {'Tripalmitin': 1, 'Methanol': 1}}
-)
-
-# Ejecutar simulación
-success = connector.run_simulation()
-
-if success:
-    results = connector.get_results()
-    print(f"Conversión HYSYS: {results['conversion_%']:.2f}%")
-
-connector.close(save=False)
-```
-
 ### Comparación de Modelos
 
 ```python
 from src.utils.comparison import ModelComparison
 
-comparator = ModelComparison(model1_name="Standalone", model2_name="HYSYS")
+comparator = ModelComparison(model1_name="Model1", model2_name="Model2")
 
 # Comparar resultados
-metrics_df = comparator.compare_models(results_standalone, results_hysys)
+metrics_df = comparator.compare_models(results_model1, results_model2)
 
 # Ver métricas
 print(comparator.generate_summary())
@@ -360,17 +333,16 @@ plotter.plot_concentration_profiles(results, save_path='results/figures/profiles
 plotter.plot_response_surface(surface_data, save_path='results/figures/response_surface.png')
 ```
 
-## 🔬 Ejemplos Adicionales
+## Ciencia: Ejemplos Adicionales
 
 Ver carpeta `examples/` para notebooks y scripts de ejemplo:
 
 - `example_01_gc_processing.py`: Procesamiento de cromatogramas
 - `example_02_parameter_fitting.py`: Ajuste de parámetros cinéticos
 - `example_03_optimization.py`: Optimización de variables
-- `example_04_hysys_integration.py`: Integración con HYSYS
 - `example_05_complete_workflow.py`: Flujo completo de análisis
 
-## 📊 Modelos Implementados
+## Estadisticas: Modelos Implementados
 
 ### Modelo de 1 Paso (Pseudo-homogéneo de 2º Orden)
 
@@ -394,7 +366,7 @@ MG + MeOH ⇌ GL + FAME
 - **Agitación**: 200-800 rpm
 - **Catalizador CaO**: 1-5% masa
 
-## 📈 Resultados
+## Analisis: Resultados
 
 El sistema genera automáticamente:
 
@@ -402,7 +374,6 @@ El sistema genera automáticamente:
    - Conversión vs Tiempo (experimental vs modelos)
    - Perfiles de concentración de especies
    - Superficies de respuesta 3D
-   - Parity plots (Standalone vs HYSYS)
    - Análisis de sensibilidad (Tornado plots)
 
 2. **Reportes**:
@@ -415,20 +386,7 @@ El sistema genera automáticamente:
    - Intervalos de confianza de parámetros
    - Análisis de residuales
 
-## 🖥️ Integración con ASPEN HYSYS
-
-El sistema se conecta con HYSYS vía COM automation (pywin32):
-
-```python
-from src.aspen_integration import HYSYSConnector
-
-connector = HYSYSConnector(case_file="biodiesel_reactor.hsc")
-connector.set_reactor_params(T=65, V=20, catalyst_mass=3.5)
-connector.run_simulation()
-results = connector.get_results()
-```
-
-## 🌊 Simulación CFD (Reactor 20L)
+## CFD: Simulación CFD (Reactor 20L)
 
 Especificaciones completas en `docs/reactor_cfd_specs.md` (1900+ líneas):
 
@@ -515,7 +473,6 @@ pytest tests/ --cov=src --cov-report=html
 - **numpy**, **scipy**, **pandas**: Cálculos científicos
 - **lmfit**: Ajuste de parámetros
 - **matplotlib**, **plotly**, **seaborn**: Visualización
-- **pywin32**: Integración con ASPEN HYSYS
 - **openpyxl**, **xlsxwriter**: Exportación a Excel
 - **pytest**: Testing
 
@@ -523,26 +480,20 @@ pytest tests/ --cov=src --cov-report=html
 
 Ver `TODO.md` para lista detallada de tareas y progreso del desarrollo.
 
-## ⚠️ Notas Importantes
+## NOTA: Notas Importantes
 
 ### Requisitos del Sistema
 
 1. **Python 3.8+**: Requerido para todas las funcionalidades
-2. **ASPEN HYSYS**:
-   - Solo disponible en **Windows**
-   - Requiere licencia válida de HYSYS
-   - Integración vía pywin32 (COM automation)
-   - Si no tienes HYSYS, el sistema funciona completamente en modo standalone
-3. **Ansys Fluent**:
+2. **Ansys Fluent**:
    - Opcional, solo para simulación CFD
    - Las especificaciones están listas para importar
-4. **Git**: Para clonar el repositorio y control de versiones
+3. **Git**: Para clonar el repositorio y control de versiones
 
 ### Compatibilidad
 
 - **Sistemas Operativos**:
-  - Linux/Mac: Todos los módulos excepto ASPEN HYSYS
-  - Windows: Funcionalidad completa (incluido HYSYS)
+  - Linux/Mac/Windows: Funcionalidad completa
 - **Jupyter Notebooks**: Todos los módulos son compatibles
 - **IDEs**: Probado con VS Code, PyCharm, Spyder
 
@@ -558,17 +509,15 @@ Ver `TODO.md` para lista detallada de tareas y progreso del desarrollo.
 - **Simulaciones standalone**: < 1 segundo por simulación (120 min)
 - **Ajuste de parámetros**: 10-60 segundos (depende de número de experimentos)
 - **Optimización**: 1-5 minutos (100 iteraciones con Differential Evolution)
-- **Simulaciones HYSYS**: 5-30 segundos (depende de complejidad del flowsheet)
 - **CFD en Fluent**: Horas (depende de mallado y criterios de convergencia)
 
 ### Limitaciones Conocidas
 
 - **Modelo 3 pasos**: Requiere más datos experimentales para ajuste robusto
-- **HYSYS COM API**: Puede ser inestable en versiones antiguas de HYSYS
 - **CFD**: Requiere conocimientos avanzados en Ansys Fluent y mallado
 - **Catalizador heterogéneo**: Modelos asumen suspensión ideal (desprecian transferencia de masa externa)
 
-## 🎯 Próximos Pasos Sugeridos
+## Caracteristicas: Próximos Pasos Sugeridos
 
 ### 1. Configuración Inicial
 ```bash
@@ -618,9 +567,6 @@ print("✓ Todos los módulos importados correctamente")
    python main.py --mode optimize --output results/
    ```
 
-4. **Si tienes HYSYS, validar con simulación**:
-   ```bash
-   python main.py --mode simulate_hysys --output results/
    ```
 
 5. **Comparar modelos**:
@@ -654,7 +600,6 @@ El sistema está diseñado para ser **modular y extensible**:
 - **Agregar nuevos componentes**: Modificar `properties.py`
 - **Implementar nuevas cinéticas**: Extender `kinetic_model.py`
 - **Nuevos algoritmos de optimización**: Agregar a `optimizer.py`
-- **Paquetes termodinámicos adicionales**: Configurar en `hysys_connector.py`
 
 ## 🤝 Contribuciones
 
@@ -666,7 +611,7 @@ Las contribuciones son bienvenidas. Por favor:
 4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
 5. Abre un Pull Request
 
-## 📄 Licencia
+## Documentacion: Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
 
@@ -681,7 +626,6 @@ Para preguntas, sugerencias o reportar bugs, por favor abre un Issue en el repos
 ## 🙏 Agradecimientos
 
 - Comunidad de Python científico
-- Desarrolladores de ASPEN HYSYS COM API
 - Investigadores en cinética de biodiésel
 
 ---

@@ -19,8 +19,6 @@ from src.data_processing.data_loader import DataLoader
 from src.models.kinetic_model import KineticModel
 from src.models.parameter_fitting import ParameterFitter
 from src.optimization.optimizer import OperationalOptimizer
-from src.aspen_integration.hysys_connector import HYSYSConnector, check_hysys_availability
-from src.aspen_integration.data_sync import DataSync
 from src.utils.comparison import ModelComparison
 from src.visualization.plotter import ResultsPlotter
 from src.visualization.exporter import ResultsExporter
@@ -115,60 +113,23 @@ def optimize_mode(args):
     print(f"\n✓ Condiciones óptimas guardadas en: {args.output}/optimal_conditions.json")
 
 
-def simulate_hysys_mode(args):
-    """Modo: Simulación en ASPEN HYSYS."""
-    print("=== Modo: Simulación en ASPEN HYSYS ===\n")
-
-    # Verificar disponibilidad
-    available, message = check_hysys_availability()
-    if not available:
-        print(f"ERROR: {message}")
-        print("HYSYS no está disponible. Saliendo...")
-        return
-
-    print(f"{message}\n")
-
-    # Conectar con HYSYS
-    try:
-        connector = HYSYSConnector(visible=True)
-
-        # Configurar componentes
-        connector.setup_components(['Methanol', 'Tripalmitin', 'MethylPalmitate', 'Glycerol'])
-        connector.setup_thermodynamic_package('UNIFAC')
-
-        # Aquí agregarías configuración específica de tu simulación
-
-        # Ejecutar
-        success = connector.run_simulation()
-
-        if success:
-            print("\n✓ Simulación HYSYS completada exitosamente")
-        else:
-            print("\n✗ Simulación HYSYS no convergió")
-
-        connector.close(save=False)
-
-    except Exception as e:
-        print(f"ERROR en simulación HYSYS: {str(e)}")
-
-
 def compare_mode(args):
     """Modo: Comparación de modelos."""
     print("=== Modo: Comparación de Modelos ===\n")
 
-    # Simular modelo standalone
-    model = KineticModel(model_type='1-step', reversible=True, temperature=65)
+    # Simular modelo 1
+    model1 = KineticModel(model_type='1-step', reversible=True, temperature=65)
     C0 = {'TG': 0.5, 'MeOH': 4.5, 'FAME': 0.0, 'GL': 0.0}
 
-    results_standalone = model.simulate(t_span=(0, 120), C0=C0)
+    results_model1 = model1.simulate(t_span=(0, 120), C0=C0)
 
-    # Para este ejemplo, usamos el mismo con ruido como "HYSYS"
-    results_hysys = results_standalone.copy()
-    results_hysys['conversion_%'] += np.random.normal(0, 2, len(results_hysys['conversion_%']))
+    # Para este ejemplo, usamos el mismo con ruido como segundo modelo
+    results_model2 = results_model1.copy()
+    results_model2['conversion_%'] += np.random.normal(0, 2, len(results_model2['conversion_%']))
 
     # Comparar
-    comparator = ModelComparison(model1_name="Standalone", model2_name="HYSYS")
-    metrics_df = comparator.compare_models(results_standalone, results_hysys)
+    comparator = ModelComparison(model1_name="Model1", model2_name="Model2")
+    metrics_df = comparator.compare_models(results_model1, results_model2)
 
     # Imprimir resumen
     print(comparator.generate_summary())
@@ -197,16 +158,13 @@ Ejemplos de uso:
   # Optimización de condiciones
   python main.py --mode optimize --output results/
 
-  # Simulación HYSYS
-  python main.py --mode simulate_hysys --output results/
-
   # Comparación de modelos
   python main.py --mode compare --output results/comparison/
         """
     )
 
     parser.add_argument('--mode',
-                       choices=['process_gc', 'fit_params', 'optimize', 'simulate_hysys', 'compare'],
+                       choices=['process_gc', 'fit_params', 'optimize', 'compare'],
                        required=True,
                        help='Modo de operación')
 
@@ -240,8 +198,6 @@ Ejemplos de uso:
             fit_params_mode(args)
         elif args.mode == 'optimize':
             optimize_mode(args)
-        elif args.mode == 'simulate_hysys':
-            simulate_hysys_mode(args)
         elif args.mode == 'compare':
             compare_mode(args)
 

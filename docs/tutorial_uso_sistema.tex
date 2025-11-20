@@ -130,7 +130,6 @@ El sistema incluye \textbf{13 módulos} (más de 6500 líneas de código) que cu
     \item \textbf{Modelos cinéticos}: 1 paso (simplificado) o 3 pasos (mecanístico)
     \item \textbf{Ajuste de parámetros}: Estimación de energía de activación (Ea) y factor pre-exponencial (A)
     \item \textbf{Optimización}: Búsqueda de condiciones óptimas (T, RPM, \% catalizador)
-    \item \textbf{Integración ASPEN HYSYS}: Validación cruzada con simulador comercial
     \item \textbf{Análisis comparativo}: Métricas estadísticas entre modelos
     \item \textbf{Visualización}: Gráficas profesionales y reportes automatizados
     \item \textbf{Especificaciones CFD}: Diseño completo para reactor 20L (hélice axial, sin baffles, con serpentín)
@@ -148,7 +147,6 @@ El sistema incluye \textbf{13 módulos} (más de 6500 líneas de código) que cu
 
 \textbf{Software opcional}:
 \begin{itemize}
-    \item ASPEN HYSYS (solo Windows, para módulo de integración)
     \item Ansys Fluent (para simulación CFD)
     \item LaTeX (para compilar documentación)
 \end{itemize}
@@ -252,7 +250,6 @@ matplotlib & Visualización 2D \\
 plotly & Visualización interactiva 3D \\
 lmfit & Ajuste de parámetros no lineales \\
 openpyxl & Exportación a Excel \\
-pywin32 & Integración con ASPEN HYSYS (solo Windows) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -432,7 +429,6 @@ cp plantillas/plantilla_config.yaml config.yaml
     \begin{itemize}
         \item \texttt{kinetic\_model}: Tipo de modelo, parámetros iniciales
         \item \texttt{optimization}: Variables a optimizar, algoritmo
-        \item \texttt{hysys\_integration}: Habilitar/deshabilitar HYSYS
         \item \texttt{visualization}: Formatos de gráficas, estilo
     \end{itemize}
 
@@ -762,69 +758,11 @@ Un valor de sensibilidad positivo significa que \textbf{aumentar} esa variable \
 \textbf{Implicación práctica}: Si quieres mejorar conversión, prioriza ajustar temperatura, luego catalizador, luego RPM.
 \end{infobox}
 
-\subsection{Módulo 4: Simulación en ASPEN HYSYS (Opcional)}
-
-\subsubsection{Requisitos Previos}
-
-\begin{warningbox}{Solo Windows}
-Este módulo requiere:
-\begin{itemize}
-    \item Sistema operativo Windows
-    \item ASPEN HYSYS instalado
-    \item Licencia válida de HYSYS
-    \item Biblioteca pywin32 instalada (\texttt{pip install pywin32})
-\end{itemize}
-
-Si no tienes HYSYS, puedes omitir esta sección. El sistema standalone es completamente funcional.
-\end{warningbox}
+\subsection{Módulo 4: Comparación de Modelos}
 
 \subsubsection{Objetivo}
 
-Validar el modelo cinético standalone usando el simulador comercial ASPEN HYSYS.
-
-\subsubsection{Ejecución}
-
-\begin{lstlisting}[style=bashstyle]
-python main.py --mode simulate_hysys \
-    --input results/parameter_fitting/parametros_ajustados.json \
-    --output results/hysys/
-\end{lstlisting}
-
-O usar el script de ejemplo:
-
-\begin{lstlisting}[style=bashstyle]
-cp plantillas/ejemplo_04_simular_hysys.py .
-python ejemplo_04_simular_hysys.py
-\end{lstlisting}
-
-\subsubsection{¿Qué hace el módulo?}
-
-\begin{enumerate}
-    \item Inicia ASPEN HYSYS automáticamente
-    \item Crea un nuevo caso (.hsc)
-    \item Configura componentes: Metanol, Tripalmitin, MethylPalmitate, Glycerol
-    \item Selecciona paquete termodinámico UNIFAC
-    \item Crea reactor CSTR con volumen = 20 L
-    \item Configura cinética Arrhenius con parámetros ajustados
-    \item Convierte datos batch → continuo
-    \item Ejecuta simulación
-    \item Extrae resultados (conversión, composición)
-    \item Guarda caso HYSYS
-    \item Cierra HYSYS
-\end{enumerate}
-
-\subsubsection{Resultados}
-
-\begin{itemize}
-    \item \texttt{results/hysys/resultados\_hysys.json}: Conversión y composición
-    \item \texttt{results/hysys/caso\_biodiesel.hsc}: Caso HYSYS guardado
-\end{itemize}
-
-\subsection{Módulo 5: Comparación de Modelos}
-
-\subsubsection{Objetivo}
-
-Comparar estadísticamente los resultados del modelo standalone vs ASPEN HYSYS.
+Comparar estadísticamente los resultados entre diferentes modelos o configuraciones.
 
 \subsubsection{Métricas Calculadas}
 
@@ -862,7 +800,7 @@ Pearson r & > 0.95 & Correlación lineal fuerte \\
 \end{table}
 
 \begin{successbox}{Validación Exitosa}
-Si R$^2 > 0.95$ y MAPE < 5\%, tu modelo standalone está validado exitosamente contra HYSYS. Puedes confiar en los resultados del modelo para predicciones y optimización.
+Si R$^2 > 0.95$ y MAPE < 5\%, tu modelo muestra excelente precisión. Puedes confiar en los resultados del modelo para predicciones y optimización.
 \end{successbox}
 
 %==============================================================================
@@ -924,11 +862,9 @@ Visualización 3D de cómo la conversión varía con dos variables (ej. T vs \% 
     \item Identificar región óptima de operación
 \end{itemize}
 
-\subsubsection{Parity Plot (Standalone vs HYSYS)}
 
 \textbf{Ubicación}: \texttt{results/comparison/parity\_plot.png}
 
-Gráfica de valores predichos por standalone vs HYSYS.
 
 \textbf{Interpretación}:
 \begin{itemize}
@@ -1104,7 +1040,6 @@ pip install -r requirements.txt
 
 \textbf{Causa}: pywin32 solo funciona en Windows.
 
-\textbf{Solución}: Es normal. El módulo de HYSYS simplemente no estará disponible. El resto del sistema funciona perfectamente.
 
 \subsection{Errores de Datos}
 
@@ -1163,32 +1098,23 @@ pip install -r requirements.txt
     \item Ajustar límites de optimización (pueden ser muy estrechos)
 \end{enumerate}
 
-\subsection{Errores de ASPEN HYSYS}
 
-\subsubsection{Error: "HYSYS.Application not found"}
 
-\textbf{Causa}: HYSYS no está instalado o no registrado en COM.
 
 \textbf{Solución}:
 \begin{enumerate}
-    \item Verificar que HYSYS esté instalado
-    \item Ejecutar HYSYS manualmente al menos una vez
-    \item Re-registrar COM: ejecutar HYSYS como administrador
 \end{enumerate}
 
-\subsubsection{Error: "Access denied" al conectar con HYSYS}
 
 \textbf{Causa}: Permisos insuficientes.
 
 \textbf{Solución}: Ejecutar Python/script como administrador.
 
-\subsubsection{Simulación HYSYS no converge}
 
 \textbf{Causa}: Condiciones termodinámicas inválidas o parámetros extremos.
 
 \textbf{Solución}:
 \begin{enumerate}
-    \item Verificar propiedades de componentes en HYSYS
     \item Revisar paquete termodinámico (UNIFAC es apropiado para biodiésel)
     \item Simplificar modelo (usar reacción más simple)
     \item Revisar conversión batch→continuo en \texttt{data\_sync.py}
@@ -1246,7 +1172,6 @@ Activar entorno virtual (Windows) & \texttt{venv\textbackslash Scripts\textbacks
 Procesar datos GC & \texttt{python main.py --mode process\_gc --input data/raw/exp.csv} \\
 Ajustar parámetros & \texttt{python main.py --mode fit\_params --input exp.json} \\
 Optimizar condiciones & \texttt{python main.py --mode optimize --output results/} \\
-Simular en HYSYS & \texttt{python main.py --mode simulate\_hysys} \\
 Comparar modelos & \texttt{python main.py --mode compare} \\
 Workflow completo & \texttt{python ejemplo\_06\_workflow\_completo.py} \\
 \bottomrule
@@ -1265,7 +1190,6 @@ mod_esterificacion/
 │   ├── data_processing/      # Módulos de procesamiento
 │   ├── models/               # Modelos cinéticos
 │   ├── optimization/         # Optimización
-│   ├── aspen_integration/    # Integración HYSYS
 │   ├── visualization/        # Gráficas
 │   └── utils/                # Utilidades
 ├── results/                  # Resultados generados
@@ -1296,7 +1220,6 @@ mod_esterificacion/
     \item[MG] Monoglicéridos - Intermediario de reacción
     \item[GL] Glicerol - Subproducto de reacción
     \item[GC-FID] Gas Chromatography - Flame Ionization Detector (Cromatografía de Gases con Detector de Ionización de Llama)
-    \item[HYSYS] Software de simulación de procesos de Aspen Technology
     \item[CFD] Computational Fluid Dynamics (Dinámica de Fluidos Computacional)
     \item[Ea] Energía de activación (kJ/mol)
     \item[A] Factor pre-exponencial de Arrhenius (min$^{-1}$)

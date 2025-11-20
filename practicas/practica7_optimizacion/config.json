@@ -1,0 +1,26 @@
+{
+  "optimizacion": {
+    "objetivo": "maximize_conversion",
+    "tiempo_reaccion_min": 120,
+    "bounds": {
+      "temperatura_C": [50, 80],
+      "rpm_promedio": [200, 800],
+      "catalizador_pct": [1, 10]
+    },
+    "perfil_agitacion_base": {
+      "_comentario": "RPM se ajustará proporcionalmente al rpm_promedio optimizado",
+      "tipo": "lineal",
+      "puntos_relativos": [
+        {"tiempo_min": 0, "factor": 0.7},
+        {"tiempo_min": 60, "factor": 1.2},
+        {"tiempo_min": 120, "factor": 0.9}
+      ]
+    }
+  },
+  "C0": {
+    "TG": 0.5,
+    "MeOH": 4.5,
+    "FAME": 0.0,
+    "GL": 0.0
+  }
+}
