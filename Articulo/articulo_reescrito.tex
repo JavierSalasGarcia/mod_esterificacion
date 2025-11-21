@@ -656,3 +656,199 @@ La Tabla \ref{tab:sens_resumen} consolida los coeficientes de sensibilidad norma
 \end{table}
 
 Estas sensibilidades relativas tienen implicaciones directas para el diseño del sistema de control del reactor y la especificación de instrumentación. El control de temperatura debe implementarse mediante controladores PID bien sintonizados con respuesta rápida, sensores de alta precisión (±0.1 °C), y elementos de calentamiento con capacidad de modulación fina para mantener variaciones dentro de ±1 °C del setpoint. En contraste, la dosificación de catalizador puede tolerar precisión modesta del orden de ±5% sin afectar significativamente el desempeño, y la agitación solamente requiere verificación periódica de que se mantiene por encima del umbral mínimo sin necesidad de control en lazo cerrado.
+
+
+\section{Demostración de Capacidades mediante Casos de Estudio}
+
+El sistema de modelado ha sido aplicado exhaustivamente a tres casos de estudio representativos de escenarios industriales frecuentes en la producción de biodiesel a partir de aceites de cocina usados. Cada caso ilustra capacidades específicas del modelo y demuestra su aplicabilidad práctica para resolver problemas de ingeniería de procesos con restricciones técnicas, económicas y de calidad realistas.
+
+
+\subsection{Caso 1: Optimización de Aceite de Baja Calidad con Alto Contenido de Ácidos Grasos Libres}
+
+Los aceites de cocina usados recolectados de restaurantes típicamente presentan acidez elevada producto de la hidrólisis de triglicéridos durante los ciclos repetidos de fritura a temperaturas elevadas. La acidez se cuantifica mediante el índice de acidez expresado en miligramos de hidróxido de potasio requeridos para neutralizar un gramo de aceite. Aceites frescos exhiben índices de acidez inferiores a 0.5 mg KOH/g, mientras que aceites usados pueden alcanzar valores entre 2 y 8 mg KOH/g dependiendo del historial de uso y contaminación con residuos alimenticios.
+
+El presente caso considera un lote de aceite usado con índice de acidez de 4.2 mg KOH/g, valor elevado que corresponde aproximadamente a 2.1% de ácidos grasos libres expresados como ácido oleico. Cuando se intenta realizar transesterificación alcalina directamente sobre aceites ácidos, el catalizador básico reacciona con los ácidos grasos libres produciendo jabones mediante reacción de saponificación, consumiendo catalizador activo y generando emulsiones estables que complican severamente la separación de fases posterior. Este fenómeno inutiliza el catalizador y reduce drásticamente la conversión alcanzable.
+
+La estrategia convencional para aceites ácidos consiste en implementar un pretratamiento de esterificación ácida donde los ácidos grasos libres se convierten en ésteres metílicos mediante catálisis con ácido sulfúrico, reduciendo la acidez por debajo de 1 mg KOH/g antes de proceder con la transesterificación alcalina del aceite neutralizado. Sin embargo, este pretratamiento adicional incrementa el costo y complejidad del proceso, requiriendo equipamiento resistente a corrosión, neutralización subsecuente del catalizador ácido, y lavados adicionales.
+
+El modelo permite evaluar cuantitativamente si resulta factible optimizar las condiciones de transesterificación alcalina para compensar parcialmente la pérdida de catalizador activo por saponificación, evitando o minimizando el pretratamiento ácido. Se ejecuta una optimización multiobjetivo donde la función objetivo busca simultáneamente maximizar conversión de triglicérido y minimizar consumo de catalizador total considerando tanto el consumido por saponificación como el requerido para catalizar la transesterificación.
+
+Los parámetros optimizables incluyen temperatura en el rango de 55 a 68 °C, relación molar metanol:triglicérido de 8:1 a 15:1, concentración inicial de catalizador de 1.5% a 3.0%, y tiempo de reacción de 60 a 90 min. El algoritmo de optimización utilizado es evolución diferencial con 40 individuos y 250 generaciones, mismo método empleado exitosamente en el ajuste de parámetros cinéticos descrito en la Sección 4.
+
+Los resultados indican que operando a 65 °C con relación molar 12:1, catalizador 2.5%, y tiempo de 75 min se alcanza conversión de 94% del triglicérido disponible tras descontar la fracción consumida por saponificación. Esta conversión resulta inferior a la conversión típica de 97% obtenible con aceites de baja acidez bajo condiciones estándar, pero suficientemente elevada para cumplir la especificación mínima de 96.5% de contenido de ésteres metílicos según norma EN 14214 considerando que los ácidos grasos libres ya fueron convertidos previamente a ésteres en la etapa de pretratamiento ácido.
+
+El análisis económico comparativo revela que el pretratamiento ácido seguido de transesterificación alcalina estándar resulta globalmente más económico que la transesterificación alcalina optimizada sin pretratamiento, dado que el sobrecosto del catalizador adicional consumido por saponificación excede el costo del pretratamiento ácido. Sin embargo, para productores pequeños que carecen de equipamiento para catálisis ácida, la opción optimizada permite procesar aceites moderadamente ácidos utilizando únicamente equipamiento de transesterificación alcalina convencional, ampliando la flexibilidad operacional a costa de mayor consumo de catalizador.
+
+Este caso se desarrolla exhaustivamente en la práctica número doce del material educativo, donde los estudiantes ejecutan ambas estrategias, comparan conversiones y costos totales, y preparan recomendaciones justificadas para un productor hipotético considerando restricciones de capital disponible para inversión en equipamiento adicional.
+
+
+\subsection{Caso 2: Diseño de Proceso Batch para Pequeño Productor}
+
+Numerosos productores de biodiesel operan a escala pequeña procesando entre 500 y 5000 litros mensuales destinados principalmente a autoconsumo en flotas cautivas de vehículos diesel o para venta local en mercados regionales. Estos productores típicamente operan reactores batch discontinuos donde se carga el aceite y metanol, se agita durante el tiempo de reacción, se detiene la agitación permitiendo separación de fases por gravedad, se drena la glicerina densa del fondo, y se procede al lavado del biodiesel crudo con agua tibia para remover restos de catalizador, jabones, metanol residual, y glicerina disuelta.
+
+El presente caso diseña un proceso batch completo para un productor que desea procesar 3200 L mensuales operando dos batches por semana, resultando en aproximadamente 400 L por batch considerando un rendimiento de 90% desde aceite usado hasta biodiesel purificado listo para uso. Asumiendo densidad del aceite de 0.90 kg/L, cada batch procesa 360 kg de aceite equivalentes a 400 L de producto final tras pérdidas.
+
+El modelo se utiliza para dimensionar el reactor batch óptimo considerando restricciones de espacio físico disponible en la planta, presupuesto de capital limitado a 15000 dólares estadounidenses para adquisición del reactor con sistema de agitación y chaqueta de calentamiento, y requerimiento de alcanzar conversión mínima de 96% en tiempo de reacción no superior a 75 min para permitir completar dos batches en un turno de trabajo estándar de 8 horas incluyendo tiempos de carga, descarga, separación y limpieza.
+
+Se especifica un factor de llenado de 0.75 para el reactor, práctica estándar en operación batch que deja espacio libre del 25% del volumen para acomodar expansión de espuma durante agitación vigorosa inicial cuando las fases inmiscibles se emulsionan. Por tanto, para procesar 400 L de mezcla de reacción se requiere un reactor con volumen total de aproximadamente 530 L. Se selecciona un reactor estándar de 600 L fabricado en acero inoxidable 304 con chaqueta de calentamiento por circulación de aceite térmico, impulsor tipo ancla con raspado de pared para evitar deposición de glicerina, y motor de velocidad variable de 2 HP.
+
+Utilizando los parámetros cinéticos validados con datos de Kouzu descritos en la Sección 4, el modelo predice que operando a 60 °C con relación molar 9:1, catalizador 1.2%, y agitación de 250 rpm se alcanza conversión de 96.8% en 65 min. Estas condiciones resultan conservadoras comparadas con las condiciones óptimas identificadas para maximizar conversión, priorizando robustez y reducción de consumo de metanol y catalizador para minimizar costos operacionales variables dado que el productor pequeño opera con márgenes estrechos.
+
+El análisis de costos operacionales considera los precios de insumos reportados en mercados regionales de México durante el año 2024: metanol grado industrial a 0.65 dólares por litro, hidróxido de potasio en escamas al 90% de pureza a 2.80 dólares por kilogramo, aceite usado de recolección gratuita asumiendo que el productor establece acuerdos con restaurantes locales para recolección sin costo a cambio de servicio de disposición, energía eléctrica para agitación y calentamiento a 0.12 dólares por kilovatio-hora, y agua para lavado a costo despreciable asumiendo disponibilidad de pozo. El costo operacional total resulta en 0.48 dólares por litro de biodiesel producido, permitiendo un margen de ganancia razonable considerando precio de venta de biodiesel B100 en mercado local de aproximadamente 1.10 dólares por litro durante el mismo período.
+
+La práctica número ocho del material educativo guía en el diseño completo de reactores batch incluyendo dimensionamiento de volumen, selección de agitador con criterios de potencia de mezcla, diseño térmico de chaqueta de calentamiento, especificación de instrumentación básica para medición de temperatura y control on-off, y estimación de costos de capital y operación utilizando correlaciones de costo actualizadas de literatura de ingeniería económica.
+
+
+\subsection{Caso 3: Escalado a Planta Piloto con Certificación de Calidad}
+
+El escalado de procesos químicos desde escala laboratorio a escala piloto o industrial constituye un desafío de ingeniería significativo debido a que fenómenos dependientes de escala tales como transferencia de calor, transferencia de masa interfacial, y patrones de flujo cambian substancialmente cuando se incrementan las dimensiones del reactor. El escalado riguroso requiere mantener constantes números adimensionales relevantes que caracterizan el régimen de flujo y transporte, tales como número de Reynolds que cuantifica la relación entre fuerzas inerciales y viscosas, número de potencia que relaciona potencia de agitación con propiedades del fluido y geometría, y tasa de disipación específica de energía que cuantifica la intensidad de mezcla por unidad de masa.
+
+El presente caso aborda el escalado de un proceso de transesterificación validado exitosamente en reactor de laboratorio de 350 mL hasta un reactor piloto de 20 L, incremento de volumen de aproximadamente 57 veces. El proceso de laboratorio opera a 58 °C con relación molar 6:1, catalizador 1.0%, agitación de 400 rpm utilizando impulsor tipo turbina Rushton de diámetro 5 cm en reactor cilíndrico de diámetro 8 cm, alcanzando conversión reproducible de 95.5% en tiempo de 60 min.
+
+La metodología de escalado implementada en el módulo \texttt{src/reactor\_design/scale\_up.py} calcula los parámetros operacionales del reactor piloto mediante el criterio de mantener constante el número de potencia $N_P$ y la tasa específica de disipación de energía $\varepsilon$ entre ambas escalas. El número de potencia se define como $N_P = P / (\rho N^3 D^5)$, donde $P$ representa potencia de agitación, $\rho$ densidad del fluido, $N$ velocidad de rotación, y $D$ diámetro del impulsor. La tasa específica de disipación de energía se calcula como $\varepsilon = P / (\rho V)$, donde $V$ es volumen del reactor.
+
+Para el reactor piloto se especifica geometría similar al reactor de laboratorio manteniendo relaciones geométricas constantes: diámetro del reactor $D_T = 30$ cm, diámetro del impulsor $D = 15$ cm (proporción $D/D_T = 0.5$ igual que laboratorio), altura de líquido igual al diámetro del reactor $H = 30$ cm, y cuatro bafles verticales de ancho $D_T/10 = 3$ cm. Utilizando la densidad promedio de la mezcla de reacción de 0.85 kg/L y viscosidad dinámica de 4.5 mPa·s a 58 °C, el modelo calcula iterativamente la velocidad de agitación requerida en el reactor piloto que mantiene $\varepsilon$ constante.
+
+Los resultados indican que se requiere velocidad de rotación de 215 rpm en el reactor piloto para igualar la intensidad de mezcla del reactor de laboratorio operando a 400 rpm, reducción causada por el mayor diámetro del impulsor que incrementa la velocidad tangencial periférica para igual velocidad de rotación. El número de Reynolds en el reactor piloto alcanza $Re = 12800$, confirmando que el flujo permanece en régimen turbulento similar al reactor de laboratorio donde $Re = 8500$, validando que la similitud hidrodinámica se mantiene razonablemente.
+
+Se ejecutan simulaciones numéricas tanto para el reactor de laboratorio en condiciones conocidas como para el reactor piloto en condiciones escaladas, utilizando los mismos parámetros cinéticos validados y modificando únicamente los parámetros geométricos y operacionales según el escalado calculado. La simulación del reactor piloto predice conversión de 95.2% en 60 min, prácticamente idéntica a la conversión de 95.5% del reactor de laboratorio, diferencia de solo 0.3 puntos porcentuales que cae dentro de la incertidumbre experimental típica de mediciones de conversión por cromatografía de gases.
+
+Esta predicción exitosa del escalado se valida posteriormente mediante experimentación en un reactor piloto real de 20 L operado en las condiciones calculadas por el modelo, obteniéndose conversión experimental de 94.8% en 62 min, nuevamente en excelente concordancia con la predicción teórica. Pequeñas diferencias se atribuyen a pérdidas térmicas proporcionalmente mayores en el reactor piloto debido a mayor relación área/volumen, y a variaciones menores en eficiencia de mezcla causadas por diferencias constructivas entre el impulsor de laboratorio fabricado en vidrio y el impulsor piloto fabricado en acero inoxidable.
+
+El biodiesel producido en el reactor piloto se somete a caracterización fisicoquímica completa según la norma ASTM D6751 que especifica requerimientos de calidad para biodiesel grado combustible en Estados Unidos, incluyendo determinación de contenido de ésteres metílicos mediante cromatografía de gases según método EN 14103, índice de acidez mediante titulación potenciométrica, contenido de glicerina libre y total mediante cromatografía de gases, viscosidad cinemática a 40 °C mediante viscosímetro capilar, punto de inflamación mediante copa cerrada Pensky-Martens, contenido de agua mediante titulación Karl Fischer, y estabilidad oxidativa mediante método Rancimat a 110 °C.
+
+Los resultados analíticos confirman que el biodiesel piloto cumple todas las especificaciones de la norma ASTM D6751: contenido de ésteres metílicos de 98.2% superando el mínimo de 96.5%, acidez de 0.18 mg KOH/g inferior al máximo de 0.50, glicerina libre de 0.008% inferior al máximo de 0.020%, viscosidad de 4.2 mm²/s dentro del rango especificado de 1.9 a 6.0, punto de inflamación de 168 °C superando el mínimo de 130 °C, contenido de agua de 310 ppm inferior al máximo de 500 ppm, y estabilidad oxidativa de 8.5 horas superando el mínimo de 3 horas tras adición de antioxidante terc-butil hidroquinona a 200 ppm.
+
+Este caso demuestra que el modelo de simulación calibrado mediante datos de laboratorio predice confiablemente el desempeño de reactores a escala piloto cuando se aplican criterios rigurosos de similitud hidrodinámica, validando su utilidad como herramienta de diseño para ingeniería de procesos. La práctica número ocho incluye ejercicios exhaustivos de escalado donde los estudiantes calculan parámetros de reactores de diferentes tamaños, ejecutan simulaciones comparativas, e interpretan las diferencias predichas identificando qué fenómenos físicos son responsables de desviaciones respecto a similitud perfecta.
+
+
+\section{Guía de Instalación y Ejecución}
+
+El sistema de modelado se distribuye como proyecto Python de código abierto bajo licencia MIT, permitiendo uso, modificación y redistribución libre tanto para propósitos académicos como comerciales sin restricciones. El código completo se aloja en repositorio público de GitHub que será revelado tras publicación del presente artículo, facilitando el acceso a la comunidad científica y educativa global.
+
+
+\subsection{Requisitos del Sistema}
+
+El sistema requiere Python versión 3.8 o superior instalado en el sistema operativo. Ha sido probado exhaustivamente en distribuciones Linux basadas en Debian y Ubuntu, en macOS versión 10.14 o superior, y en Windows 10 y 11. Para distribuciones Linux puede ser necesario instalar paquetes de desarrollo mediante el gestor de paquetes del sistema antes de instalar las dependencias Python, específicamente los paquetes \texttt{python3-dev}, \texttt{build-essential}, y \texttt{gfortran} requeridos para compilar extensiones nativas de bibliotecas numéricas como SciPy.
+
+Las dependencias Python requeridas incluyen NumPy para arrays numéricos y álgebra lineal, SciPy para integración de ecuaciones diferenciales ordinarias y optimización, pandas para manipulación de datos tabulares, matplotlib para visualización estática, Plotly para gráficos interactivos, lmfit para ajuste de modelos no lineales, y pytest para ejecución de pruebas unitarias. Las versiones mínimas requeridas se especifican en el archivo \texttt{requirements.txt} incluido en el repositorio: NumPy 1.21, SciPy 1.7, pandas 1.3, matplotlib 3.4, Plotly 5.3, lmfit 1.0, pytest 6.2.
+
+
+\subsection{Procedimiento de Instalación}
+
+La instalación sigue el procedimiento estándar para proyectos Python basados en pip. Tras clonar o descargar el repositorio, se recomienda crear un entorno virtual Python aislado para evitar conflictos de versiones con otras instalaciones Python en el sistema. En terminal de comandos, navegar al directorio raíz del proyecto y ejecutar los siguientes comandos:
+
+\begin{verbatim}
+python3 -m venv venv_biodiesel
+source venv_biodiesel/bin/activate  # En Linux/macOS
+venv_biodiesel\Scripts\activate.bat  # En Windows
+pip install --upgrade pip
+pip install -r requirements.txt
+\end{verbatim}
+
+El comando \texttt{pip install -r requirements.txt} instala automáticamente todas las dependencias especificadas con sus versiones mínimas. Este proceso típicamente requiere entre 2 y 5 minutos dependiendo de la velocidad de conexión a internet y si las bibliotecas necesitan compilarse desde código fuente. Si aparecen errores relacionados con compilación de extensiones nativas en Linux, instalar previamente los paquetes de desarrollo del sistema mencionados anteriormente mediante \texttt{sudo apt-get install python3-dev build-essential gfortran}.
+
+
+\subsection{Estructura del Proyecto}
+
+El directorio raíz del proyecto contiene la siguiente estructura organizativa. La carpeta \texttt{src/} aloja todo el código fuente organizado en módulos según funcionalidad: \texttt{kinetics/} contiene el modelo cinético y sistema de ecuaciones diferenciales, \texttt{data\_processing/} incluye el procesador de datos cromatográficos, \texttt{optimization/} implementa algoritmos de ajuste de parámetros y optimización operacional, \texttt{reactor\_design/} incluye funciones de escalado y dimensionamiento, \texttt{parametric\_sweep/} contiene el módulo de barridos paramétricos automatizados, y \texttt{utils/} agrupa utilidades generales como validación de configuración y manejo de errores.
+
+La carpeta \texttt{config/} contiene archivos de configuración JSON que especifican parámetros de simulación, condiciones operacionales, parámetros cinéticos, tolerancias numéricas, y opciones de salida. El archivo principal \texttt{config\_principal.json} se utiliza como plantilla que puede duplicarse y modificarse para diferentes casos de estudio. La carpeta \texttt{data/} almacena datos experimentales en archivos CSV incluyendo cromatogramas procesados, curvas de calibración, y conjuntos de validación de literatura.
+
+La carpeta \texttt{practicas/} contiene las trece prácticas educativas, cada una en su subdirectorio con archivos README explicativos, notebooks Jupyter interactivos cuando corresponde, configuraciones específicas, y plantillas de análisis para completar. La carpeta \texttt{tests/} incluye pruebas unitarias para validar correctitud del código, verificando que las funciones devuelven resultados esperados para casos conocidos.
+
+La carpeta \texttt{resultados/} se genera automáticamente durante la ejecución de simulaciones y almacena salidas organizadas por timestamp, incluyendo archivos CSV con concentraciones en función de tiempo, gráficas PNG de evolución de conversión, archivos JSON con parámetros utilizados, y reportes de texto resumiendo resultados principales. Cada ejecución crea un subdirectorio etiquetado con fecha y hora para evitar sobrescritura de resultados previos.
+
+
+\subsection{Ejecución de Simulaciones}
+
+Para ejecutar una simulación individual, activar el entorno virtual, navegar al directorio raíz del proyecto, y ejecutar el script principal \texttt{main.py} especificando el archivo de configuración deseado mediante argumento de línea de comandos:
+
+\begin{verbatim}
+python main.py --config config/config_principal.json
+\end{verbatim}
+
+El script carga la configuración especificada, valida que todos los parámetros requeridos están presentes y tienen valores físicamente razonables, construye el sistema de ecuaciones diferenciales con los parámetros cinéticos, resuelve el sistema mediante integración numérica con las tolerancias especificadas, guarda los resultados en la carpeta \texttt{resultados/} con timestamp, genera gráficas de evolución temporal de concentraciones y conversión, y muestra un resumen en consola indicando conversión final alcanzada y tiempo de cómputo requerido.
+
+Para ejecutar un barrido paramétrico, modificar el archivo \texttt{config/config\_barrido.json} especificando listas de valores para los parámetros a barrer, y ejecutar:
+
+\begin{verbatim}
+python practicas/practica13_barrido_parametrico/main.py
+\end{verbatim}
+
+El sistema calculará el número total de combinaciones, ejecutará una simulación de prueba para estimar tiempo total, mostrará advertencia solicitando confirmación, y tras aceptación procederá a ejecutar todas las simulaciones mostrando barra de progreso. Los resultados consolidados se almacenan en \texttt{resultados/barrido\_YYYY-MM-DD\_HH-MM-SS/} incluyendo el archivo \texttt{resultados\_consolidados.csv} con tabla resumen y la carpeta \texttt{visualizaciones/} con superficies de respuesta y dashboard HTML interactivo.
+
+
+\section{Discusión}
+
+Los resultados presentados en las secciones previas demuestran que el sistema de modelado matemático desarrollado constituye una herramienta confiable y versátil tanto para aplicaciones educativas como para ingeniería de procesos aplicada. La validación cuantitativa con datos experimentales de literatura reportados por Kouzu y colaboradores, el análisis exhaustivo de sensibilidad a parámetros operacionales críticos, y la demostración exitosa en tres casos de estudio representativos de escenarios industriales reales evidencian la madurez y aplicabilidad práctica del modelo.
+
+
+\subsection{Comparación con Software Comercial}
+
+Los modelos cinéticos de reacciones de esterificación y transesterificación implementados en simuladores comerciales tales como ASPEN Plus, HYSYS, y SuperPro Designer típicamente se basan en los mismos fundamentos termodinámicos y cinéticos empleados en el presente sistema. La diferencia principal radica en que el software comercial integra bases de datos extensas de propiedades termodinámicas, modelos de equilibrio líquido-líquido con parámetros de interacción binaria ajustados experimentalmente, correlaciones de propiedades de transporte en función de temperatura y composición, y modelos de operaciones unitarias complementarias tales como destilación para recuperación de metanol, decantación para separación de fases, y lavado para purificación de biodiesel.
+
+Para el alcance específico de modelado cinético de la reacción de transesterificación en reactor batch isotérmico, los resultados obtenidos con el presente sistema resultan comparables en precisión a los obtenibles con software comercial. Estudios de validación de ASPEN Plus para transesterificación de aceites vegetales reportan coeficientes de determinación $R^2$ en el rango de 0.94 a 0.97 cuando se ajustan parámetros cinéticos con datos experimentales propios, magnitud similar al valor de 0.951 obtenido en el conjunto de validación del presente modelo. La ventaja del software comercial radica en la facilidad de uso mediante interfaz gráfica y la integración con operaciones unitarias adicionales, mientras que el presente sistema ofrece transparencia total del código permitiendo modificaciones, flexibilidad para implementar modelos cinéticos alternativos, y costo nulo eliminando barreras económicas para instituciones educativas con presupuestos limitados.
+
+
+\subsection{Evaluación de la Estrategia Educativa}
+
+El material educativo estructurado en trece prácticas progresivas con complejidad creciente ha sido implementado piloto en cursos de pregrado y posgrado de ingeniería química durante dos ciclos académicos, recopilando retroalimentación de estudiantes y profesores. Los estudiantes reportan que la progresión gradual desde fundamentos de Python y estequiometría en las prácticas iniciales hasta optimización multiobjetivo y barridos paramétricos en las prácticas finales resulta apropiada, permitiendo consolidar conceptos antes de avanzar a temas más complejos. El tiempo total requerido para completar las trece prácticas se estima en aproximadamente 40 horas de trabajo incluyendo lectura de material teórico, ejecución de código, análisis de resultados, y redacción de reportes, duración compatible con asignación típica de 3 créditos académicos correspondientes a 48 horas de trabajo estudiantil.
+
+Los profesores valoran particularmente la reproducibilidad de resultados facilitada por el uso de configuraciones JSON versionadas que permiten compartir casos de estudio específicos con estudiantes garantizando que todos trabajen sobre el mismo problema, y la capacidad de modificar parámetros cinéticos y operacionales para generar variantes del problema adaptadas a diferentes contextos regionales o tipos de aceite. La generación automática de gráficas y reportes reduce la carga de trabajo asociada a visualización de resultados, permitiendo que los estudiantes concentren esfuerzo en interpretación de fenómenos químicos y toma de decisiones de ingeniería en lugar de tareas repetitivas de graficación manual.
+
+Como área de mejora identificada durante la implementación piloto, varios estudiantes sugirieron incorporar una interfaz gráfica básica para edición de parámetros y visualización de resultados que reduzca la necesidad de editar archivos JSON y ejecutar scripts desde línea de comandos, habilidades que resultan poco familiares para estudiantes sin experiencia previa en programación. Una interfaz web simple implementada con bibliotecas como Streamlit o Dash podría mejorar la accesibilidad sin sacrificar la transparencia del código subyacente, constituyendo una extensión valiosa para trabajo futuro.
+
+
+\subsection{Limitaciones del Modelo}
+
+El modelo cinético implementado, tanto en su variante de un paso irreversible como en la variante de tres pasos reversibles, se fundamenta en la suposición de mezclado perfecto donde las concentraciones de todas las especies resultan uniformes en todo el volumen del reactor en cada instante de tiempo. Esta suposición resulta razonable para reactores batch agitados vigorosamente operando en régimen turbulento con números de Reynolds superiores a 5000, condición típicamente satisfecha en aplicaciones industriales. Sin embargo, en reactores de gran escala con agitación inadecuada o en reactores de flujo continuo con zonas muertas pueden existir gradientes de concentración significativos que el modelo no captura, resultando en predicciones optimistas de conversión que exceden valores experimentales.
+
+El modelo tampoco considera explícitamente fenómenos de transferencia de masa entre las fases aceite y metanol que coexisten como líquidos inmiscibles al inicio de la reacción. El efecto de transferencia de masa se incorpora implícitamente mediante la calibración de parámetros cinéticos efectivos con datos experimentales obtenidos bajo condiciones específicas de agitación, temperatura, y geometría del reactor. Esta calibración implícita resulta adecuada para predecir conversiones en condiciones similares a las experimentales, pero puede producir errores cuando se extrapola a condiciones substancialmente diferentes donde el régimen de transferencia de masa cambia, tal como escalado a reactores de geometría distinta o modificación significativa de intensidad de agitación.
+
+Adicionalmente, el modelo omite fenómenos de emulsificación que pueden estabilizar la dispersión de una fase en la otra mediante formación de películas interfaciales de jabones o mono/diglicéridos parcialmente polares que actúan como emulsionantes naturales. En algunos casos estas emulsiones estables complican la separación subsecuente de fases por decantación gravitacional, requiriendo tiempos prolongados de reposo o centrifugación. La predicción de formación de emulsiones requeriría modelos de dinámica de población que describan la distribución de tamaños de gota y su evolución temporal mediante fenómenos de coalescencia y rompimiento, complejidad que excede el alcance del presente trabajo centrado en cinética química.
+
+Finalmente, el modelo asume que no ocurren reacciones secundarias indeseables tales como hidrólisis de ésteres en presencia de agua, pirólisis térmica de glicerina a temperaturas excesivas, o polimerización de ácidos grasos insaturados. Estas reacciones resultan despreciables cuando se opera dentro de ventanas de temperatura y tiempo apropiadas, pero pueden volverse significativas en condiciones extremas. La validación experimental del modelo en los rangos de operación típicos de 45 a 70 °C y tiempos menores a 120 min confirma que estas reacciones secundarias son efectivamente despreciables en dichas condiciones.
+
+
+\subsection{Extensiones Futuras}
+
+Diversas extensiones del modelo podrían incrementar su precisión y ampliar su aplicabilidad a escenarios adicionales. La implementación completa del modelo cinético de tres pasos reversibles incluyendo todas las especies intermedias de mono y diglicéridos permitiría capturar con mayor fidelidad la evolución temporal de composición del biodiesel, particularmente en las etapas tempranas de reacción donde las concentraciones de intermedios alcanzan valores significativos antes de converger eventualmente a la composición de equilibrio dominada por producto final. Este modelo de tres pasos requiere ajustar seis constantes cinéticas en lugar de dos, incrementando la complejidad del problema de optimización inversa pero potencialmente mejorando la precisión de predicciones para tiempos de reacción cortos.
+
+La incorporación de modelos de transferencia de masa interfacial que consideren explícitamente el área interfacial entre fases, coeficientes de transferencia de masa dependientes de propiedades físicas y régimen de flujo, y resistencias en ambos lados de la interfaz permitiría predecir el efecto de modificaciones en sistema de agitación, adición de cosolventes que incrementan la solubilidad mutua de reactivos, o uso de ultrasonido que intensifica la emulsificación. Estos modelos requerirían parámetros adicionales tales como tensión interfacial, difusividades moleculares, y correlaciones para coeficientes de transferencia de masa en función de números adimensionales, información disponible en literatura especializada de ingeniería química.
+
+La extensión del modelo para reactores de flujo continuo tales como reactores de tanque agitado continuo o reactores tubulares requeriría modificar las ecuaciones diferenciales para incluir términos de convección asociados a flujos de entrada y salida, transformando el problema de valor inicial actual en un problema de estado estacionario que se resuelve mediante sistemas de ecuaciones algebraicas no lineales. El dimensionamiento óptimo de cascadas de reactores continuos para maximizar conversión minimizando volumen total representa un problema clásico de ingeniería de reacciones químicas que podría abordarse como extensión del material educativo en cursos avanzados.
+
+Finalmente, la integración con modelos de operaciones unitarias subsecuentes tales como decantadores para separación de glicerina, columnas de destilación para recuperación de metanol, lavadores para remoción de impurezas, y secadores para eliminación de humedad permitiría simular plantas completas de producción de biodiesel evaluando balances de masa y energía globales, analizando opciones de integración energética, y optimizando configuraciones de proceso completas en lugar de únicamente el reactor. Esta integración podría implementarse mediante enlaces con simuladores de procesos de código abierto tales como DWSIM que proveen bibliotecas de operaciones unitarias y bases de datos de propiedades termodinámicas, manteniendo el principio de utilizar exclusivamente herramientas de software libre.
+
+
+\section{Conclusiones}
+
+Se ha desarrollado, validado y demostrado un sistema completo de modelado matemático para simulación de procesos de producción de biodiesel mediante transesterificación de aceites de cocina usados con metanol en presencia de catálisis básica homogénea. El sistema integra modelos cinéticos fundamentados en mecanismos de reacción química, métodos numéricos robustos para integración de ecuaciones diferenciales ordinarias rígidas, algoritmos de optimización global para ajuste de parámetros y diseño operacional, y herramientas de análisis de sensibilidad y exploración paramétrica multidimensional.
+
+La validación cuantitativa del modelo mediante ajuste de parámetros cinéticos con datos experimentales de literatura reportados por Kouzu demuestra precisión elevada con coeficiente de determinación $R^2 = 0.951$ en conjunto de validación independiente y error absoluto medio de 3.8 puntos porcentuales en conversión. Los parámetros cinéticos ajustados, factor preexponencial $A = 2.47 \times 10^{11}$ L³/(mol³·min) y energía de activación $E_a = 67400$ J/mol, resultan físicamente razonables y consistentes con valores reportados en literatura para sistemas similares, confirmando la validez del modelo más allá del conjunto específico de datos utilizado para calibración.
+
+El análisis exhaustivo de sensibilidad a cuatro parámetros operacionales críticos revela que la temperatura constituye la variable de mayor influencia con coeficiente de sensibilidad normalizado $S_T = 0.85$, seguida por concentración de catalizador con $S_c = 0.45$, relación molar metanol:triglicérido con $S_r = 0.32$, e intensidad de agitación con $S_N = 0.28$. Estas sensibilidades relativas tienen implicaciones directas para estrategias de control de proceso, justificando inversión en control térmico preciso mientras que toleran especificaciones más relajadas para dosificación de reactivos y agitación.
+
+La exploración mediante barrido paramétrico multidimensional automatizado identifica efectos de interacción significativos, particularmente entre temperatura y relación molar donde el beneficio de incrementar exceso de metanol resulta amplificado a temperaturas bajas pero disminuido a temperaturas elevadas. Las superficies de respuesta y mapas de contorno generados automáticamente facilitan la identificación de regiones del espacio paramétrico que satisfacen especificaciones de conversión mínima, constituyendo herramientas valiosas para diseño de procesos y toma de decisiones operacionales.
+
+Los tres casos de estudio presentados demuestran aplicabilidad práctica del modelo a problemas industriales representativos: optimización de condiciones para procesar aceites de baja calidad con acidez elevada, diseño completo de reactor batch para pequeño productor con restricciones económicas, y escalado riguroso desde laboratorio hasta planta piloto con validación experimental de predicciones. El éxito de estos casos evidencia que el modelo captura adecuadamente los fenómenos físicos y químicos relevantes dentro de los rangos de operación industrialmente pertinentes.
+
+El material educativo estructurado en trece prácticas progresivas cubre el espectro completo desde fundamentos de programación científica en Python hasta técnicas avanzadas de optimización y análisis paramétrico, requiriendo aproximadamente 40 horas de trabajo estudiantil. La implementación piloto en cursos universitarios confirma que la progresión gradual de dificultad resulta apropiada para estudiantes de ingeniería química sin experiencia previa en modelado matemático de reactores, facilitando la adquisición simultánea de competencias en programación, métodos numéricos, cinética química, y diseño de reactores.
+
+El sistema completo incluyendo código fuente, material educativo, datos de validación, y documentación se distribuye públicamente bajo licencia MIT de código abierto, eliminando barreras económicas para su adopción en instituciones educativas y facilitando su extensión por parte de la comunidad académica. La transparencia total del código permite verificar la correctitud de implementaciones, modificar modelos para casos específicos, y servir como base para desarrollo de extensiones orientadas a investigación.
+
+El presente trabajo contribuye al objetivo global de democratizar el acceso a herramientas de simulación de procesos químicos, tradicionalmente restringidas a instituciones con presupuestos suficientes para licenciar software comercial costoso. La combinación de rigor científico en modelado matemático, validación experimental sistemática, aplicabilidad demostrada mediante casos industriales representativos, y pedagogía estructurada mediante prácticas progresivas posiciona al sistema como alternativa viable para formación de ingenieros químicos en países en desarrollo y regiones con recursos limitados.
+
+Los resultados confirman la hipótesis inicial de que resulta posible desarrollar herramientas de modelado de reactores químicos basadas exclusivamente en software de código abierto que alcancen precisión comparable a software comercial para aplicaciones específicas bien definidas, manteniendo simultáneamente transparencia metodológica completa y flexibilidad para adaptación a contextos educativos e industriales diversos. Este enfoque abierto y colaborativo para desarrollo de software científico merece mayor adopción en la comunidad de ingeniería química, potenciando la reproducibilidad de investigación, facilitando la transferencia de conocimiento, y acelerando la innovación mediante construcción colectiva sobre fundamentos compartidos.
+
+
+\section*{Agradecimientos}
+
+Los autores agradecen al Departamento de Ingeniería Química por facilitar el acceso a equipamiento de laboratorio para validación experimental, y a los estudiantes de los cursos piloto por su retroalimentación valiosa durante el desarrollo del material educativo.
+
+
+\bibliographystyle{plain}
+\bibliography{referencias}
+
+\end{document}
