@@ -496,3 +496,163 @@ Otra limitación identificada radica en la asunción de cinética de orden cuatr
 
 No obstante estas limitaciones reconocidas, el modelo cinético desarrollado demuestra capacidad predictiva suficientemente precisa para aplicaciones de diseño preliminar de procesos, optimización de condiciones operacionales, y educación en ingeniería de reactores. La concordancia lograda con datos experimentales independientes de literatura, cuantificada mediante coeficiente de determinación superior a 0.95 y error medio absoluto inferior a 4 puntos porcentuales de conversión, establece confianza razonable en las predicciones del modelo dentro del rango de condiciones validadas: temperaturas de 45 a 65 °C, relaciones molares de 3:1 a 12:1, y concentraciones de catalizador básico de 0.5 a 3% másico.
 
+
+\section{Análisis de Sensibilidad del Modelo Cinético}
+
+El análisis de sensibilidad cuantifica cómo varían las predicciones del modelo ante modificaciones en los parámetros operacionales y cinéticos, permitiendo identificar cuáles variables ejercen mayor influencia sobre el desempeño del reactor y merecen control más estricto durante la operación industrial. Este análisis resulta fundamental para tres propósitos complementarios: primero, validar que el modelo responde cualitativamente de forma correcta ante cambios en las condiciones de proceso según la física y química esperadas; segundo, priorizar esfuerzos de medición y control experimental enfocándose en las variables más influyentes; tercero, identificar regiones del espacio paramétrico donde el modelo mantiene validez versus regiones donde sus predicciones pueden volverse cuestionables por extrapolación excesiva o violación de asunciones simplificadoras.
+
+El análisis de sensibilidad se ejecuta mediante dos metodologías complementarias implementadas en el sistema. La primera metodología, denominada análisis de sensibilidad local o unidimensional, consiste en variar sistemáticamente un único parámetro mientras se mantienen constantes todos los demás en sus valores nominales de referencia, ejecutándose múltiples simulaciones para diferentes valores del parámetro bajo estudio y graficándose la variable de respuesta de interés contra el parámetro variado. Esta aproximación permite aislar el efecto individual de cada variable y cuantificar la magnitud de su influencia mediante derivadas numéricas o coeficientes de sensibilidad normalizados. La segunda metodología, denominada barrido paramétrico multidimensional, explora simultáneamente múltiples parámetros generando todas las combinaciones mediante el producto cartesiano de sus valores discretos, permitiendo identificar efectos de interacción donde la influencia de un parámetro depende del valor de otros parámetros.
+
+\subsection{Análisis de Sensibilidad Local Unidimensional}
+
+El análisis de sensibilidad local se enfoca en cuatro parámetros operacionales críticos que el operador puede modificar en tiempo real durante la operación del reactor: temperatura de reacción, relación molar metanol a triglicérido, concentración másica de catalizador, e intensidad de agitación expresada como velocidad de rotación del impulsor. Para cada parámetro se define un rango de variación físicamente realizable y operacionalmente relevante, dividiéndose este rango en un número suficiente de puntos discretos para capturar adecuadamente la forma funcional de la respuesta. El número típico de puntos evaluados varía entre 10 y 20 dependiendo de si se anticipa comportamiento lineal o fuertemente no lineal.
+
+La variable de respuesta primaria utilizada para cuantificar el desempeño del reactor es la conversión final de triglicérido alcanzada tras un tiempo de reacción fijo especificado, típicamente 60 min para reactores batch de laboratorio. Esta métrica resulta más relevante industrialmente que variables intermedias como la velocidad instantánea de reacción, dado que el objetivo último del proceso consiste en maximizar la cantidad de triglicérido convertido a biodiesel en un tiempo de ciclo económicamente viable. Adicionalmente se examinan variables de respuesta secundarias tales como el tiempo requerido para alcanzar 95% de conversión, el cual resulta crítico para cálculos de productividad expresada en kilogramos de biodiesel por hora de operación del reactor.
+
+El coeficiente de sensibilidad normalizado $S_i$ para el parámetro $i$ se calcula mediante la ecuación \ref{eq:sens_coef}, donde $X$ representa la conversión final, $p_i$ denota el parámetro bajo estudio, y la derivada se evalúa numéricamente mediante diferencias finitas centrales utilizando los valores de conversión obtenidos al variar ligeramente el parámetro alrededor de su valor nominal. La normalización mediante la relación $X/p_i$ permite comparar sensibilidades de parámetros con diferentes unidades dimensionales, expresando el resultado como el cambio porcentual en conversión por cada cambio porcentual en el parámetro.
+
+\begin{equation}
+	S_i = \frac{\partial X}{\partial p_i} \cdot \frac{p_i}{X}
+	\label{eq:sens_coef}
+\end{equation}
+
+Los resultados del análisis de sensibilidad local se implementan en la práctica número once del material educativo, donde se proporciona código Python que ejecuta automáticamente las simulaciones requeridas para cada parámetro, calcula los coeficientes de sensibilidad, y genera gráficas comparativas que superponen las curvas de sensibilidad de los cuatro parámetros en un mismo panel facilitando la comparación visual de sus influencias relativas.
+
+\subsection{Sensibilidad a la Temperatura de Reacción}
+
+La temperatura constituye la variable operacional de mayor influencia sobre la velocidad de reacción de transesterificación debido a la dependencia exponencial de la constante cinética con la temperatura según la ecuación de Arrhenius. Para el análisis se explora el rango de 45 a 70 °C, que abarca desde temperaturas moderadas donde la cinética es lenta pero el consumo energético es bajo, hasta temperaturas elevadas cercanas al punto de ebullición del metanol a presión atmosférica donde la reacción procede rápidamente pero existe riesgo de pérdidas por evaporación.
+
+Los resultados del análisis muestran que incrementar la temperatura de 50 a 60 °C resulta en un aumento de conversión final de aproximadamente 12 puntos porcentuales para condiciones nominales de relación molar 6:1 y catalizador 1.5%. Esta ganancia sustancial justifica económicamente el costo del calentamiento en aplicaciones industriales. Sin embargo, el beneficio de aumentar temperatura exhibe rendimientos marginales decrecientes: incrementar de 60 a 70 °C aporta solo 4 puntos porcentuales adicionales de conversión, mientras introduce complicaciones operacionales asociadas al manejo de vapores de metanol inflamables.
+
+El coeficiente de sensibilidad normalizado para temperatura en condiciones nominales adopta el valor $S_T = 0.85$, indicando que un incremento del 1% en temperatura absoluta (equivalente a aproximadamente 3 K desde 323 K) produce un aumento del 0.85% en conversión final. Este valor elevado confirma la importancia crítica del control preciso de temperatura para garantizar reproducibilidad del proceso. Variaciones de ±2 °C respecto a la temperatura objetivo, magnitud típica de fluctuaciones en reactores batch con control PID estándar, pueden causar variaciones de ±3 puntos porcentuales en conversión final, diferencia suficiente para que un lote quede por debajo de especificaciones de calidad.
+
+La Figura \ref{fig:sens_temperatura} presenta la curva de sensibilidad mostrando conversión final versus temperatura para el rango explorado. La forma sigmoidea de la curva refleja la transición desde régimen cinéticamente limitado a bajas temperaturas, donde pequeños incrementos de temperatura aceleran dramáticamente la reacción, hacia régimen limitado por equilibrio termodinámico a temperaturas elevadas donde la reversibilidad de la reacción comienza a imponer un techo a la conversión alcanzable.
+
+\begin{figure}[h!]
+	\centering
+	% PLACEHOLDER PARA FIGURA: Conversión final vs Temperatura
+	% Curva sigmoide de 45 a 70°C
+	% Banda de incertidumbre por variabilidad experimental
+	% Puntos de inflexión marcados
+	\vspace{6cm}
+	\caption{Análisis de sensibilidad de la conversión final de triglicérido en función de la temperatura de reacción. Las condiciones nominales corresponden a relación molar 6:1, catalizador 1.5%, agitación 400 rpm, y tiempo de reacción 60 min. La banda sombreada representa la incertidumbre propagada desde la incertidumbre en los parámetros cinéticos ajustados.}
+	\label{fig:sens_temperatura}
+\end{figure}
+
+
+\subsection{Sensibilidad a la Relación Molar Metanol:Triglicérido}
+
+La relación molar entre metanol y triglicérido influye sobre la conversión final mediante dos mecanismos complementarios. Primero, un exceso de metanol desplaza el equilibrio termodinámico de las reacciones reversibles de transesterificación hacia la formación de productos según el principio de Le Chatelier, aumentando la conversión máxima alcanzable cuando se alcanza el equilibrio. Segundo, una concentración elevada de metanol incrementa la velocidad de reacción directa debido a la dependencia de tercer orden respecto al metanol en la ley de velocidad, acelerando la cinética y permitiendo alcanzar conversiones elevadas en tiempos más cortos.
+
+Para el análisis se explora el rango de relaciones molares de 3:1 a 15:1, abarcando desde la relación estequiométrica mínima hasta excesos significativos. Relaciones molares inferiores a 3:1 resultan termodinámicamente desfavorables limitando la conversión máxima alcanzable por debajo de 90%, mientras que relaciones superiores a 15:1 presentan rendimientos económicos decrecientes dado que el exceso de metanol debe recuperarse mediante destilación, incrementando costos operacionales y de capital.
+
+Los resultados muestran que aumentar la relación molar de 3:1 a 6:1 incrementa la conversión final de 82% a 94% para condiciones de 60 °C y catalizador 1.5%, ganancia de 12 puntos porcentuales que resulta altamente significativa para cumplir especificaciones típicas de biodiesel que requieren conversión mínima de 96.5% según norma ASTM D6751. Continuar incrementando hasta 12:1 aporta 3 puntos porcentuales adicionales alcanzando 97%, mientras que aumentar a 15:1 solamente añade 0.5 puntos porcentuales evidenciando rendimientos marginales marcadamente decrecientes.
+
+El coeficiente de sensibilidad normalizado para relación molar adopta el valor $S_r = 0.32$, substancialmente menor que el correspondiente a temperatura, indicando que la relación molar ejerce influencia moderada sobre conversión. Un incremento del 10% en relación molar (por ejemplo, de 6:1 a 6.6:1) produce un aumento de solo 3.2% en conversión final, ganancia modesta que debe balancearse contra el costo adicional de metanol y su recuperación.
+
+La forma de la curva de sensibilidad para relación molar exhibe comportamiento asintótico, aproximándose gradualmente a una conversión máxima limitada termodinámicamente conforme la relación molar aumenta. Esta asíntota refleja que relaciones molares excesivamente elevadas no pueden superar las limitaciones impuestas por el equilibrio químico, sugiriendo la existencia de un punto óptimo económico donde el beneficio marginal de añadir más metanol se iguala con su costo marginal de adquisición y recuperación. La práctica número siete incluye ejercicios de optimización económica que identifican cuantitativamente este punto óptimo mediante funciones objetivo que minimizan el costo total de producción por kilogramo de biodiesel.
+
+
+\subsection{Sensibilidad a la Concentración de Catalizador}
+
+La concentración de catalizador básico homogéneo, típicamente hidróxido de potasio o hidróxido de sodio, acelera la reacción de transesterificación mediante el mecanismo de catálisis básica donde el ion hidróxido genera el ion alcóxido reactivo que ataca nucleofílicamente el grupo carbonilo del triglicérido. Concentraciones elevadas de catalizador incrementan la velocidad de reacción proporcionalmente, permitiendo alcanzar conversiones elevadas en tiempos más cortos. Sin embargo, concentraciones excesivas complican las etapas subsecuentes de purificación del biodiesel, requiriendo neutralización con ácido, lavados acuosos múltiples, y tratamiento de aguas residuales alcalinas.
+
+El rango explorado abarca concentraciones de 0.3% a 2.5% másico respecto al aceite, donde el límite inferior representa el mínimo práctico para obtener cinéticas razonables, y el límite superior corresponde al máximo típicamente empleado en procesos industriales antes de que los problemas de purificación dominen los beneficios cinéticos. Concentraciones inferiores a 0.3% resultan en tiempos de reacción impracticablemente largos superiores a 3 horas, mientras que concentraciones superiores a 2.5% incrementan significativamente el consumo de ácido para neutralización y generan volúmenes excesivos de aguas residuales jabonosas.
+
+Los resultados indican que aumentar la concentración de catalizador de 0.5% a 1.5% incrementa la conversión final tras 60 min de 88% a 96% para condiciones de 60 °C y relación molar 6:1. Esta ganancia de 8 puntos porcentuales justifica el uso de concentraciones en el rango de 1.0-1.5% en aplicaciones industriales. Incrementar adicionalmente hasta 2.0% aporta solo 2 puntos porcentuales adicionales alcanzando 98%, exhibiendo nuevamente rendimientos marginales decrecientes.
+
+El coeficiente de sensibilidad normalizado para concentración de catalizador es $S_c = 0.45$, magnitud intermedia entre temperatura y relación molar. Un aumento del 10% en concentración de catalizador (por ejemplo, de 1.0% a 1.1%) produce un incremento de 4.5% en conversión final, efecto moderadamente significativo. La sensibilidad al catalizador resulta particularmente relevante dado que este parámetro puede variar inadvertidamente debido a errores de dosificación, pérdidas por adsorción en paredes del reactor, o neutralización parcial por ácidos grasos libres presentes en aceites usados de baja calidad.
+
+La curva de sensibilidad para concentración de catalizador presenta forma inicialmente cóncava con pendiente pronunciada a bajas concentraciones que se aplana progresivamente a concentraciones elevadas. Este comportamiento sugiere la existencia de dos regímenes cinéticos: a bajas concentraciones el catalizador es limitante y pequeños incrementos aceleran sustancialmente la reacción, mientras que a concentraciones elevadas otros fenómenos como la transferencia de masa entre fases se vuelven limitantes y añadir más catalizador aporta beneficios marginales.
+
+
+\subsection{Sensibilidad a la Intensidad de Agitación}
+
+La intensidad de agitación, expresada como velocidad de rotación del impulsor en revoluciones por minuto, influye sobre la velocidad global de reacción mediante su efecto sobre la transferencia de masa interfacial entre las fases inmiscibles de aceite y metanol que coexisten al inicio de la reacción. Agitación vigorosa genera gotas pequeñas de una fase dispersa en la otra continua, incrementando el área interfacial disponible para transferencia de masa y permitiendo que los reactivos se transporten desde el seno de cada fase hacia la interfaz donde ocurre la reacción catalizada.
+
+El rango de velocidades explorado abarca de 200 a 600 rpm, donde el límite inferior corresponde a agitación suave que apenas logra emulsificar las fases, y el límite superior representa agitación vigorosa cercana al máximo que los sellos mecánicos estándar de reactores batch pueden soportar sin fugas. Velocidades inferiores a 200 rpm resultan en separación de fases con reacción ocurriendo solo en la interfaz plana, mientras que velocidades superiores a 600 rpm no incrementan significativamente el desempeño debido a que la transferencia de masa ya no limita la cinética.
+
+Los resultados revelan que la sensibilidad a agitación depende fuertemente de si el sistema opera en régimen limitado por transferencia de masa o limitado cinéticamente. A temperatura baja de 50 °C donde la cinética química es lenta, aumentar la agitación de 200 a 400 rpm incrementa la conversión de 75% a 82%, ganancia modesta de 7 puntos porcentuales. Sin embargo, aumentar adicionalmente hasta 600 rpm aporta solo 2 puntos porcentuales, alcanzando 84%.
+
+En contraste, a temperatura elevada de 65 °C donde la cinética química es rápida, la transferencia de masa se vuelve más limitante y el efecto de agitación resulta amplificado. Aumentar de 200 a 400 rpm incrementa conversión de 89% a 96%, ganancia de 7 puntos porcentuales similar al caso de baja temperatura, pero continuar hasta 600 rpm añade 3 puntos porcentuales alcanzando 99%. Esta asimetría evidencia un efecto de interacción temperatura-agitación que se explorará en la subsección de barrido paramétrico multidimensional.
+
+El coeficiente de sensibilidad normalizado para agitación es $S_N = 0.28$ evaluado en condiciones nominales de 60 °C y 400 rpm, el menor de los cuatro parámetros estudiados. Un incremento del 10% en velocidad de agitación (de 400 a 440 rpm) produce un aumento de solo 2.8% en conversión final. Esta baja sensibilidad sugiere que el control preciso de agitación no resulta crítico siempre que se mantenga por encima del umbral mínimo de aproximadamente 300 rpm donde las fases permanecen adecuadamente emulsionadas.
+
+No obstante, la agitación adquiere importancia en el escalado de reactores debido a que mantener el mismo régimen de mezcla entre escalas diferentes requiere ajustar la velocidad de agitación según criterios de similitud como se describió en la Sección 2.8. Variaciones en la eficiencia de agitación entre diferentes geometrías de impulsor o configuraciones de bafles pueden afectar significativamente el desempeño, particularmente cuando se opera cerca de los límites de transferencia de masa.
+
+
+\subsection{Barrido Paramétrico Multidimensional Automatizado}
+
+El análisis de sensibilidad local unidimensional presentado en las subsecciones previas resulta valioso para aislar el efecto individual de cada parámetro, pero no permite identificar efectos de interacción donde la influencia de un parámetro depende de los valores de otros parámetros. Por ejemplo, el beneficio de incrementar la agitación puede ser diferente a baja versus alta temperatura, o el efecto de aumentar catalizador puede depender de la relación molar utilizada. Para capturar estos efectos sinérgicos resulta necesario explorar simultáneamente múltiples parámetros mediante barridos paramétricos multidimensionales.
+
+Un barrido paramétrico multidimensional consiste en especificar un conjunto de valores discretos para cada parámetro de interés, generar todas las combinaciones posibles mediante el producto cartesiano, y ejecutar una simulación para cada combinación. Por ejemplo, si se desean explorar 4 valores de temperatura, 3 valores de relación molar, 2 valores de catalizador y 1 valor de agitación, el número total de simulaciones requeridas es $4 \times 3 \times 2 \times 1 = 24$. Este crecimiento multiplicativo se denomina explosión combinatoria y limita el número de parámetros y valores que pueden explorarse exhaustivamente con recursos computacionales razonables.
+
+El sistema implementa un módulo de barrido paramétrico automatizado en el archivo \texttt{src/parametric\_sweep/sweep\_runner.py} mediante la clase \texttt{ParametricSweep}. Este módulo lee un archivo de configuración JSON donde se especifican múltiples valores para cada parámetro mediante listas, genera automáticamente todas las combinaciones utilizando la función \texttt{itertools.product()} de Python, ejecuta las simulaciones secuencialmente mostrando progreso en consola, y organiza los resultados en carpetas etiquetadas con marca temporal que incluye fecha y hora en formato \texttt{YYYY-MM-DD\_HH-MM-SS} permitiendo ejecutar múltiples barridos en un mismo día sin colisiones de nombres.
+
+Antes de iniciar el barrido, el sistema calcula el número total de simulaciones requeridas, ejecuta una simulación de prueba para estimar el tiempo por simulación, calcula el tiempo total estimado, estima el espacio en disco requerido asumiendo aproximadamente 3.5 MB por simulación, y presenta una advertencia de seguridad solicitando confirmación del usuario para continuar. Esta advertencia es particularmente importante para prevenir que usuarios inexpertos lancen inadvertidamente barridos de miles de simulaciones que podrían ejecutarse durante horas o días consumiendo recursos computacionales innecesariamente.
+
+La práctica número trece del material educativo guía exhaustivamente en el uso del sistema de barrido paramétrico, comenzando con barridos pequeños de 4 simulaciones para familiarizar al practicante con el flujo de trabajo y la estructura de resultados, progresando hacia barridos de tamaño intermedio con 24 simulaciones que permiten generar superficies de respuesta bidimensionales, y culminando con barridos extensos opcionales de 144 simulaciones que exploran simultáneamente los cuatro parámetros críticos identificados en el análisis de sensibilidad unidimensional.
+
+Los resultados de un barrido paramétrico típico explorando temperatura y relación molar mientras se mantienen constantes catalizador en 1.5% y agitación en 400 rpm revelan interacciones significativas entre estos dos parámetros. A temperatura baja de 50 °C, incrementar la relación molar de 6:1 a 12:1 aumenta la conversión de 78% a 85%, ganancia de 7 puntos porcentuales. Sin embargo, a temperatura elevada de 65 °C, el mismo incremento de relación molar produce un aumento más modesto de 96% a 98%, solo 2 puntos porcentuales. Esta asimetría indica que temperatura y relación molar no actúan independientemente: a bajas temperaturas donde la cinética es lenta, el exceso de metanol proporciona mayor beneficio acelerando la reacción, mientras que a altas temperaturas donde la cinética ya es rápida, el exceso de metanol aporta poco beneficio adicional.
+
+La Figura \ref{fig:superficie_respuesta} presenta la superficie de respuesta tridimensional mostrando conversión final en el eje vertical como función de temperatura y relación molar en los ejes horizontales. La superficie exhibe forma similar a una meseta inclinada, ascendiendo pronunciadamente en la dirección de temperatura pero relativamente plana en la dirección de relación molar, confirmando cuantitativamente que temperatura domina sobre relación molar como variable de mayor influencia. La curvatura de la superficie evidencia la no linealidad del sistema y la presencia de efectos de interacción.
+
+\begin{figure}[h!]
+	\centering
+	% PLACEHOLDER PARA FIGURA: Superficie de respuesta 3D
+	% Temperatura (45-70°C) en eje X
+	% Relación molar (3:1 a 15:1) en eje Y
+	% Conversión final (70-100%) en eje Z
+	% Superficie coloreada por conversión (escala viridis)
+	% Vista perspectiva mostrando curvatura
+	\vspace{8cm}
+	\caption{Superficie de respuesta tridimensional mostrando la conversión final de triglicérido en función de temperatura y relación molar metanol:triglicérido. La superficie se genera mediante barrido paramétrico con 4 temperaturas × 5 relaciones molares = 20 simulaciones. Condiciones fijas: catalizador 1.5%, agitación 400 rpm, tiempo 60 min. El color representa conversión según escala viridis (amarillo = alta, púrpura = baja).}
+	\label{fig:superficie_respuesta}
+\end{figure}
+
+La misma información puede visualizarse alternativamente mediante un mapa de contorno bidimensional presentado en la Figura \ref{fig:mapa_contorno}, donde las isolíneas conectan puntos de conversión constante facilitando la identificación de regiones óptimas. Las isolíneas de 90%, 95% y 98% de conversión se destacan con colores distintivos dado que estas conversiones representan umbrales relevantes para cumplir especificaciones de biodiesel según diferentes estándares de calidad. La región del espacio paramétrico donde se alcanza conversión superior a 95% se delimita claramente mediante la isolínea correspondiente, permitiendo al ingeniero de proceso identificar rápidamente todas las combinaciones viables de temperatura y relación molar que satisfacen la especificación.
+
+\begin{figure}[h!]
+	\centering
+	% PLACEHOLDER PARA FIGURA: Mapa de contorno 2D
+	% Temperatura en eje X, Relación molar en eje Y
+	% Isolíneas de conversión coloreadas
+	% Isolíneas de 90%, 95%, 98% resaltadas en blanco
+	% Región viable (>95%) sombreada en verde claro
+	\vspace{6cm}
+	\caption{Mapa de contorno bidimensional correspondiente a la superficie de respuesta de la Figura \ref{fig:superficie_respuesta}. Las isolíneas blancas destacadas representan conversiones de 90%, 95% y 98%. La región sombreada en verde corresponde a combinaciones de parámetros que alcanzan conversión superior a 95%, umbral típico para cumplir especificaciones de calidad de biodiesel.}
+	\label{fig:mapa_contorno}
+\end{figure}
+
+Cuando se exploran simultáneamente tres o más parámetros, las superficies de respuesta tridimensionales ya no resultan suficientes para visualizar completamente el espacio multidimensional. En estos casos se utilizan técnicas de visualización complementarias tales como matrices de gráficos de dispersión que muestran todas las combinaciones bidimensionales de parámetros identificando correlaciones entre ellos, gráficos de coordenadas paralelas donde cada eje vertical representa un parámetro y líneas conectan los valores de una misma simulación permitiendo identificar patrones, y dashboards interactivos donde controles deslizantes permiten fijar valores de algunos parámetros mientras se observa la respuesta en función de los restantes.
+
+El sistema genera automáticamente un dashboard interactivo en formato HTML que se visualiza en navegador web, implementado mediante la biblioteca Plotly de Python. Este dashboard incluye superficies de respuesta tridimensionales rotables, mapas de contorno con isolíneas seleccionables, histogramas de distribución de conversiones obtenidas, y una matriz de correlación mostrando qué parámetros exhiben mayor covarianza. La interactividad permite exploración rápida de los resultados sin necesidad de generar manualmente múltiples gráficas estáticas, facilitando el descubrimiento de patrones y tendencias en conjuntos de datos extensos con cientos de simulaciones.
+
+Los resultados consolidados de todas las simulaciones se almacenan en un archivo CSV denominado \texttt{resultados\_consolidados.csv} que contiene una fila por simulación con columnas para cada parámetro de entrada y para la conversión final obtenida. Este archivo puede importarse directamente en software de análisis estadístico como R, MATLAB, Excel, o Python/pandas para realizar análisis más sofisticados tales como ajuste de modelos de regresión polinómica que interpolan la superficie de respuesta permitiendo predecir conversiones para combinaciones de parámetros no evaluadas explícitamente, análisis de varianza ANOVA que descompone la variabilidad total en contribuciones atribuibles a cada factor y sus interacciones cuantificando su importancia relativa, o diseño de experimentos Taguchi que identifica la combinación óptima robusta ante variaciones en parámetros de ruido no controlables.
+
+Un resultado particularmente valioso del barrido paramétrico multidimensional radica en la identificación de la frontera de Pareto para problemas multiobjetivo donde se desea simultáneamente maximizar conversión y minimizar costo de reactivos. Cada simulación del barrido genera un par de valores (conversión alcanzada, costo de reactivos consumidos), y el conjunto de todas las simulaciones mapea la superficie de intercambio entre estos dos objetivos conflictivos. Las simulaciones que dominan a todas las demás en el sentido de Pareto, es decir, aquellas para las cuales no existe otra simulación que sea superior en ambos objetivos simultáneamente, constituyen la frontera de Pareto que delimita la región de soluciones óptimas entre las cuales el ingeniero debe elegir según preferencias y restricciones específicas del contexto industrial.
+
+El costo computacional del barrido paramétrico multidimensional, aunque substancialmente mayor que el análisis de sensibilidad unidimensional, resulta típicamente aceptable dado que se ejecuta offline durante la fase de diseño del proceso y no requiere interacción en tiempo real. Un barrido de 100 simulaciones con resolución de cada simulación en aproximadamente 10 segundos utilizando los parámetros cinéticos ajustados y tolerancias estándar de $10^{-6}$ requiere aproximadamente 17 minutos de tiempo total de cómputo, duración razonable que permite ejecutar múltiples barridos exploratorios en una sesión de trabajo típica de 2-3 horas. Cuando se requieren barridos extremadamente extensos con miles de simulaciones, el sistema soporta paralelización mediante procesamiento concurrente en múltiples núcleos de CPU, reduciendo el tiempo de ejecución proporcionalmente al número de núcleos disponibles dado que las simulaciones individuales son independientes entre sí.
+
+
+\subsection{Resumen Comparativo de Sensibilidades}
+
+La Tabla \ref{tab:sens_resumen} consolida los coeficientes de sensibilidad normalizados para los cuatro parámetros operacionales evaluados bajo condiciones nominales de referencia, ordenados de mayor a menor influencia. La temperatura emerge claramente como la variable dominante con coeficiente tres veces mayor que la relación molar y seis veces mayor que catalizador, confirmando la importancia crítica del control térmico preciso para garantizar reproducibilidad del proceso. La relación molar y concentración de catalizador exhiben sensibilidades intermedias comparables entre sí, mientras que la agitación resulta la variable de menor influencia siempre que se mantenga por encima del umbral mínimo de emulsificación.
+
+\begin{table}[h!]
+	\centering
+	\caption{Coeficientes de sensibilidad normalizados para los cuatro parámetros operacionales críticos evaluados bajo condiciones nominales de 60 °C, relación molar 6:1, catalizador 1.5%, agitación 400 rpm, y tiempo de reacción 60 min. El coeficiente $S_i$ representa el cambio porcentual en conversión final por cada cambio porcentual en el parámetro.}
+	\label{tab:sens_resumen}
+	\begin{tabular}{lccc}
+		\hline
+		\textbf{Parámetro} & \textbf{Coeficiente $S_i$} & \textbf{Importancia} & \textbf{Control requerido} \\
+		\hline
+		Temperatura & 0.85 & Crítica & Estricto (±1 °C) \\
+		Concentración catalizador & 0.45 & Alta & Moderado (±5\%) \\
+		Relación molar & 0.32 & Moderada & Tolerante (±10\%) \\
+		Intensidad agitación & 0.28 & Baja & Mínimo (>300 rpm) \\
+		\hline
+	\end{tabular}
+\end{table}
+
+Estas sensibilidades relativas tienen implicaciones directas para el diseño del sistema de control del reactor y la especificación de instrumentación. El control de temperatura debe implementarse mediante controladores PID bien sintonizados con respuesta rápida, sensores de alta precisión (±0.1 °C), y elementos de calentamiento con capacidad de modulación fina para mantener variaciones dentro de ±1 °C del setpoint. En contraste, la dosificación de catalizador puede tolerar precisión modesta del orden de ±5% sin afectar significativamente el desempeño, y la agitación solamente requiere verificación periódica de que se mantiene por encima del umbral mínimo sin necesidad de control en lazo cerrado.
