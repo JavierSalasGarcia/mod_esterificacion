@@ -1,18 +1,11 @@
 \documentclass{syx7}
 
 % ============================================================================
-% SOLUCIÓN A CONFLICTOS DE PAQUETES
-% ============================================================================
-\let\openbox\relax
-\let\c@author\relax
-\let\not=\relax
-\let\not<\relax
-\let\not>\relax
-
-% ============================================================================
 % PAQUETES NECESARIOS
 % ============================================================================
-\usepackage{amsmath}
+% NOTA: La clase syx7 ya carga amsthm, amsmath y otros paquetes basicos
+% No se deben recargar para evitar conflictos
+
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
@@ -21,7 +14,7 @@
 \usepackage{tikz}
 \usepackage{epsfig}
 \usepackage{epstopdf}
-\usepackage[ruled,vlined]{algorithm2e}
+% \usepackage[ruled,vlined]{algorithm2e}  % Comentado - no disponible
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{listings}
@@ -46,11 +39,11 @@
 % ============================================================================
 % CONFIGURACIÓN DE BIBLIOGRAFÍA
 % ============================================================================
+% NOTA: etoolbox ya esta cargado por la clase syx7
 \usepackage[backend=bibtex,style=ieee,natbib=true]{biblatex}
 \defbibheading{bibliography}{\section*{Referencias}}
 \addbibresource{biblio.bib}
 
-\usepackage{etoolbox}
 \patchcmd{\bibsetup}{\begingroup}{\begingroup\let\clearpage\relax}{}{}
 
 % ============================================================================
