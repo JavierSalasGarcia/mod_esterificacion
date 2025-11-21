@@ -1,36 +1,34 @@
 {
-  "experimentos": [
-    {
-      "id": "Exp_55C",
-      "temperatura_C": 55,
-      "tiempo_min": [0, 30, 60, 90, 120],
-      "conversion_pct": [0, 35, 58, 72, 80],
-      "perfil_agitacion": {
-        "tipo": "constante",
-        "puntos": [{"tiempo_min": 0, "rpm": 400}]
-      }
-    },
-    {
-      "id": "Exp_65C",
-      "temperatura_C": 65,
-      "tiempo_min": [0, 30, 60, 90, 120],
-      "conversion_pct": [0, 48, 72, 83, 88],
-      "perfil_agitacion": {
-        "tipo": "constante",
-        "puntos": [{"tiempo_min": 0, "rpm": 400}]
-      }
-    }
-  ],
-  "condiciones_iniciales": {
-    "C_TG_mol_L": 0.5,
-    "C_MeOH_mol_L": 4.5,
-    "C_FAME_mol_L": 0.0,
-    "C_GL_mol_L": 0.0
+  "_comentario": "Práctica 6: Ajuste de Parámetros Cinéticos",
+
+  "archivo_datos": "datos_exp_ajuste.csv",
+
+  "valores_iniciales": {
+    "_comentario": "Valores iniciales para el ajuste. MODIFICA estos valores para experimentar",
+    "A_inicial": 1.0e6,
+    "_comentario_A": "Prueba valores entre 1e5 y 1e7",
+    "Ea_inicial": 60.0,
+    "_comentario_Ea": "Prueba valores entre 50 y 80 kJ/mol"
   },
-  "ajuste": {
-    "model_type": "1-step",
-    "reversible": true,
-    "method": "leastsq",
-    "max_iter": 1000
+
+  "limites_parametros": {
+    "_comentario": "Límites físicos razonables para los parámetros",
+    "A_min": 1.0e4,
+    "A_max": 1.0e8,
+    "Ea_min": 30.0,
+    "Ea_max": 100.0
+  },
+
+  "opciones_ajuste": {
+    "metodo": "leastsq",
+    "_opciones_metodo": "leastsq, least_squares, differential_evolution",
+    "max_iteraciones": 1000,
+    "tolerancia": 1e-8
+  },
+
+  "experimentos": {
+    "_exp1": "Cambia A_inicial a 5.0e5 y observa si el ajuste converge al mismo resultado",
+    "_exp2": "Cambia Ea_inicial a 70.0 y compara parámetros finales",
+    "_exp3": "Usa valores iniciales muy alejados (A=1e8, Ea=30) para probar robustez"
   }
 }

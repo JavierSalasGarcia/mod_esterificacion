@@ -1,63 +1,104 @@
-# Práctica 9: Up-Scaling y Preparación para CFD (Reactor 20L)
+# Practica 9: Up-scaling y CFD
 
-## 📖 Teoría
+## Objetivo
 
-### Escalado de Reactores
-Escalamos desde **350 mL** (batch con mosca magnética) a **20 L** (reactor piloto).
+Aprender a escalar de escala laboratorio (350 mL) a escala piloto (20 L) aplicando criterios de escalado. Generar UDF (User Defined Function) para Ansys Fluent con cinetica de transesterificacion.
 
-**Criterios de escalado:**
-- P/V constante (potencia por volumen)
-- Re constante (número de Reynolds)
-- Tiempo de mezclado constante (θ_m)
+## Duracion Estimada
 
-### Geometría Reactor 20L
-- **Impulsor**: Ribbon (helicoidal, tipo mezclador de pintura)
-- **Serpentín**: 10 espiras para control de temperatura
-- **Sin baffles**: El serpentín rompe el vórtice
+4-5 horas
 
-## 🎯 Objetivos
+## Conceptos Clave
 
-- ✅ Calcular escalado dimensional
-- ✅ Diseñar geometría reactor + ribbon + serpentín
-- ✅ Preparar archivos para Ansys Fluent
-- ✅ Crear UDF con cinética ajustada
-- ✅ Comparar modelo 0D vs CFD 3D
+- Escalado de reactores batch
+- Criterios de similitud: P/V, Re, v_tip, θ_m
+- Geometria de reactor: ribbon impeller + serpentin
+- CFD con Ansys Fluent
+- UDF en lenguaje C para cinetica
 
-## 📦 Software
+## Partes de la Practica
 
-- **Python 3.8+**: Cálculos y geometría
-- **Ansys Fluent Student** (opcional): Simulación CFD
-- **OpenFOAM** (alternativa gratuita)
+### Parte A: Calculos de Escalado
 
-## 📋 Flujo de Trabajo
+Escalar de:
+- Laboratorio: 350 mL, agitador Rushton, 600 rpm
+- Piloto: 20 L, ribbon impeller, rpm_piloto = ?
 
-### Parte A: Escalado (Python)
-1. Cálculos dimensionales (Re, P/V, θ_m)
-2. Determinar RPM del ribbon impeller
-3. Dimensiones del serpentín
+Criterios:
+1. Potencia por volumen (P/V) constante
+2. Numero de Reynolds similar
+3. Velocidad en punta de impulsor (v_tip)
+4. Tiempo de mezclado (θ_m)
 
-### Parte B: Geometría (Python)
-1. Coordenadas del reactor cilíndrico
-2. Geometría del ribbon impeller
-3. Geometría del serpentín (10 espiras)
-4. Exportar a STEP/IGES
+### Parte B: Geometria del Reactor
 
-### Parte C: Ansys Fluent
-1. Importar geometría
-2. Configurar mallado
-3. Modelos (turbulencia, energía, especies)
-4. UDF con cinética
-5. Ejecutar simulación
+Reactor cilindrico vertical con:
+- Ribbon impeller (helicoidal)
+- Serpentin de enfriamiento (10 espiras)
+- Relacion H/D = 1.5
+- 4 deflectores
 
-### Parte D: Post-procesamiento
-1. Leer resultados CFD
-2. Comparar con modelo 0D
-3. Analizar distribución espacial
+### Parte C: UDF para Cinetica
 
-## ✅ Entregables
+Generar archivo C con:
+- Ecuacion de Arrhenius
+- Modelo de 3 pasos
+- Terminos fuente para especies
+- Compatible con Ansys Fluent 2023
 
-- `escalado_calculos.xlsx`: Cálculos de escalado
-- `reactor_20L.step`: Geometría CAD
-- `setup_fluent.cas`: Caso Ansys configurado
-- `cinetica.c`: UDF para Fluent
-- `comparacion_0D_vs_CFD.pdf`: Reporte final
+### Parte D: Postproceso CFD
+
+Procesar resultados de Fluent:
+- Campos de velocidad
+- Perfiles de temperatura
+- Distribucion de conversion
+
+## Instrucciones
+
+### Parte A:
+```bash
+python parte_A_escalado.py
+```
+
+### Parte B:
+```bash
+python parte_B_geometria.py
+```
+
+### Parte C:
+Revisar archivo `parte_D_udf_cinetica.c`
+
+### Parte D:
+```bash
+python parte_E_postproceso.py
+```
+
+## Archivos
+
+```
+practica9_upscaling_cfd/
+├── parte_A_escalado.py
+├── parte_B_geometria.py
+├── parte_D_udf_cinetica.c       # UDF para Ansys Fluent
+├── parte_E_postproceso.py
+├── config.json
+├── README.md
+├── README_Ansys.md              # Guia para uso en Fluent
+├── analisis.md
+└── resultados/
+    ├── geometria_reactor_20L.png
+    ├── criterios_escalado.json
+    └── campos_cfd/
+```
+
+## Preguntas
+
+Ver `analisis.md`:
+1. ¿Cual es el rpm optimo para el reactor piloto?
+2. Comparar criterios de escalado
+3. Interpretar campos de CFD
+4. Identificar zonas muertas
+
+## Siguiente Practica
+
+Practica 10: Validacion con datos de literatura (Kouzu et al. 2008).

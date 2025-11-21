@@ -60,7 +60,7 @@ heightrounded,
 
 \RequirePackage{float}
 \RequirePackage{etoolbox}
-\RequirePackage[ruled,vlined]{algorithm2e}
+% \RequirePackage[ruled,vlined]{algorithm2e}  % Comentado - paquete no disponible
 \RequirePackage{atbegshi}
 \RequirePackage{lastpage}
 \RequirePackage{refcount}

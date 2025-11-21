@@ -1,33 +1,80 @@
-# Core científico
-numpy>=1.24.0
-scipy>=1.10.0
-pandas>=2.0.0
+# ============================================================================
+# REQUIREMENTS.TXT
+# Sistema Modular en Python para Modelado Cinetico de Biodiesel
+# ============================================================================
+#
+# Instalacion:
+#   pip install -r requirements.txt
+#
+# Python version recomendada: 3.10
+# Sistemas operativos: Windows, macOS, Linux
+#
+# ============================================================================
 
-# Ajuste de parámetros
-lmfit>=1.2.0
+# Core cientifico - Computacion numerica
+numpy>=1.24.0,<2.0.0
+scipy>=1.10.0,<2.0.0
+pandas>=2.0.0,<3.0.0
 
-# Optimización avanzada
-scikit-optimize>=0.9.0
+# Ajuste de parametros y optimizacion
+lmfit>=1.2.0,<2.0.0
+scikit-optimize>=0.9.0,<1.0.0
 
-# Visualización
-matplotlib>=3.7.0
-plotly>=5.14.0
-seaborn>=0.12.0
+# Visualizacion
+matplotlib>=3.7.0,<4.0.0
+plotly>=5.14.0,<6.0.0
+seaborn>=0.12.0,<1.0.0
+kaleido>=0.2.1  # Backend para exportar graficas de plotly
 
-# Exportación
-openpyxl>=3.1.0
-xlsxwriter>=3.1.0
+# Exportacion de datos
+openpyxl>=3.1.0,<4.0.0
+xlsxwriter>=3.1.0,<4.0.0
 
-# Procesamiento de datos
-PyYAML>=6.0
+# Manejo de archivos de configuracion
+PyYAML>=6.0,<7.0.0
+jsonschema>=4.19.0,<5.0.0  # Validacion de JSON
 
 # Testing
-pytest>=7.3.0
-pytest-cov>=4.1.0
-
-# CFD integration (futuro - opcional)
-# pyfluent>=0.35.0  # Descomentar cuando se necesite
+pytest>=7.3.0,<8.0.0
+pytest-cov>=4.1.0,<5.0.0
 
 # Utilidades
-tqdm>=4.65.0
-colorama>=0.4.6
+tqdm>=4.65.0,<5.0.0  # Barras de progreso
+colorama>=0.4.6,<1.0.0  # Colores en terminal
+python-dateutil>=2.8.2
+pytz>=2023.3
+
+# Para interfaz grafica (opcional, mejora visualizacion)
+PyQt5>=5.15.9,<6.0.0
+
+# Para notebooks Jupyter (opcional, para practicas interactivas)
+jupyter>=1.0.0,<2.0.0
+ipykernel>=6.25.0,<7.0.0
+ipywidgets>=8.1.0,<9.0.0
+
+# Para generacion de reportes HTML
+jinja2>=3.1.2,<4.0.0
+
+# CFD integration (futuro - opcional)
+# pyfluent>=0.35.0  # Descomentar cuando se necesite Ansys Fluent API
+
+# ============================================================================
+# NOTAS DE INSTALACION
+# ============================================================================
+#
+# Para instalar todo:
+#   pip install -r requirements.txt
+#
+# Para instalar solo lo esencial (sin jupyter ni PyQt5):
+#   pip install numpy scipy pandas matplotlib plotly lmfit openpyxl
+#
+# Si tienes problemas con PyQt5 en Windows:
+#   pip install PyQt5 --no-cache-dir
+#
+# Si tienes problemas con kaleido:
+#   conda install -c conda-forge python-kaleido
+#
+# Para verificar instalacion:
+#   python -c "import numpy, scipy, pandas, matplotlib, plotly, lmfit; print('Instalacion OK')"
+#
+# ============================================================================
