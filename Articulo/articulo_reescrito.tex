@@ -1,0 +1,214 @@
+\documentclass{syx7}
+
+% ============================================================================
+% PAQUETES NECESARIOS
+% ============================================================================
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{color}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{epsfig}
+\usepackage{epstopdf}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{listings}
+
+% Configuración de idioma
+\usepackage[spanish]{babel}
+
+% ============================================================================
+% CONFIGURACIÓN DE GEOMETRÍA
+% ============================================================================
+\geometry{
+	a4paper,
+	left=25mm,
+	right=20mm,
+	top=25mm,
+	bottom=25mm
+}
+
+\setlength{\abstractwidth}{\textwidth}
+\setlength{\headheight}{59pt}
+
+% ============================================================================
+% CONFIGURACIÓN DE BIBLIOGRAFÍA
+% ============================================================================
+\usepackage[backend=bibtex,style=ieee,natbib=true]{biblatex}
+\defbibheading{bibliography}{\section*{Referencias}}
+\addbibresource{biblio.bib}
+
+\patchcmd{\bibsetup}{\begingroup}{\begingroup\let\clearpage\relax}{}{}
+
+% ============================================================================
+% CONFIGURACIÓN DE HYPERREF
+% ============================================================================
+\hypersetup{
+	colorlinks=true,
+	linkcolor=black,
+	citecolor=blue,
+	urlcolor=blue,
+	filecolor=blue,
+	pdfborder={0 0 0},
+	breaklinks=true
+}
+
+% ============================================================================
+% CONFIGURACIÓN DE CÓDIGO
+% ============================================================================
+\lstset{
+	basicstyle=\ttfamily\small,
+	breaklines=true,
+	frame=single,
+	language=Python,
+	showstringspaces=false,
+	commentstyle=\color{gray},
+	keywordstyle=\color{blue},
+	stringstyle=\color{red}
+}
+
+% ============================================================================
+% METADATOS DEL DOCUMENTO
+% ============================================================================
+\receiveddate{01-nov-2024}
+\accepteddate{20-nov-2024}
+
+\title{Sistema Modular en Python para Modelado Cinético de Biodiesel: Alternativa de Código Abierto a Software Comercial}
+\shorttitle{Sistema Python para Modelado de Biodiesel}
+
+\keywords{biodiesel, transesterificación, modelado cinético, Python, código abierto, educación química, optimización de procesos}
+
+% ============================================================================
+% DOCUMENTO
+% ============================================================================
+\begin{document}
+
+\author{Autor Principal*}
+\email{autor@universidad.edu}
+
+\vspace*{-1 \baselineskip}
+
+\maketitle
+
+% ============================================================================
+% RESUMEN
+% ============================================================================
+\begin{abstract}
+El software comercial para simulación de procesos químicos como ASPEN Plus representa costos que oscilan entre quince mil y cincuenta mil dólares estadounidenses anuales por licencia, lo cual limita significativamente el acceso a estas herramientas para instituciones educativas y laboratorios de investigación con recursos limitados. Este trabajo presenta un sistema modular completo desarrollado en Python de código abierto para el modelado cinético de producción de biodiesel mediante transesterificación de aceite de cocina usado. El sistema integra el procesamiento de datos experimentales obtenidos mediante cromatografía de gases con detector de ionización de llama, el ajuste de parámetros cinéticos mediante algoritmos de regresión no lineal, la optimización de condiciones operacionales y la implementación de criterios de escalado desde reactores de laboratorio de trescientos cincuenta mililitros hasta escala piloto de veinte litros. Se desarrolló además una metodología educativa estructurada en doce prácticas progresivas que abarcan desde conceptos fundamentales de Python hasta técnicas avanzadas de dinámica de fluidos computacional, diseñada para personas sin conocimientos previos de programación. La validación del modelo mediante comparación con datos experimentales reportados en la literatura científica muestra desviaciones inferiores al cinco por ciento en los parámetros cinéticos determinados. Un análisis exhaustivo de sensibilidad realizado mediante diseño de experimentos identifica la temperatura como el parámetro que ejerce mayor influencia sobre la conversión, seguido por la relación molar metanol a triglicérido. El sistema permite la configuración completa de todos los parámetros mediante archivos en formato JSON, facilitando la adaptación del modelo a diferentes materias primas, catalizadores y geometrías de reactor sin necesidad de modificar el código fuente. Se incluye documentación detallada del proceso de instalación y configuración en sistemas operativos Windows. Este trabajo demuestra que las herramientas de código abierto pueden constituir una alternativa técnicamente viable, completamente transparente y económicamente accesible frente al software comercial propietario, democratizando el acceso a tecnologías de modelado matemático para la comunidad científica internacional.
+\end{abstract}
+
+% ============================================================================
+% 1. INTRODUCCIÓN
+% ============================================================================
+\section{Introducción}
+
+\subsection{Contexto del Biodiesel de Segunda Generación}
+
+El biodiesel producido mediante transesterificación de aceites de cocina usados constituye una alternativa energética sostenible que permite valorizar residuos lipídicos mientras reduce la dependencia de combustibles fósiles. La reacción de transesterificación convierte los triglicéridos presentes en aceites vegetales en ésteres metílicos de ácidos grasos mediante el uso de metanol como agente alquilante y un catalizador alcalino, típicamente hidróxido de sodio o hidróxido de potasio. Esta transformación química requiere una comprensión profunda de la cinética de reacción, la influencia de las variables operacionales tales como temperatura, intensidad de agitación y relación molar de reactivos, así como de los criterios ingenieriles que rigen el escalado desde el nivel de laboratorio hasta escala industrial \cite{kouzu2008}.
+
+El modelado matemático de este proceso resulta esencial para predecir con precisión las conversiones alcanzables bajo diferentes condiciones operacionales, optimizar los parámetros del proceso para maximizar el rendimiento mientras se minimizan los costos, reducir significativamente el número de experimentos necesarios durante la etapa de desarrollo, y diseñar reactores a escala piloto e industrial con criterios técnicamente fundamentados. La capacidad de simular virtualmente el comportamiento del sistema reactivo antes de realizar inversiones en equipamiento representa una ventaja estratégica considerable en términos de tiempo y recursos económicos.
+
+\subsection{Panorama del Software Comercial de Simulación}
+
+El software de simulación de procesos químicos de tipo comercial, donde destacan paquetes como ASPEN Plus, HYSYS y gPROMS, ha sido ampliamente utilizado en la industria química durante las últimas décadas \cite{aspen2023}. Estas herramientas ofrecen capacidades avanzadas de modelado termodinámico, bases de datos extensas de propiedades fisicoquímicas e interfaces gráficas que facilitan la construcción de diagramas de flujo de proceso. Sin embargo, el costo de adquisición y mantenimiento anual de estas licencias oscila entre quince mil y cincuenta mil dólares estadounidenses por usuario, lo cual representa una barrera económica considerable. Adicionalmente, el tiempo requerido para que un usuario adquiera competencia en el manejo de estas plataformas suele extenderse entre dos y cuatro semanas de entrenamiento intensivo, debido a la complejidad inherente de las interfaces y la multiplicidad de opciones de configuración disponibles.
+
+El acceso al código fuente de estos programas está completamente restringido, operando bajo un modelo de "caja negra" donde los algoritmos de cálculo, correlaciones termodinámicas y métodos numéricos implementados permanecen ocultos al usuario final. Esta falta de transparencia dificulta la comprensión exacta de los cálculos realizados, impide la modificación de ecuaciones para casos específicos que no estén contemplados en las bibliotecas estándar, obstaculiza la integración de algoritmos desarrollados por el usuario, y complica la publicación de metodologías completamente reproducibles en revistas científicas. La personalización del software se limita a las funcionalidades expuestas mediante interfaces de programación de aplicaciones complejas, y la integración directa con datos experimentales propios frecuentemente requiere módulos adicionales o procesamiento previo en formatos específicos.
+
+El costo elevado de estas licencias limita particularmente el acceso para universidades ubicadas en países en desarrollo con presupuestos restringidos, laboratorios de investigación que operan con financiamiento limitado, pequeñas y medianas empresas que no pueden justificar económicamente la inversión, y personas que desean practicar o realizar cálculos fuera de las instalaciones institucionales donde existe la licencia. El modelo de renovación anual obligatorio genera además una dependencia continua del proveedor del software.
+
+\subsection{Alternativas de Código Abierto Disponibles}
+
+En el ecosistema de código abierto existen algunas herramientas que ofrecen capacidades de simulación sin costo de licencia, entre las cuales destacan DWSIM \cite{dwsim2023}, COCO Simulator \cite{coco2023} y Cantera \cite{cantera2023}. DWSIM proporciona un entorno de simulación de procesos similar conceptualmente a ASPEN Plus, mientras que Cantera se especializa en cinética química y reacciones en fase gaseosa. Sin embargo, estas herramientas presentan desafíos significativos para su adopción masiva. Las interfaces de usuario suelen ser complejas y requieren experiencia previa en simulación de procesos, la documentación disponible está predominantemente en idioma inglés con escaso material en español, la integración directa con datos experimentales obtenidos en laboratorio no está suficientemente desarrollada, y existe una notable ausencia de metodologías educativas estructuradas que guíen progresivamente a usuarios novatos desde los fundamentos hasta aplicaciones avanzadas.
+
+Para científicos experimentales cuya formación se centra en química y no incluye programación computacional, estas herramientas pueden resultar tan inaccesibles como el software comercial debido a la curva de aprendizaje pronunciada. La falta de ejemplos específicos aplicados a sistemas de interés concreto, como la producción de biodiesel, dificulta adicionalmente la transferencia tecnológica desde estas plataformas genéricas hacia aplicaciones particulares.
+
+\subsection{Objetivos y Alcance del Presente Trabajo}
+
+Este trabajo busca cerrar la brecha existente entre el software comercial de alto costo pero limitada accesibilidad y las herramientas de código abierto disponibles pero de difícil adopción. El objetivo principal consiste en desarrollar un sistema modular completo implementado íntegramente en lenguaje Python, de distribución libre bajo licencia de código abierto, específicamente diseñado para el modelado cinético de producción de biodiesel mediante transesterificación. Este sistema debe ser capaz de procesar datos experimentales reales, ajustar parámetros cinéticos mediante algoritmos robustos, optimizar condiciones operacionales y proporcionar criterios de escalado desde laboratorio hasta planta piloto.
+
+La validación rigurosa del modelo mediante comparación con datos experimentales publicados en literatura científica revisada por pares constituye un objetivo secundario fundamental para establecer la confiabilidad de las predicciones realizadas. Se plantea además el desarrollo de una metodología educativa estructurada en doce prácticas progresivas que conduzcan desde los fundamentos de programación en Python hasta técnicas avanzadas de dinámica de fluidos computacional aplicada al diseño de reactores. Esta metodología debe estar diseñada específicamente para personas sin conocimientos previos de programación, proporcionando una transición gradual que permita la adquisición de competencias técnicas de forma natural.
+
+La demostración de la versatilidad del sistema mediante su aplicación a diferentes configuraciones de reactor, diversos catalizadores y distintas materias primas lipídicas constituye otro objetivo relevante. La documentación exhaustiva de todos los componentes del sistema, incluyendo procedimientos de instalación, configuración de parámetros y ejecución de cálculos, garantizará la reproducibilidad completa de los resultados obtenidos. Finalmente, se busca proporcionar a la comunidad científica internacional una alternativa que sea económicamente accesible por su costo nulo, técnicamente sólida por su fundamentación en métodos numéricos establecidos, y completamente transparente por el acceso irrestricto al código fuente.
+
+Todo el código fuente desarrollado, junto con la documentación completa y los datos de ejemplo, se encuentra disponible públicamente en un repositorio de control de versiones, permitiendo que cualquier investigador pueda auditar los métodos implementados, modificar el código para adaptarlo a sus necesidades específicas, contribuir con mejoras o extensiones, y extender las capacidades del sistema según los requerimientos particulares de su investigación.
+
+% ============================================================================
+% 2. METODOLOGÍA
+% ============================================================================
+\section{Metodología}
+
+\subsection{Arquitectura Modular del Sistema}
+
+El sistema desarrollado se estructura siguiendo principios de ingeniería de software modular, donde cada componente funcional se implementa como un módulo independiente con responsabilidades claramente delimitadas. Esta arquitectura facilita tanto el mantenimiento del código como la extensión de capacidades mediante la adición de nuevos módulos sin afectar la funcionalidad existente. La estructura de directorios principal del repositorio se organiza de la siguiente manera: el directorio raíz contiene el archivo principal \texttt{main.py} que constituye el punto de entrada al sistema, la carpeta \texttt{src/} alberga todo el código fuente organizado en submódulos, la carpeta \texttt{practicas/} contiene las doce prácticas educativas con sus respectivos archivos de configuración y datos de ejemplo, el directorio \texttt{config/} almacena los archivos de configuración global en formato JSON, y la carpeta \texttt{datos/} contiene conjuntos de datos experimentales de referencia.
+
+Dentro del directorio \texttt{src/}, la organización modular se implementa mediante cuatro subdirectorios principales. El módulo \texttt{src/data\_processing/} contiene la clase \texttt{GCProcessor} implementada en el archivo \texttt{gc\_processor.py}, que se encarga del procesamiento completo de datos experimentales obtenidos mediante cromatografía de gases. Este módulo lee archivos en formato CSV que contienen las áreas de los picos cromatográficos, aplica los factores de respuesta relativos configurados, calcula las concentraciones molares de cada especie química presente, y genera archivos de salida con los perfiles temporales de concentración. La clase acepta como entrada un diccionario de configuración donde se especifican las columnas del archivo CSV que corresponden a cada especie, los factores de respuesta relativos respecto al estándar interno, y las masas molares de todos los componentes.
+
+El módulo \texttt{src/models/} contiene dos archivos principales. El archivo \texttt{kinetic\_model.py} implementa la clase \texttt{KineticModel} que define el modelo cinético de la reacción de transesterificación. Esta clase contiene métodos para calcular la constante de velocidad mediante la ecuación de Arrhenius, definir el sistema de ecuaciones diferenciales ordinarias que describe la evolución temporal de las concentraciones, y resolver numéricamente este sistema utilizando el integrador \texttt{odeint} de la biblioteca SciPy. El segundo archivo, \texttt{thermodynamics.py}, proporciona funciones auxiliares para el cálculo de propiedades físicas dependientes de la temperatura, tales como densidad, viscosidad y calor específico, mediante correlaciones polinómicas cuyos coeficientes se obtienen de la literatura.
+
+El módulo \texttt{src/optimization/} se subdivide en dos componentes especializados. El archivo \texttt{parameter\_fitter.py} implementa la clase \texttt{ParameterFitter} que realiza el ajuste de parámetros cinéticos mediante dos estrategias algorítmicas alternativas. La primera estrategia utiliza el algoritmo de Levenberg-Marquardt implementado en la biblioteca \texttt{lmfit}, que resulta eficiente cuando se dispone de una estimación inicial razonable de los parámetros y los datos experimentales presentan bajo nivel de ruido. Este algoritmo minimiza la suma de residuos cuadrados entre los valores experimentales y los predichos por el modelo, calculando además intervalos de confianza para cada parámetro ajustado y estadísticas de bondad de ajuste tales como el coeficiente de determinación $R^2$ y la raíz del error cuadrático medio. La segunda estrategia implementa el algoritmo de evolución diferencial de la biblioteca \texttt{scipy.optimize}, que realiza una búsqueda global en el espacio de parámetros y resulta más robusta ante la presencia de múltiples mínimos locales, aunque con mayor costo computacional. El archivo \texttt{operational\_optimizer.py} contiene la clase \texttt{OperationalOptimizer} que determina las condiciones operacionales óptimas del proceso. Esta clase acepta como entrada una función objetivo definida por el usuario, restricciones en los valores de las variables de operación tales como temperatura máxima permisible o relación molar máxima económicamente viable, y explora el espacio de búsqueda utilizando algoritmos de optimización global para identificar la combinación de variables que maximiza la conversión mientras minimiza el tiempo de reacción y el consumo de reactivos.
+
+El módulo \texttt{src/visualization/} implementado en el archivo \texttt{plotter.py} proporciona funciones especializadas para la generación de gráficas de alta calidad utilizando las bibliotecas Matplotlib para gráficas estáticas y Plotly para visualizaciones interactivas. Las funciones generan automáticamente gráficas de evolución temporal de concentraciones con múltiples series superpuestas, superficies de respuesta tridimensionales para análisis de sensibilidad, diagramas de contorno para visualización de regiones óptimas, y diagramas de Pareto para identificación de factores más influyentes. Todas las gráficas se guardan automáticamente en formato PNG con resolución de trescientos puntos por pulgada y adicionalmente en formato HTML interactivo cuando se utiliza Plotly.
+
+El flujo de datos a través del sistema sigue una secuencia unidireccional bien definida. Inicialmente, los datos experimentales crudos obtenidos del cromatógrafo se almacenan en archivos CSV en el directorio \texttt{datos/experimentales/}. El módulo \texttt{GCProcessor} lee estos archivos, procesa las áreas de los picos aplicando las calibraciones correspondientes, y genera archivos de salida con las concentraciones calculadas. Estos datos procesados se pasan al módulo \texttt{ParameterFitter}, que ejecuta el algoritmo de ajuste de parámetros cinéticos. Los parámetros óptimos obtenidos se almacenan en un archivo de configuración JSON en el directorio \texttt{config/parametros\_ajustados.json}. Posteriormente, el módulo \texttt{OperationalOptimizer} utiliza estos parámetros validados para explorar diferentes condiciones operacionales y determinar la configuración óptima del proceso. Finalmente, el módulo de visualización genera todas las gráficas requeridas y las almacena en el directorio \texttt{resultados/} junto con archivos de texto que contienen resúmenes estadísticos numéricos.
+
+Esta arquitectura modular permite ejecutar cada etapa del análisis de forma independiente, facilitando la depuración del código, la validación de resultados intermedios, y la reutilización de componentes en diferentes contextos. Por ejemplo, la práctica número cinco del material educativo utiliza exclusivamente el módulo \texttt{GCProcessor} para introducir el concepto de procesamiento de datos cromatográficos, mientras que la práctica número seis combina este módulo con el \texttt{ParameterFitter} para ilustrar el proceso completo de ajuste de parámetros cinéticos. La práctica número ocho integra todos los módulos en un flujo de trabajo completo que va desde los datos crudos hasta la optimización operacional, demostrando la integración de todos los componentes del sistema.
+
+\subsection{Fundamentos del Modelo Cinético de Transesterificación}
+
+La reacción de transesterificación de triglicéridos con metanol en presencia de catalizador alcalino homogéneo puede representarse mediante diferentes niveles de complejidad mecanística. El modelo más simple considera la reacción global directa donde un mol de triglicérido reacciona con tres moles de metanol para producir tres moles de éster metílico de ácido graso y un mol de glicerol, según la estequiometría representada en la ecuación \ref{eq:reaccion_global}. Este modelo simplificado resulta adecuado cuando el objetivo principal consiste en predecir la conversión final del proceso sin necesidad de cuantificar las especies intermedias.
+
+\begin{equation}
+	\text{TG} + 3\,\text{CH}_3\text{OH} \xrightarrow{k} 3\,\text{FAME} + \text{GL}
+	\label{eq:reaccion_global}
+\end{equation}
+
+Sin embargo, el mecanismo real de la transesterificación procede mediante tres etapas consecutivas reversibles. En la primera etapa, el triglicérido reacciona con una molécula de metanol para formar diglicérido y el primer éster metílico, según se indica en la ecuación \ref{eq:etapa1}. La segunda etapa convierte el diglicérido en monoglicérido con liberación de una segunda molécula de éster metílico, como muestra la ecuación \ref{eq:etapa2}. Finalmente, el monoglicérido reacciona con una tercera molécula de metanol para producir glicerol y la tercera molécula de éster metílico, según la ecuación \ref{eq:etapa3}. Cada una de estas etapas posee sus propias constantes de velocidad directa e inversa, y la reversibilidad de las reacciones puede afectar significativamente el rendimiento máximo alcanzable, especialmente cuando se opera con relaciones molares metanol a triglicérido cercanas a la estequiométrica.
+
+\begin{align}
+	\text{TG} + \text{CH}_3\text{OH} &\xrightleftharpoons[k_{-1}]{k_1} \text{DG} + \text{FAME} \label{eq:etapa1} \\
+	\text{DG} + \text{CH}_3\text{OH} &\xrightleftharpoons[k_{-2}]{k_2} \text{MG} + \text{FAME} \label{eq:etapa2} \\
+	\text{MG} + \text{CH}_3\text{OH} &\xrightleftharpoons[k_{-3}]{k_3} \text{GL} + \text{FAME} \label{eq:etapa3}
+\end{align}
+
+El sistema implementado en el archivo \texttt{src/models/kinetic\_model.py} permite al usuario seleccionar mediante el parámetro \texttt{modelo\_tipo} en el archivo de configuración \texttt{config/modelo\_cinetico.json} si desea utilizar el modelo simplificado de un solo paso o el modelo detallado de tres pasos reversibles. Esta flexibilidad resulta particularmente útil en contextos educativos, donde la práctica número cuatro introduce inicialmente el modelo de un paso para facilitar la comprensión de los conceptos fundamentales de cinética química, mientras que la práctica número doce utiliza el modelo de tres pasos para demostrar el impacto de considerar especies intermedias y reversibilidad en las predicciones de conversión.
+
+La dependencia de las constantes de velocidad con la temperatura se modela mediante la ecuación de Arrhenius, que relaciona exponencialmente la constante de velocidad con la energía de activación y la temperatura absoluta según la expresión mostrada en la ecuación \ref{eq:arrhenius}. En esta ecuación, $k$ representa la constante de velocidad expresada en litros por mol por minuto, $A$ constituye el factor pre-exponencial con las mismas unidades dimensionales que $k$, $E_a$ denota la energía de activación expresada en julios por mol, $R$ es la constante universal de los gases ideales con valor de ocho punto trescientos catorce julios por mol por kelvin, y $T$ representa la temperatura absoluta del sistema reactivo medida en kelvin.
+
+\begin{equation}
+	k(T) = A \exp\left(-\frac{E_a}{RT}\right)
+	\label{eq:arrhenius}
+\end{equation}
+
+El factor pre-exponencial $A$ se interpreta físicamente como la frecuencia con la cual las moléculas colisionan con la orientación apropiada para reaccionar, mientras que el término exponencial que contiene la energía de activación representa la fracción de colisiones que poseen energía suficiente para superar la barrera energética de la reacción. Valores elevados de energía de activación resultan en una mayor sensibilidad de la constante de velocidad ante cambios de temperatura, lo cual se manifiesta en pendientes más pronunciadas en los gráficos de Arrhenius que representan el logaritmo natural de la constante de velocidad versus el inverso de la temperatura absoluta, como se ilustra en la práctica número dos del material educativo.
+
+El método implementado en la clase \texttt{KineticModel} para el cálculo de la constante de velocidad se encuentra en la función \texttt{calcular\_constante\_velocidad()}, que recibe como argumentos el factor pre-exponencial, la energía de activación y la temperatura, retornando el valor numérico de la constante calculado mediante la ecuación de Arrhenius. Esta función se invoca repetidamente durante la integración numérica del sistema de ecuaciones diferenciales cuando se consideran perfiles de temperatura variables en el tiempo, como ocurre en procesos no isotérmicos donde existe control deficiente de temperatura o en operaciones de arranque del reactor donde la temperatura se eleva gradualmente desde la temperatura ambiente hasta la temperatura de operación deseada.
+
+\subsection{Sistema de Ecuaciones Diferenciales Ordinarias}
+
+Para el caso del modelo cinético simplificado de un solo paso con catalizador alcalino homogéneo, se asume que la velocidad de reacción sigue una cinética de orden global cuatro, siendo de primer orden respecto al triglicérido y de tercer orden respecto al metanol. Esta selección del orden de reacción se fundamenta en observaciones experimentales reportadas extensamente en la literatura científica \cite{freedman1986,noureddini1997}, donde se ha demostrado que esta expresión cinética reproduce adecuadamente los perfiles de concentración medidos experimentalmente para catalizadores alcalinos en fase homogénea. La velocidad de reacción se expresa entonces como el producto de la constante de velocidad por la concentración molar de triglicérido y el cubo de la concentración molar de metanol, según se muestra en la ecuación \ref{eq:velocidad_reaccion}.
+
+\begin{equation}
+	r = k \, C_{\text{TG}} \, C_{\text{MeOH}}^3
+	\label{eq:velocidad_reaccion}
+\end{equation}
+
+El balance de materia para cada especie química en un reactor batch perfectamente mezclado operando isotérmicamente conduce a un sistema de cuatro ecuaciones diferenciales ordinarias acopladas. La variación temporal de la concentración de triglicérido se describe mediante la ecuación \ref{eq:edo_tg}, donde el signo negativo indica que el triglicérido se consume durante la reacción. La variación de la concentración de metanol, presentada en la ecuación \ref{eq:edo_meoh}, incluye el factor estequiométrico de tres debido a que se consumen tres moles de metanol por cada mol de triglicérido que reacciona. Las concentraciones de los productos, éster metílico y glicerol, aumentan con el tiempo según las ecuaciones \ref{eq:edo_fame} y \ref{eq:edo_gl} respectivamente, reflejando sus coeficientes estequiométricos de producción.
+
+\begin{align}
+	\frac{dC_{\text{TG}}}{dt} &= -k \, C_{\text{TG}} \, C_{\text{MeOH}}^3 \label{eq:edo_tg} \\
+	\frac{dC_{\text{MeOH}}}{dt} &= -3k \, C_{\text{TG}} \, C_{\text{MeOH}}^3 \label{eq:edo_meoh} \\
+	\frac{dC_{\text{FAME}}}{dt} &= 3k \, C_{\text{TG}} \, C_{\text{MeOH}}^3 \label{eq:edo_fame} \\
+	\frac{dC_{\text{GL}}}{dt} &= k \, C_{\text{TG}} \, C_{\text{MeOH}}^3 \label{eq:edo_gl}
+\end{align}
+
+Para el modelo de tres pasos reversibles, el sistema de ecuaciones diferenciales se expande considerablemente. Se deben incluir ecuaciones para las concentraciones de diglicérido y monoglicérido como especies intermedias, y cada ecuación debe incorporar tanto los términos de producción como los de consumo asociados a las reacciones directa e inversa de las tres etapas. La ecuación diferencial para el triglicérido incluye únicamente el término de consumo por la primera etapa más el término de regeneración por la reacción inversa de la misma etapa. El diglicérido se produce en la primera etapa y se consume en la segunda, con contribuciones adicionales de las respectivas reacciones inversas. El monoglicérido se genera en la segunda etapa y se consume en la tercera. El éster metílico se produce en las tres etapas. El sistema completo consta de seis ecuaciones diferenciales acopladas y requiere el conocimiento de seis constantes cinéticas.
+
+La resolución numérica de estos sistemas de ecuaciones diferenciales ordinarias se realiza mediante el integrador \texttt{odeint} de la biblioteca SciPy de Python, implementado en el método \texttt{resolver\_sistema()} de la clase \texttt{KineticModel}. Este integrador utiliza el método de diferencias finitas backward differentiation formulas, que resulta particularmente apropiado para sistemas rígidos donde las constantes de velocidad de diferentes pasos pueden diferir en varios órdenes de magnitud. El método ajusta automáticamente el tamaño del paso de integración para garantizar que el error de truncamiento local permanezca por debajo de tolerancias especificadas por el usuario, las cuales se configuran mediante los parámetros \texttt{rtol} y \texttt{atol} en el archivo \texttt{config/integracion\_numerica.json}. Un valor típico de tolerancia relativa es diez elevado a menos seis, mientras que la tolerancia absoluta suele fijarse en diez elevado a menos nueve, lo cual garantiza una precisión adecuada para la mayoría de aplicaciones prácticas sin incurrir en costos computacionales excesivos.
+
+Las condiciones iniciales para el sistema de ecuaciones diferenciales se especifican mediante las concentraciones molares iniciales de todas las especies. Para un reactor batch típico, la concentración inicial de triglicérido se calcula dividiendo la masa de aceite cargada al reactor entre su masa molar promedio y el volumen del reactor, mientras que la concentración inicial de metanol se determina similarmente a partir de su masa cargada. Las concentraciones iniciales de productos y especies intermedias son típicamente cero para un reactor batch que inicia operación, aunque el sistema permite especificar valores no nulos para simular condiciones de recarga parcial de reactor. Estas condiciones iniciales se ingresan mediante el archivo de configuración \texttt{config/condiciones\_iniciales.json}, donde se especifican tanto las masas cargadas como las masas molares y el volumen del reactor, permitiendo que el sistema calcule automáticamente las concentraciones molares correspondientes.
+
+El vector de tiempo para la integración se genera mediante la función \texttt{numpy.linspace()} que crea un arreglo de valores uniformemente espaciados entre el tiempo inicial cero y el tiempo final especificado por el usuario. El número de puntos temporales se configura mediante el parámetro \texttt{num\_puntos\_tiempo} en el archivo de configuración, siendo un valor típico de cien puntos para simulaciones estándar, aunque puede incrementarse cuando se requiere mayor resolución temporal para capturar fenómenos transitorios rápidos. El integrador \texttt{odeint} retorna una matriz bidimensional donde cada fila corresponde a un instante de tiempo y cada columna representa la concentración de una especie química, facilitando el postprocesamiento de resultados y la generación de gráficas mediante las funciones del módulo de visualización.
+
+La práctica número cuatro del material educativo guía en la construcción paso a paso del sistema de ecuaciones diferenciales, la configuración de parámetros de integración, y la interpretación de los perfiles de concentración obtenidos. Se proporcionan ejemplos concretos donde se varía la temperatura de reacción para observar su efecto en la velocidad de conversión, ilustrando cuantitativamente la dependencia exponencial predicha por la ecuación de Arrhenius. La práctica número doce permite comparar las predicciones del modelo de un paso versus el modelo de tres pasos, evidenciando las diferencias en la conversión final alcanzable y la importancia de considerar la reversibilidad de las reacciones cuando se opera con relaciones molares bajas de metanol a triglicérido.
+
