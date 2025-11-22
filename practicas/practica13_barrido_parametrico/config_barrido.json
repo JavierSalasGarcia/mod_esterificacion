@@ -1,0 +1,45 @@
+{
+  "_comentario": "Configuración para barrido paramétrico automatizado - Práctica 13",
+  "_descripcion": "Parámetros con listas se barren (producto cartesiano). Parámetros con valor único permanecen constantes.",
+
+  "parametros_barrido": {
+    "temperatura_C": [50, 55, 60, 65],
+    "relacion_molar": [6, 9, 12],
+    "concentracion_catalizador_pct": [1.0, 1.5],
+    "agitacion_rpm": [400]
+  },
+
+  "parametros_fijos": {
+    "tiempo_reaccion_min": 60,
+    "volumen_reactor_mL": 350,
+    "presion_atm": 1.0
+  },
+
+  "parametros_cineticos": {
+    "_fuente": "Ajustados en Práctica 6 o validados con Kouzu 2008",
+    "factor_preexponencial": 2.47e11,
+    "energia_activacion_J_mol": 67400
+  },
+
+  "opciones_calculo": {
+    "modelo_tipo": "un_paso_irreversible",
+    "tolerancia_relativa": 1e-6,
+    "tolerancia_absoluta": 1e-9,
+    "num_puntos_tiempo": 100
+  },
+
+  "opciones_barrido": {
+    "pedir_confirmacion": true,
+    "guardar_simulaciones_individuales": true,
+    "generar_visualizaciones": true,
+    "formato_salida": "csv_y_json",
+    "nivel_detalle_log": "INFO"
+  },
+
+  "salida": {
+    "carpeta_base": "resultados",
+    "prefijo_nombre": "barrido",
+    "incluir_timestamp": true,
+    "formato_timestamp": "%Y-%m-%d_%H-%M-%S"
+  }
+}
